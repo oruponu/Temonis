@@ -359,7 +359,7 @@ namespace Temonis
         // 色から計測震度を取得
         private static float GetInstIntensity(int x, int y)
         {
-            return !ColorTable.TryGetValue(GetColor(x, y), out float value) ? -3.0f : value;
+            return !ColorTable.TryGetValue(GetColor(x, y), out var value) ? -3.0f : value;
         }
 
         // 計測震度を整数に変換

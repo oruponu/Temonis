@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Media;
-using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Temonis
 {
@@ -24,10 +22,6 @@ namespace Temonis
                 player.Stop();
             }
         }
-
-        [DllImport("winmm.dll")]
-        private static extern int mciSendString(string lpszCommand, StringBuilder lpszReturnString,
-            int cchReturn, IntPtr hwndCallback);
 
         // 音を再生
         public void PlaySound()
@@ -238,14 +232,14 @@ namespace Temonis
         private static void Play(string filePath)
         {
             Stop();
-            if (mciSendString($"open \"{filePath}\" type mpegvideo alias {Alias}", null, 0, IntPtr.Zero) != 0) return;
-            mciSendString($"play {Alias}", null, 0, IntPtr.Zero);
+            if (NativeMethods.mciSendString($"open \"{filePath}\" type mpegvideo alias {Alias}", null, 0, IntPtr.Zero) != 0) return;
+            NativeMethods.mciSendString($"play {Alias}", null, 0, IntPtr.Zero);
         }
 
         private static void Stop()
         {
-            mciSendString($"stop {Alias}", null, 0, IntPtr.Zero);
-            mciSendString($"close {Alias}", null, 0, IntPtr.Zero);
+            NativeMethods.mciSendString($"stop {Alias}", null, 0, IntPtr.Zero);
+            NativeMethods.mciSendString($"close {Alias}", null, 0, IntPtr.Zero);
         }
     }
 }
