@@ -1,4 +1,6 @@
-﻿namespace Temonis
+﻿using System.Windows.Forms;
+
+namespace Temonis
 {
     partial class MainWindow
     {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Text;
 using System.IO;
 using System.Net.Http;
 using System.Runtime.Serialization;
@@ -43,15 +44,12 @@ namespace Temonis
             _eew = new EEW(this);
             _eqInfo = new EqInfo(this);
             _sound = new Sound();
-            // 設定を読み込む
-            Settings.LoadSettings();
-            //ピクチャーボックスを初期化
+            Settings.LoadSettings();    // 設定を読み込む
+            // フォームを初期化
             pictureBox_kyoshinMap.Image = Properties.Resources.BaseMap;
-            // ラベルを初期化
             InitializeLabel();
-            // フォームの色を変更
-            ChangeFormColor();
-            // フォーカスをコントロールから外す
+            SetFormColor();
+            SetFormFont();
             ActiveControl = label_LatestTime;
             // タイマー定義
             var timer = new System.Timers.Timer(1000);
@@ -84,8 +82,8 @@ namespace Temonis
             label_eqinfoMessage.Text = "";
         }
 
-        // フォームの色を変更
-        private void ChangeFormColor()
+        // フォームの色を設定
+        private void SetFormColor()
         {
             BackColor = Black;
             label_LatestTime.ForeColor = White;
@@ -96,6 +94,49 @@ namespace Temonis
             textBox_eqInfoIntensity.ForeColor = White;
         }
         
+        // フォントを設定
+        private void SetFormFont()
+        {
+            var name = "Meiryo UI";
+            var fontCollection = new InstalledFontCollection();
+            var fontFamilies = fontCollection.Families;
+            foreach (var fontFamily in fontFamilies)
+            {
+                if (fontFamily.Name == "Yu Gothic UI")
+                {
+                    name = fontFamily.Name;
+                }
+            }
+            label_LatestTime.Font = new Font(name, label_LatestTime.Font.Size);
+            groupBox_Kyoshin.Font = new Font(name, groupBox_Kyoshin.Font.Size);
+            label_kyoshinMaxIntHeader.Font = new Font(name, label_kyoshinMaxIntHeader.Font.Size);
+            label_kyoshinMaxInt.Font = new Font(name, label_kyoshinMaxInt.Font.Size);
+            label_kyoshinMaxIntDetail.Font = new Font(name, label_kyoshinMaxIntDetail.Font.Size);
+            label_kyoshinPrefecture.Font = new Font(name, label_kyoshinPrefecture.Font.Size);
+            groupBox_EEW.Font = new Font(name, groupBox_EEW.Font.Size);
+            label_eewMessage.Font = new Font(name, label_eewMessage.Font.Size);
+            label_eewTimeHeader.Font = new Font(name, label_eewTimeHeader.Font.Size);
+            label_eewTime.Font = new Font(name, label_eewTime.Font.Size);
+            label_eewEpicenterHeader.Font = new Font(name, label_eewEpicenterHeader.Font.Size);
+            label_eewEpicenter.Font = new Font(name, label_eewEpicenter.Font.Size);
+            label_eewDepthHeader.Font = new Font(name, label_eewDepthHeader.Font.Size);
+            label_eewDepth.Font = new Font(name, label_eewDepth.Font.Size);
+            label_eewMagnitudeHeader.Font = new Font(name, label_eewMagnitudeHeader.Font.Size);
+            label_eewMagnitude.Font = new Font(name, label_eewMagnitude.Font.Size);
+            label_eewIntensityHeader.Font = new Font(name, label_eewIntensityHeader.Font.Size);
+            label_eewIntensity.Font = new Font(name, label_eewIntensity.Font.Size);
+            groupBox_EqInfo.Font = new Font(name, groupBox_EqInfo.Font.Size);
+            label_eqinfoTimeHeader.Font = new Font(name, label_eqinfoTimeHeader.Font.Size);
+            label_eqinfoTime.Font = new Font(name, label_eqinfoTime.Font.Size);
+            label_eqinfoEpicenterHeader.Font = new Font(name, label_eqinfoEpicenterHeader.Font.Size);
+            label_eqinfoEpicenter.Font = new Font(name, label_eqinfoEpicenter.Font.Size);
+            label_eqinfoDepthHeader.Font = new Font(name, label_eqinfoDepthHeader.Font.Size);
+            label_eqinfoDepth.Font = new Font(name, label_eqinfoDepth.Font.Size);
+            label_eqinfoMagnitudeHeader.Font = new Font(name, label_eqinfoMagnitudeHeader.Font.Size);
+            label_eqinfoMagnitude.Font = new Font(name, label_eqinfoMagnitude.Font.Size);
+            label_eqinfoMessage.Font = new Font(name, label_eqinfoMessage.Font.Size);
+        }
+
         // レベルを変更
         private void ChangeLevel()
         {
@@ -157,7 +198,7 @@ namespace Temonis
         {
             try
             {
-                await SetLatestTime();
+                await SetLatestTimeAsync();
             }
             catch (Exception ex)
             {
@@ -165,7 +206,7 @@ namespace Temonis
             }
             try
             {
-                await _eew.UpdateEEW();
+                await _eew.UpdateEEWAsync();
             }
             catch (Exception ex)
             {
@@ -175,7 +216,7 @@ namespace Temonis
             {
                 try
                 {
-                    await _eqInfo.UpdateEqInfo();
+                    await _eqInfo.UpdateEqInfoAsync();
                 }
                 catch (Exception ex)
                 {
@@ -185,12 +226,12 @@ namespace Temonis
             }
             try
             {
-                await _kyoshin.UpdateKyoshin();
+                await _kyoshin.UpdateKyoshinAsync();
                 _retryCount = 0;
             }
             catch (Exception ex)
             {
-                await RequestLatestTime();
+                await RequestLatestTimeAsync();
                 _retryCount++;
                 Logger(ex);
             }
@@ -209,14 +250,15 @@ namespace Temonis
         }
 
         // 強震モニタの時刻を取得
-        private static async Task RequestLatestTime()
+        private static async Task RequestLatestTimeAsync()
         {
             try
             {
                 using (var stream = await HttpClient.GetStreamAsync(LatestTimeUri))
                 {
-                    var latestTime = (LatestTimeJson)new DataContractJsonSerializer(typeof(LatestTimeJson)).ReadObject(stream);
-                    LatestTime = DateTime.Parse(latestTime.LatestTime);
+                    var serializer = new DataContractJsonSerializer(typeof(LatestTimeJson));
+                    var json = (LatestTimeJson)serializer.ReadObject(stream);
+                    LatestTime = DateTime.Parse(json.LatestTime);
                 }
             }
             catch (Exception ex)
@@ -226,11 +268,11 @@ namespace Temonis
         }
 
         // 強震モニタの時刻を設定
-        private static async Task SetLatestTime()
+        private static async Task SetLatestTimeAsync()
         {
             if (_timeResetCount >= TimeResetInterval)
             {
-                await RequestLatestTime();
+                await RequestLatestTimeAsync();
                 _timeResetCount = 0;
             }
             else

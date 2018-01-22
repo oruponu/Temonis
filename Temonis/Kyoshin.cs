@@ -160,12 +160,12 @@ namespace Temonis
             _instance.comboBox_MapType.SelectedIndex = 0;
         }
 
-        public async Task UpdateKyoshin()
+        public async Task UpdateKyoshinAsync()
         {
             var time = $"{MainWindow.LatestTime:yyyyMMdd}/{MainWindow.LatestTime:yyyyMMddHHmmss}";
-            using (var realTimeImg = await RequestRealTimeImg(time))
+            using (var realTimeImg = await GetRealTimeImageAsync(time))
             {
-                using (var bitmapRealTime = (Bitmap)await RequestImage($"{Uri}RealTimeImg/jma_s/{time}.jma_s.gif"))
+                using (var bitmapRealTime = (Bitmap)await RequestImageAsync($"{Uri}RealTimeImg/jma_s/{time}.jma_s.gif"))
                 {
                     _dataRealTime =
                         bitmapRealTime.LockBits(new Rectangle(0, 0, bitmapRealTime.Width, bitmapRealTime.Height),
@@ -179,7 +179,7 @@ namespace Temonis
                 {
                     if (EEW.OnTrigger)
                     {
-                        graphicsEpicenter.DrawImage(await RequestPSWaveImg(time), 0, 0, realTimeImg.Width,
+                        graphicsEpicenter.DrawImage(await GetPSWaveImageAsync(time), 0, 0, realTimeImg.Width,
                             realTimeImg.Height);
                     }
                     else
@@ -200,8 +200,8 @@ namespace Temonis
             }
         }
 
-        // 画像を取得
-        private static async Task<Image> RequestImage(string requestUri)
+        // 画像をリクエスト
+        private static async Task<Image> RequestImageAsync(string requestUri)
         {
             using (var stream = await HttpClient.GetStreamAsync(requestUri))
             {
@@ -210,7 +210,7 @@ namespace Temonis
         }
 
         // 強震モニタ
-        private async Task<Bitmap> RequestRealTimeImg(string time)
+        private async Task<Bitmap> GetRealTimeImageAsync(string time)
         {
             // コントロールから設定を取得
             var mapType = MapType[_instance.comboBox_MapType.SelectedIndex];
@@ -221,7 +221,7 @@ namespace Temonis
             {
                 imageAttrs.SetRemapTable(_mapRealTime);
                 graphics.DrawImage(
-                    await RequestImage($"{Uri}RealTimeImg/{mapType}_{mapSb}/{time}.{mapType}_{mapSb}.gif"),
+                    await RequestImageAsync($"{Uri}RealTimeImg/{mapType}_{mapSb}/{time}.{mapType}_{mapSb}.gif"),
                     new Rectangle(Point.Empty, bitmap.Size), 0, 0, bitmap.Width, bitmap.Height, GraphicsUnit.Pixel,
                     imageAttrs);
             }
@@ -245,8 +245,14 @@ namespace Temonis
                 {
                     {$"{items[2]} {items[1]}", new Point(int.Parse(items[3]), int.Parse(items[4]))}
                 };
-                if (!pointList.ContainsKey(pointInfo)) pointList.Add(pointInfo, intensity);
-                else if (pointList[pointInfo] < intensity) pointList[pointInfo] = intensity;
+                if (!pointList.ContainsKey(pointInfo))
+                {
+                    pointList.Add(pointInfo, intensity);
+                }
+                else if (pointList[pointInfo] < intensity)
+                {
+                    pointList[pointInfo] = intensity;
+                }
 
                 // 都道府県リストを作成
                 if (intensity <= 0.0f) continue;
@@ -260,13 +266,22 @@ namespace Temonis
                     pointNum++;
                 }
                 if (pointNum < 3) continue;
-                if (!prefList.ContainsKey(items[2])) prefList.Add(prefName, pointNum);
-                else prefList[prefName] = pointNum;
+                if (!prefList.ContainsKey(items[2]))
+                {
+                    prefList.Add(prefName, pointNum);
+                }
+                else
+                {
+                    prefList[prefName] = pointNum;
+                }
             }
             var maxInt = pointList.Values.Max();
             Intensity = ToInteger(maxInt);
             // トリガチェック（レガシー）
-            if (prefList.Count != 0) OnTrigger = true;
+            if (prefList.Count != 0)
+            {
+                OnTrigger = true;
+            }
             // 最大震度（気象庁震度階級）を検知した地点数
             var kvpd = pointList.OrderByDescending(x => x.Value);
             var maxIntNum = -1 + kvpd.Where(x => !(x.Value < 0.5))
@@ -278,7 +293,10 @@ namespace Temonis
             {
                 for (var x = maxIntPoint.X - 2; x <= maxIntPoint.X + 2; x += 2)
                 {
-                    if (GetInstIntensity(x, y) >= 1.5f) trigger++;
+                    if (GetInstIntensity(x, y) >= 1.5f)
+                    {
+                        trigger++;
+                    }
                 }
             }
             if (trigger > 0) OnTrigger = true;
@@ -308,7 +326,7 @@ namespace Temonis
             }
             else
             {
-                var kvpi = prefList.OrderByDescending(_ => _.Value);
+                var kvpi = prefList.OrderByDescending(x => x.Value);
                 prefName = "";
                 var num = 0;
                 foreach (var kvp in kvpi)
@@ -335,14 +353,14 @@ namespace Temonis
         }
 
         // 緊急地震速報 P波・S波到達予想円
-        private async Task<Bitmap> RequestPSWaveImg(string time)
+        private async Task<Bitmap> GetPSWaveImageAsync(string time)
         {
             var bitmap = new Bitmap(_instance.pictureBox_kyoshinMap.Width, _instance.pictureBox_kyoshinMap.Height);
             using (var graphics = Graphics.FromImage(bitmap))
             using (var imageAttrs = new ImageAttributes())
             {
                 imageAttrs.SetRemapTable(_mapPSWave);
-                graphics.DrawImage(await RequestImage($"{Uri}PSWaveImg/eew/{time}.eew.gif"),
+                graphics.DrawImage(await RequestImageAsync($"{Uri}PSWaveImg/eew/{time}.eew.gif"),
                     new Rectangle(Point.Empty, bitmap.Size), 0, 0, bitmap.Width, bitmap.Height, GraphicsUnit.Pixel,
                     imageAttrs);
             }

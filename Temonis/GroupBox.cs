@@ -10,10 +10,7 @@ namespace Temonis
 
         public Color BorderColor
         {
-            get
-            {
-                return _borderColor;
-            }
+            get => _borderColor;
             set
             {
                 if (BorderColor == value) return;

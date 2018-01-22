@@ -62,14 +62,14 @@ namespace Temonis
             }
             else _lastEEWInfo = new Dictionary<string, string>();
             // 地震情報
-            if (_lastEqInfoTime == EqInfo.DateTime && _lastEqInfoIntensity == EqInfo.Intensity) return;
+            if (_lastEqInfoTime == EqInfo.ArrivalTime && _lastEqInfoIntensity == EqInfo.Intensity) return;
             if (_lastEqInfoIntensity == null)
             {
-                _lastEqInfoTime = EqInfo.DateTime;
+                _lastEqInfoTime = EqInfo.ArrivalTime;
                 _lastEqInfoIntensity = EqInfo.Intensity;
                 return;
             }
-            _lastEqInfoTime = EqInfo.DateTime;
+            _lastEqInfoTime = EqInfo.ArrivalTime;
             _lastEqInfoIntensity = EqInfo.Intensity;
             PlayEqInfo();
         }

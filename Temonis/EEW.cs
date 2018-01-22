@@ -23,14 +23,15 @@ namespace Temonis
             _instance = instance;
         }
 
-        public async Task UpdateEEW()
+        public async Task UpdateEEWAsync()
         {
             using (var stream = await HttpClient.GetStreamAsync($"{Uri}{MainWindow.LatestTime:yyyyMMddHHmmss}.json"))
             {
-                var eew = (EEWJson)new DataContractJsonSerializer(typeof(EEWJson)).ReadObject(stream);
-                if (eew.Result.Message != "データがありません")
+                var serializer = new DataContractJsonSerializer(typeof(EEWJson));
+                var json = (EEWJson)serializer.ReadObject(stream);
+                if (json.Result.Message != "データがありません")
                 {
-                    if ((bool)eew.IsCancel)
+                    if ((bool)json.IsCancel)
                     {
                         OnTrigger = false;
                         _instance.label_eewMessage.Text = "緊急地震速報は取り消されました。";
@@ -44,37 +45,37 @@ namespace Temonis
                         _instance.label_eewDepth.Text = "";
                         _instance.label_eewMagnitude.Text = "";
                         _instance.label_eewIntensity.Text = "";
-                        Info[eew.ReportId] = "0";
+                        Info[json.ReportId] = "0";
                     }
-                    else if (EqInfo.Id == eew.ReportId)
+                    else if (EqInfo.Id == json.ReportId)
                     {
                         OnTrigger = false;
                     }
                     else
                     {
                         OnTrigger = true;
-                        var serial = "第" + eew.ReportNum + "報";
-                        if ((bool)eew.IsFinal) serial += " 最終";
-                        _instance.label_eewMessage.Text = $"緊急地震速報（{eew.Alertflg}）{serial}";
+                        var serial = "第" + json.ReportNum + "報";
+                        if ((bool)json.IsFinal) serial += " 最終";
+                        _instance.label_eewMessage.Text = $"緊急地震速報（{json.Alertflg}）{serial}";
                         _instance.label_eewTimeHeader.Visible = true;
                         _instance.label_eewEpicenterHeader.Visible = true;
                         _instance.label_eewDepthHeader.Visible = true;
                         _instance.label_eewMagnitudeHeader.Visible = true;
                         _instance.label_eewIntensityHeader.Visible = true;
                         _instance.label_eewTime.Text = DateTime
-                            .ParseExact(eew.OriginTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture)
+                            .ParseExact(json.OriginTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture)
                             .ToString("yyyy年MM月dd日 HH時mm分ss秒");
-                        _instance.label_eewEpicenter.Text = eew.RegionName;
-                        _instance.label_eewDepth.Text = eew.Depth;
-                        _instance.label_eewMagnitude.Text = eew.Magunitude;
-                        _instance.label_eewIntensity.Text = eew.Calcintensity;
-                        if (!Info.ContainsKey(eew.ReportId))
+                        _instance.label_eewEpicenter.Text = json.RegionName;
+                        _instance.label_eewDepth.Text = json.Depth;
+                        _instance.label_eewMagnitude.Text = json.Magunitude;
+                        _instance.label_eewIntensity.Text = json.Calcintensity;
+                        if (!Info.ContainsKey(json.ReportId))
                         {
-                            Info.Add(eew.ReportId, eew.Calcintensity);
+                            Info.Add(json.ReportId, json.Calcintensity);
                         }
-                        else if (Info[eew.ReportId] != eew.Calcintensity)
+                        else if (Info[json.ReportId] != json.Calcintensity)
                         {
-                            Info[eew.ReportId] = eew.Calcintensity;
+                            Info[json.ReportId] = json.Calcintensity;
                         }
                     }
                 }

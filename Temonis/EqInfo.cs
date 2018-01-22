@@ -19,7 +19,7 @@ namespace Temonis
 
         public static string Id { get; private set; }
 
-        public static DateTime DateTime { get; private set; }
+        public static DateTime ArrivalTime { get; private set; }
 
         public static string Intensity { get; private set; }
 
@@ -29,7 +29,7 @@ namespace Temonis
         }
 
         // 地震情報を取得（Yahoo!天気・災害）
-        public async Task UpdateEqInfo()
+        public async Task UpdateEqInfoAsync()
         {
             var html = await HttpClient.GetStringAsync(Uri);
             var epicenter = new double[2];
@@ -42,11 +42,14 @@ namespace Temonis
 
             // 発生時刻
             var str = Regex.Match(html, @"<\w+>発生時刻</\w+></\w+>\n<.+><\w+>(?<text>.+?)</\w+>").Groups["text"].Value.Replace("ごろ", "");
-            DateTime = DateTime.Parse(str, new CultureInfo("ja-JP"), DateTimeStyles.AssumeLocal);
-            _instance.label_eqinfoTime.Text = DateTime.ToString("yyyy年MM月dd日 HH時mm分");
+            ArrivalTime = DateTime.Parse(str, new CultureInfo("ja-JP"), DateTimeStyles.AssumeLocal);
+            _instance.label_eqinfoTime.Text = ArrivalTime.ToString("yyyy年MM月dd日 HH時mm分");
             // 震源地
             str = Regex.Match(html, @"<\w+>震源地</\w+></\w+>\n<.+><\w+><.+?>(?<text>.+?)</\w+></\w+>").Groups["text"].Value.Replace("</a>", "");
-            if (str == "") str = "---"; // 震度速報の場合
+            if (str == "")  // 震度速報
+            {
+                str = "---";
+            }
             _instance.label_eqinfoEpicenter.Text = str;
             // 緯度
             var latitude = Regex.Match(html, @"<\w+>緯度</\w+></\w+>\n<.+><\w+>(?<text>.+?)</\w+>").Groups["text"].Value;
@@ -91,7 +94,10 @@ namespace Temonis
             {
                 str = "今後の情報に注意してください。";
             }
-            if (str.Count(x => x == '。') == 2) str = str.Replace("。", "。\n");   // 付加文の情報が2つの場合は2行に分割
+            if (str.Count(x => x == '。') == 2)  // 付加文の情報が2つの場合は2行に分割
+            {
+                str = str.Replace("。", "。\n");
+            }
             _instance.label_eqinfoMessage.Text = str;
             // 各地の震度
             _instance.textBox_eqInfoIntensity.Clear();
