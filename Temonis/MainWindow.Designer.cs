@@ -31,7 +31,6 @@ namespace Temonis
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
-            this.label_LatestTime = new System.Windows.Forms.Label();
             this.groupBox_EqInfo = new Temonis.GroupBox();
             this.textBox_eqInfoIntensity = new System.Windows.Forms.TextBox();
             this.label_eqinfoMessage = new System.Windows.Forms.Label();
@@ -59,6 +58,7 @@ namespace Temonis
             this.label_kyoshinPrefecture = new System.Windows.Forms.Label();
             this.radioButton_Borehore = new System.Windows.Forms.RadioButton();
             this.radioButton_Surface = new System.Windows.Forms.RadioButton();
+            this.label_kyoshinLatestTime = new System.Windows.Forms.Label();
             this.comboBox_MapType = new System.Windows.Forms.ComboBox();
             this.label_kyoshinMaxIntDetail = new System.Windows.Forms.Label();
             this.label_kyoshinMaxInt = new System.Windows.Forms.Label();
@@ -69,16 +69,6 @@ namespace Temonis
             this.groupBox_Kyoshin.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_kyoshinMap)).BeginInit();
             this.SuspendLayout();
-            // 
-            // label_LatestTime
-            // 
-            this.label_LatestTime.AutoSize = true;
-            this.label_LatestTime.Font = new System.Drawing.Font("Meiryo UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label_LatestTime.Location = new System.Drawing.Point(24, 18);
-            this.label_LatestTime.Name = "label_LatestTime";
-            this.label_LatestTime.Size = new System.Drawing.Size(157, 26);
-            this.label_LatestTime.TabIndex = 0;
-            this.label_LatestTime.Text = "接続しています...";
             // 
             // groupBox_EqInfo
             // 
@@ -93,9 +83,9 @@ namespace Temonis
             this.groupBox_EqInfo.Controls.Add(this.label_eqinfoEpicenterHeader);
             this.groupBox_EqInfo.Controls.Add(this.label_eqinfoTime);
             this.groupBox_EqInfo.Controls.Add(this.label_eqinfoTimeHeader);
-            this.groupBox_EqInfo.Location = new System.Drawing.Point(408, 242);
+            this.groupBox_EqInfo.Location = new System.Drawing.Point(420, 186);
             this.groupBox_EqInfo.Name = "groupBox_EqInfo";
-            this.groupBox_EqInfo.Size = new System.Drawing.Size(512, 318);
+            this.groupBox_EqInfo.Size = new System.Drawing.Size(512, 338);
             this.groupBox_EqInfo.TabIndex = 3;
             this.groupBox_EqInfo.TabStop = false;
             this.groupBox_EqInfo.Text = "地震情報";
@@ -107,13 +97,13 @@ namespace Temonis
             this.textBox_eqInfoIntensity.Name = "textBox_eqInfoIntensity";
             this.textBox_eqInfoIntensity.ReadOnly = true;
             this.textBox_eqInfoIntensity.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox_eqInfoIntensity.Size = new System.Drawing.Size(472, 149);
+            this.textBox_eqInfoIntensity.Size = new System.Drawing.Size(472, 160);
             this.textBox_eqInfoIntensity.TabIndex = 0;
             // 
             // label_eqinfoMessage
             // 
             this.label_eqinfoMessage.Font = new System.Drawing.Font("Meiryo UI", 12F);
-            this.label_eqinfoMessage.Location = new System.Drawing.Point(21, 104);
+            this.label_eqinfoMessage.Location = new System.Drawing.Point(20, 104);
             this.label_eqinfoMessage.Name = "label_eqinfoMessage";
             this.label_eqinfoMessage.Size = new System.Drawing.Size(472, 40);
             this.label_eqinfoMessage.TabIndex = 0;
@@ -123,7 +113,7 @@ namespace Temonis
             // 
             this.label_eqinfoMagnitude.AutoSize = true;
             this.label_eqinfoMagnitude.Font = new System.Drawing.Font("Meiryo UI", 12F);
-            this.label_eqinfoMagnitude.Location = new System.Drawing.Point(133, 84);
+            this.label_eqinfoMagnitude.Location = new System.Drawing.Point(132, 84);
             this.label_eqinfoMagnitude.Name = "label_eqinfoMagnitude";
             this.label_eqinfoMagnitude.Size = new System.Drawing.Size(51, 20);
             this.label_eqinfoMagnitude.TabIndex = 0;
@@ -133,7 +123,7 @@ namespace Temonis
             // 
             this.label_eqinfoMagnitudeHeader.AutoSize = true;
             this.label_eqinfoMagnitudeHeader.Font = new System.Drawing.Font("Meiryo UI", 12F);
-            this.label_eqinfoMagnitudeHeader.Location = new System.Drawing.Point(21, 84);
+            this.label_eqinfoMagnitudeHeader.Location = new System.Drawing.Point(20, 84);
             this.label_eqinfoMagnitudeHeader.Name = "label_eqinfoMagnitudeHeader";
             this.label_eqinfoMagnitudeHeader.Size = new System.Drawing.Size(93, 20);
             this.label_eqinfoMagnitudeHeader.TabIndex = 0;
@@ -143,7 +133,7 @@ namespace Temonis
             // 
             this.label_eqinfoDepth.AutoSize = true;
             this.label_eqinfoDepth.Font = new System.Drawing.Font("Meiryo UI", 12F);
-            this.label_eqinfoDepth.Location = new System.Drawing.Point(133, 64);
+            this.label_eqinfoDepth.Location = new System.Drawing.Point(132, 64);
             this.label_eqinfoDepth.Name = "label_eqinfoDepth";
             this.label_eqinfoDepth.Size = new System.Drawing.Size(51, 20);
             this.label_eqinfoDepth.TabIndex = 0;
@@ -153,7 +143,7 @@ namespace Temonis
             // 
             this.label_eqinfoDepthHeader.AutoSize = true;
             this.label_eqinfoDepthHeader.Font = new System.Drawing.Font("Meiryo UI", 12F);
-            this.label_eqinfoDepthHeader.Location = new System.Drawing.Point(21, 64);
+            this.label_eqinfoDepthHeader.Location = new System.Drawing.Point(20, 64);
             this.label_eqinfoDepthHeader.Name = "label_eqinfoDepthHeader";
             this.label_eqinfoDepthHeader.Size = new System.Drawing.Size(81, 20);
             this.label_eqinfoDepthHeader.TabIndex = 0;
@@ -163,7 +153,7 @@ namespace Temonis
             // 
             this.label_eqinfoEpicenter.AutoSize = true;
             this.label_eqinfoEpicenter.Font = new System.Drawing.Font("Meiryo UI", 12F);
-            this.label_eqinfoEpicenter.Location = new System.Drawing.Point(133, 44);
+            this.label_eqinfoEpicenter.Location = new System.Drawing.Point(132, 44);
             this.label_eqinfoEpicenter.Name = "label_eqinfoEpicenter";
             this.label_eqinfoEpicenter.Size = new System.Drawing.Size(51, 20);
             this.label_eqinfoEpicenter.TabIndex = 0;
@@ -173,7 +163,7 @@ namespace Temonis
             // 
             this.label_eqinfoEpicenterHeader.AutoSize = true;
             this.label_eqinfoEpicenterHeader.Font = new System.Drawing.Font("Meiryo UI", 12F);
-            this.label_eqinfoEpicenterHeader.Location = new System.Drawing.Point(21, 44);
+            this.label_eqinfoEpicenterHeader.Location = new System.Drawing.Point(20, 44);
             this.label_eqinfoEpicenterHeader.Name = "label_eqinfoEpicenterHeader";
             this.label_eqinfoEpicenterHeader.Size = new System.Drawing.Size(57, 20);
             this.label_eqinfoEpicenterHeader.TabIndex = 0;
@@ -183,7 +173,7 @@ namespace Temonis
             // 
             this.label_eqinfoTime.AutoSize = true;
             this.label_eqinfoTime.Font = new System.Drawing.Font("Meiryo UI", 12F);
-            this.label_eqinfoTime.Location = new System.Drawing.Point(133, 24);
+            this.label_eqinfoTime.Location = new System.Drawing.Point(132, 24);
             this.label_eqinfoTime.Name = "label_eqinfoTime";
             this.label_eqinfoTime.Size = new System.Drawing.Size(51, 20);
             this.label_eqinfoTime.TabIndex = 0;
@@ -213,7 +203,7 @@ namespace Temonis
             this.groupBox_EEW.Controls.Add(this.label_eewTime);
             this.groupBox_EEW.Controls.Add(this.label_eewTimeHeader);
             this.groupBox_EEW.Controls.Add(this.label_eewMessage);
-            this.groupBox_EEW.Location = new System.Drawing.Point(408, 64);
+            this.groupBox_EEW.Location = new System.Drawing.Point(420, 8);
             this.groupBox_EEW.Name = "groupBox_EEW";
             this.groupBox_EEW.Size = new System.Drawing.Size(512, 158);
             this.groupBox_EEW.TabIndex = 2;
@@ -336,14 +326,15 @@ namespace Temonis
             this.groupBox_Kyoshin.Controls.Add(this.label_kyoshinPrefecture);
             this.groupBox_Kyoshin.Controls.Add(this.radioButton_Borehore);
             this.groupBox_Kyoshin.Controls.Add(this.radioButton_Surface);
+            this.groupBox_Kyoshin.Controls.Add(this.label_kyoshinLatestTime);
             this.groupBox_Kyoshin.Controls.Add(this.comboBox_MapType);
             this.groupBox_Kyoshin.Controls.Add(this.label_kyoshinMaxIntDetail);
             this.groupBox_Kyoshin.Controls.Add(this.label_kyoshinMaxInt);
             this.groupBox_Kyoshin.Controls.Add(this.label_kyoshinMaxIntHeader);
             this.groupBox_Kyoshin.Controls.Add(this.pictureBox_kyoshinMap);
-            this.groupBox_Kyoshin.Location = new System.Drawing.Point(24, 64);
+            this.groupBox_Kyoshin.Location = new System.Drawing.Point(28, 8);
             this.groupBox_Kyoshin.Name = "groupBox_Kyoshin";
-            this.groupBox_Kyoshin.Size = new System.Drawing.Size(368, 496);
+            this.groupBox_Kyoshin.Size = new System.Drawing.Size(376, 516);
             this.groupBox_Kyoshin.TabIndex = 1;
             this.groupBox_Kyoshin.TabStop = false;
             this.groupBox_Kyoshin.Text = "強震モニタ";
@@ -352,7 +343,7 @@ namespace Temonis
             // 
             this.label_kyoshinPrefecture.AutoSize = true;
             this.label_kyoshinPrefecture.Font = new System.Drawing.Font("Meiryo UI", 8F);
-            this.label_kyoshinPrefecture.Location = new System.Drawing.Point(319, 408);
+            this.label_kyoshinPrefecture.Location = new System.Drawing.Point(356, 441);
             this.label_kyoshinPrefecture.Name = "label_kyoshinPrefecture";
             this.label_kyoshinPrefecture.Size = new System.Drawing.Size(0, 14);
             this.label_kyoshinPrefecture.TabIndex = 0;
@@ -361,7 +352,7 @@ namespace Temonis
             // radioButton_Borehore
             // 
             this.radioButton_Borehore.AutoSize = true;
-            this.radioButton_Borehore.Location = new System.Drawing.Point(272, 452);
+            this.radioButton_Borehore.Location = new System.Drawing.Point(276, 481);
             this.radioButton_Borehore.Name = "radioButton_Borehore";
             this.radioButton_Borehore.Size = new System.Drawing.Size(67, 19);
             this.radioButton_Borehore.TabIndex = 1;
@@ -372,13 +363,23 @@ namespace Temonis
             // 
             this.radioButton_Surface.AutoSize = true;
             this.radioButton_Surface.Checked = true;
-            this.radioButton_Surface.Location = new System.Drawing.Point(192, 452);
+            this.radioButton_Surface.Location = new System.Drawing.Point(196, 481);
             this.radioButton_Surface.Name = "radioButton_Surface";
             this.radioButton_Surface.Size = new System.Drawing.Size(67, 19);
             this.radioButton_Surface.TabIndex = 1;
             this.radioButton_Surface.TabStop = true;
             this.radioButton_Surface.Text = "地表(&S)";
             this.radioButton_Surface.UseVisualStyleBackColor = true;
+            // 
+            // label_kyoshinLatestTime
+            // 
+            this.label_kyoshinLatestTime.AutoSize = true;
+            this.label_kyoshinLatestTime.Font = new System.Drawing.Font("Meiryo UI", 14F);
+            this.label_kyoshinLatestTime.Location = new System.Drawing.Point(20, 24);
+            this.label_kyoshinLatestTime.Name = "label_kyoshinLatestTime";
+            this.label_kyoshinLatestTime.Size = new System.Drawing.Size(144, 24);
+            this.label_kyoshinLatestTime.TabIndex = 0;
+            this.label_kyoshinLatestTime.Text = "接続しています...";
             // 
             // comboBox_MapType
             // 
@@ -395,7 +396,7 @@ namespace Temonis
             "1.0Hz速度応答",
             "2.0Hz速度応答",
             "4.0Hz速度応答"});
-            this.comboBox_MapType.Location = new System.Drawing.Point(24, 449);
+            this.comboBox_MapType.Location = new System.Drawing.Point(24, 478);
             this.comboBox_MapType.Name = "comboBox_MapType";
             this.comboBox_MapType.Size = new System.Drawing.Size(152, 23);
             this.comboBox_MapType.TabIndex = 0;
@@ -404,7 +405,7 @@ namespace Temonis
             // 
             this.label_kyoshinMaxIntDetail.AutoSize = true;
             this.label_kyoshinMaxIntDetail.Font = new System.Drawing.Font("Meiryo UI", 8F);
-            this.label_kyoshinMaxIntDetail.Location = new System.Drawing.Point(107, 54);
+            this.label_kyoshinMaxIntDetail.Location = new System.Drawing.Point(111, 93);
             this.label_kyoshinMaxIntDetail.Name = "label_kyoshinMaxIntDetail";
             this.label_kyoshinMaxIntDetail.Size = new System.Drawing.Size(55, 14);
             this.label_kyoshinMaxIntDetail.TabIndex = 0;
@@ -414,7 +415,7 @@ namespace Temonis
             // 
             this.label_kyoshinMaxInt.AutoSize = true;
             this.label_kyoshinMaxInt.Font = new System.Drawing.Font("Meiryo UI", 12F);
-            this.label_kyoshinMaxInt.Location = new System.Drawing.Point(34, 49);
+            this.label_kyoshinMaxInt.Location = new System.Drawing.Point(38, 88);
             this.label_kyoshinMaxInt.Name = "label_kyoshinMaxInt";
             this.label_kyoshinMaxInt.Size = new System.Drawing.Size(25, 20);
             this.label_kyoshinMaxInt.TabIndex = 0;
@@ -424,7 +425,7 @@ namespace Temonis
             // 
             this.label_kyoshinMaxIntHeader.AutoSize = true;
             this.label_kyoshinMaxIntHeader.Font = new System.Drawing.Font("Meiryo UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label_kyoshinMaxIntHeader.Location = new System.Drawing.Point(12, 29);
+            this.label_kyoshinMaxIntHeader.Location = new System.Drawing.Point(16, 68);
             this.label_kyoshinMaxIntHeader.Name = "label_kyoshinMaxIntHeader";
             this.label_kyoshinMaxIntHeader.Size = new System.Drawing.Size(73, 20);
             this.label_kyoshinMaxIntHeader.TabIndex = 0;
@@ -434,7 +435,7 @@ namespace Temonis
             // 
             this.pictureBox_kyoshinMap.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.pictureBox_kyoshinMap.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBox_kyoshinMap.Location = new System.Drawing.Point(8, 25);
+            this.pictureBox_kyoshinMap.Location = new System.Drawing.Point(12, 64);
             this.pictureBox_kyoshinMap.Name = "pictureBox_kyoshinMap";
             this.pictureBox_kyoshinMap.Size = new System.Drawing.Size(352, 400);
             this.pictureBox_kyoshinMap.TabIndex = 0;
@@ -444,11 +445,10 @@ namespace Temonis
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(944, 601);
+            this.ClientSize = new System.Drawing.Size(960, 540);
             this.Controls.Add(this.groupBox_EqInfo);
             this.Controls.Add(this.groupBox_EEW);
             this.Controls.Add(this.groupBox_Kyoshin);
-            this.Controls.Add(this.label_LatestTime);
             this.Font = new System.Drawing.Font("Meiryo UI", 9F);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -465,7 +465,6 @@ namespace Temonis
             this.groupBox_Kyoshin.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_kyoshinMap)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -502,7 +501,7 @@ namespace Temonis
         private System.Windows.Forms.Label label_kyoshinMaxIntHeader;
         public System.Windows.Forms.PictureBox pictureBox_kyoshinMap;
         private GroupBox groupBox_Kyoshin;
-        private System.Windows.Forms.Label label_LatestTime;
+        private System.Windows.Forms.Label label_kyoshinLatestTime;
         private GroupBox groupBox_EEW;
     }
 }

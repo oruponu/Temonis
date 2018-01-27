@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Timers = System.Timers;
 
 namespace Temonis
 {
@@ -44,15 +45,15 @@ namespace Temonis
             _eew = new EEW(this);
             _eqInfo = new EqInfo(this);
             _sound = new Sound();
-            Settings.LoadSettings();    // 設定を読み込む
+            Settings.LoadSettings();
             // フォームを初期化
             pictureBox_kyoshinMap.Image = Properties.Resources.BaseMap;
             InitializeLabel();
             SetFormColor();
             SetFormFont();
-            ActiveControl = label_LatestTime;
+            ActiveControl = label_kyoshinLatestTime;
             // タイマー定義
-            var timer = new System.Timers.Timer(1000);
+            var timer = new Timers.Timer(1000);
             timer.Elapsed += Timer;
             timer.SynchronizingObject = this;
             timer.Start();
@@ -86,7 +87,7 @@ namespace Temonis
         private void SetFormColor()
         {
             BackColor = Black;
-            label_LatestTime.ForeColor = White;
+            label_kyoshinLatestTime.ForeColor = White;
             groupBox_Kyoshin.ForeColor = White;
             groupBox_EEW.ForeColor = White;
             groupBox_EqInfo.ForeColor = White;
@@ -107,7 +108,7 @@ namespace Temonis
                     name = fontFamily.Name;
                 }
             }
-            label_LatestTime.Font = new Font(name, label_LatestTime.Font.Size);
+            label_kyoshinLatestTime.Font = new Font(name, label_kyoshinLatestTime.Font.Size);
             groupBox_Kyoshin.Font = new Font(name, groupBox_Kyoshin.Font.Size);
             label_kyoshinMaxIntHeader.Font = new Font(name, label_kyoshinMaxIntHeader.Font.Size);
             label_kyoshinMaxInt.Font = new Font(name, label_kyoshinMaxInt.Font.Size);
@@ -235,7 +236,7 @@ namespace Temonis
                 _retryCount++;
                 Logger(ex);
             }
-            label_LatestTime.Text = _retryCount < 10 ? LatestTime.ToString("yyyy/MM/dd HH:mm:ss") : "接続しています...";
+            label_kyoshinLatestTime.Text = _retryCount < 10 ? LatestTime.ToString("yyyy/MM/dd HH:mm:ss") : "接続しています...";
             ChangeLevel();
             try
             {

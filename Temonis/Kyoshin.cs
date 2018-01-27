@@ -347,8 +347,8 @@ namespace Temonis
                 prefName = prefName.TrimEnd('　');
                 _instance.label_kyoshinPrefecture.Text = prefName;
                 _instance.label_kyoshinPrefecture.Location =
-                    new Point(_instance.pictureBox_kyoshinMap.Width - _instance.label_kyoshinPrefecture.Size.Width,
-                        _instance.pictureBox_kyoshinMap.Height - _instance.label_kyoshinPrefecture.Size.Height + 16);
+                    new Point(_instance.pictureBox_kyoshinMap.Width - _instance.label_kyoshinPrefecture.Size.Width + 4,
+                        _instance.pictureBox_kyoshinMap.Height - _instance.label_kyoshinPrefecture.Size.Height + 54);
             }
         }
 
