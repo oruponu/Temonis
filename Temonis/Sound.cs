@@ -24,7 +24,7 @@ namespace Temonis
         }
 
         // 音を再生
-        public static void PlaySound()
+        public void PlaySound()
         {
             // 強震モニタ
             if (Kyoshin.OnTrigger && !EEW.OnTrigger)
