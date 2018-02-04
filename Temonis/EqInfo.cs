@@ -13,7 +13,7 @@ namespace Temonis
         private static readonly HttpClient HttpClient = new HttpClient();
         private const string Uri = "https://typhoon.yahoo.co.jp/weather/jp/earthquake/";
         private static MainWindow _instance;
-        private static string _bufferLastEqInfo;
+        private static string _lastInfo;
 
         public static Bitmap BitmapEpicenter { get; private set; }
 
@@ -32,27 +32,23 @@ namespace Temonis
         public async Task UpdateEqInfoAsync()
         {
             var html = await HttpClient.GetStringAsync(Uri);
-            double latitude, longitude;
 
             // 地震ID
-            Id = Regex.Match(html, "<a href=\"/weather/jp/earthquake/(?<text>.+).html\">").Groups["text"].Value;
+            Id = Regex.Match(html, "<a href=\"/weather/jp/earthquake/(.+).html\">").Groups[1].Value;
 
             html = Regex.Match(html, "<.+class=\"tracked_mods\">.+</div>", RegexOptions.Singleline).Value;
             if (!IsUpdated(html)) return;
 
             // 発生時刻
-            var str = Regex.Match(html, @"<\w+>発生時刻</\w+></\w+>\n<.+><\w+>(?<text>.+?)</\w+>").Groups["text"].Value.Replace("ごろ", "");
+            var str = Regex.Match(html, @"<\w+>発生時刻</\w+></\w+>\n<.+><\w+>(.+?)</\w+>").Groups[1].Value.Replace("ごろ", "");
             ArrivalTime = DateTime.Parse(str, new CultureInfo("ja-JP"), DateTimeStyles.AssumeLocal);
             _instance.label_eqinfoTime.Text = ArrivalTime.ToString("yyyy年MM月dd日 HH時mm分");
             // 震源地
-            str = Regex.Match(html, @"<\w+>震源地</\w+></\w+>\n<.+><\w+><.+?>(?<text>.+?)</\w+></\w+>").Groups["text"].Value.Replace("</a>", "");
-            if (str == "")  // 震度速報
-            {
-                str = "---";
-            }
+            str = Regex.Match(html, @"<\w+>震源地</\w+></\w+>\n<.+><\w+>(<.+?>)?(.+?)(</\w+>)?</\w+>").Groups[2].Value;
             _instance.label_eqinfoEpicenter.Text = str;
             // 緯度
-            str = Regex.Match(html, @"<\w+>緯度</\w+></\w+>\n<.+><\w+>(?<text>.+?)</\w+>").Groups["text"].Value;
+            double latitude, longitude;
+            str = Regex.Match(html, @"<\w+>緯度</\w+></\w+>\n<.+><\w+>(.+?)</\w+>").Groups[1].Value;
             if (str == "---")
             {
                 latitude = 0.0;
@@ -65,7 +61,7 @@ namespace Temonis
                     : double.Parse("-" + str.Replace("南緯", ""));
             }
             // 経度
-            str = Regex.Match(html, @"<\w+>経度</\w+></\w+>\n<.+><\w+>(?<text>.+?)</\w+>").Groups["text"].Value;
+            str = Regex.Match(html, @"<\w+>経度</\w+></\w+>\n<.+><\w+>(.+?)</\w+>").Groups[1].Value;
             if (str == "---")
             {
                 longitude = 0.0;
@@ -78,21 +74,17 @@ namespace Temonis
                     : double.Parse("-" + str.Replace("西経", ""));
             }
             // 深さ
-            str = Regex.Match(html, @"<\w+>深さ</\w+></\w+>\n\n<.+><\w+>(?<text>.+?)</\w+>").Groups["text"].Value;
+            str = Regex.Match(html, @"<\w+>深さ</\w+></\w+>\n\n<.+><\w+>(.+?)</\w+>").Groups[1].Value;
             _instance.label_eqinfoDepth.Text = str;
             // マグニチュード
-            str = Regex.Match(html, @"<\w+>マグニチュード</\w+></\w+>\n<.+><\w+>(?<text>.+?)</\w+>").Groups["text"].Value;
+            str = Regex.Match(html, @"<\w+>マグニチュード</\w+></\w+>\n<.+><\w+>(.+?)</\w+>").Groups[1].Value;
             _instance.label_eqinfoMagnitude.Text = str;
             // 情報
-            str = Regex.Match(html, @"<\w+>情報</\w+></\w+>\n<.+><\w+>(?<text>.+?)</\w+>").Groups["text"].Value;
-            _instance.label_eqinfoMessage.Font = new Font(_instance.label_eqinfoMessage.Font.FontFamily, 12.0f);
+            str = Regex.Match(html, @"<\w+>情報</\w+></\w+>\n<.+><\w+>(.+?)</*\w+>").Groups[1].Value;
+            _instance.label_eqinfoMessage.Font = new Font(_instance.label_eqinfoMessage.Font.FontFamily, 12f);
             if (str.Length > 32)
             {
-                _instance.label_eqinfoMessage.Font = new Font(_instance.label_eqinfoMessage.Font.FontFamily, 11.0f);
-            }
-            if (_instance.label_eqinfoTime.Text != "---" && _instance.label_eqinfoEpicenter.Text == "---")
-            {
-                str = "今後の情報に注意してください。";
+                _instance.label_eqinfoMessage.Font = new Font(_instance.label_eqinfoMessage.Font.FontFamily, 11f);
             }
             if (str.Count(x => x == '。') == 2)  // 付加文の情報が2つの場合は2行に分割
             {
@@ -101,8 +93,8 @@ namespace Temonis
             _instance.label_eqinfoMessage.Text = str;
             // 各地の震度
             _instance.textBox_eqInfoIntensity.Clear();
-            str = Regex.Match(html, @"<.+class=""yjw_table"">(?<text>.+?)</\w+>\n</div>",
-                RegexOptions.Singleline).Groups["text"].Value.Replace("\n", "");
+            str = Regex.Match(html, @"<.+class=""yjw_table"">(.+?)</\w+>\n</div>",
+                RegexOptions.Singleline).Groups[1].Value.Replace("\n", "");
             str = Regex.Replace(str, @"<\w+ \S+><\w+ \S+ \w+><\w+><\w+>", "［");
             str = Regex.Replace(str, @"</\w+></\w+></\w+><\w+ \S+><\w+>", "］");
             str = Regex.Replace(str, @"<\w+ \S+><\w+ \S+ \S+ \S+><\w+>", "");
@@ -157,10 +149,10 @@ namespace Temonis
         }
 
         // ページ更新チェック
-        private static bool IsUpdated(string lastUpdating)
+        private static bool IsUpdated(string current)
         {
-            if (_bufferLastEqInfo == lastUpdating) return false;
-            _bufferLastEqInfo = lastUpdating;
+            if (_lastInfo == current) return false;
+            _lastInfo = current;
             return true;
         }
     }
