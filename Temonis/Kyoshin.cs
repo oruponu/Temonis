@@ -9,7 +9,9 @@ namespace Temonis
 {
     internal class Kyoshin
     {
-        // マップの種類
+        /// <summary>
+        /// マップの種類
+        /// </summary>
         private static readonly string[] MapType =
         {
             "jma", "acmap", "vcmap", "dcmap", "rsp0125", "rsp0250", "rsp0500", "rsp1000", "rsp2000", "rsp4000"
@@ -118,9 +120,13 @@ namespace Temonis
             { Color.FromArgb(177, 0, 0), 6.9f },
         };
         private static readonly HttpClient HttpClient = new HttpClient();
-        // 観測点リスト
+        /// <summary>
+        /// 観測点リスト
+        /// </summary>
         private static readonly string[] Station = Properties.Resources.Station.Split('\n');
-        // 強震モニタ
+        /// <summary>
+        /// 強震モニタ
+        /// </summary>
         private static readonly ColorMap[] MapRealTime =
         {
             new ColorMap
@@ -129,7 +135,9 @@ namespace Temonis
                 NewColor = MainWindow.Black
             }
         };
-        // 緊急地震速報 P波・S波到達予想円
+        /// <summary>
+        /// 緊急地震速報 P波・S波到達予想円
+        /// </summary>
         private static readonly ColorMap[] MapPsWave = 
         {
             new ColorMap
@@ -145,7 +153,9 @@ namespace Temonis
         };
         private const string Uri = "http://www.kmoni.bosai.go.jp/new/data/map_img/";
         private static MainWindow _instance;
-        // 地表震度
+        /// <summary>
+        /// 地表震度
+        /// </summary>
         private static BitmapData _dataRealTime;
 
         public static bool OnTrigger { get; private set; }
@@ -161,7 +171,7 @@ namespace Temonis
 
         public async Task UpdateKyoshinAsync()
         {
-            var time = $"{MainWindow.LatestTime:yyyyMMdd}/{MainWindow.LatestTime:yyyyMMddHHmmss}";
+            var time = $"{MainWindow.LatestTime:yyyyMMdd/yyyyMMddHHmmss}";
             using (var realTimeImg = await GetRealTimeImageAsync(time))
             {
                 using (var bitmapRealTime = (Bitmap)await RequestImageAsync($"{Uri}RealTimeImg/jma_s/{time}.jma_s.gif"))
@@ -199,7 +209,11 @@ namespace Temonis
             }
         }
 
-        // 画像をリクエスト
+        /// <summary>
+        /// 画像を要求
+        /// </summary>
+        /// <param name="requestUri">要求の送信先 URI</param>
+        /// <returns></returns>
         private static async Task<Image> RequestImageAsync(string requestUri)
         {
             using (var stream = await HttpClient.GetStreamAsync(requestUri))
@@ -208,7 +222,11 @@ namespace Temonis
             }
         }
 
-        // 強震モニタ
+        /// <summary>
+        /// 強震モニタの画像を取得
+        /// </summary>
+        /// <param name="time">取得する時刻</param>
+        /// <returns></returns>
         private static async Task<Bitmap> GetRealTimeImageAsync(string time)
         {
             // コントロールから設定を取得
@@ -227,12 +245,15 @@ namespace Temonis
             return bitmap;
         }
 
-        // 最大地表震度を取得
+        /// <summary>
+        /// 画像から最大地表震度を取得
+        /// </summary>
+        /// <param name="realTimeImg">取得する画像</param>
         private static void GetRealtimeIntensity(Image realTimeImg)
         {
             OnTrigger = false;
             var pointList = new Dictionary<Dictionary<string, Point>, float>(); // 観測点リスト
-            var prefList = new Dictionary<string, int>(); // 地震を検知した都道府県リスト
+            var prefList = new Dictionary<string, int>();   // 地震を検知した都道府県リスト
             var prefName = "";  // 地震を検知した都道府県名
             var pointNum = 0;   // 地震を検知した都道府県別の地点数
             foreach (var line in Station)
@@ -283,7 +304,7 @@ namespace Temonis
             }
             // 最大震度（気象庁震度階級）を検知した地点数
             var pointSorted = pointList.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
-            var maxIntNum = -1 + pointSorted.Where(x => !(x.Value < 0.5)).Count(kvp => ToJMAIntensity(kvp.Value) == ToJMAIntensity(maxInt));
+            var maxIntNum = -1 + pointSorted.Where(x => x.Value >= 0.5).Count(kvp => ToJMAIntensity(kvp.Value) == ToJMAIntensity(maxInt));
             // トリガチェック（テリトリー）
             var trigger = -1;
             var maxIntPoint = pointSorted.First().Key.Values.First();
@@ -350,7 +371,11 @@ namespace Temonis
             }
         }
 
-        // 緊急地震速報 P波・S波到達予想円
+        /// <summary>
+        /// 緊急地震速報 P波・S波到達予想円を取得
+        /// </summary>
+        /// <param name="time">取得する時刻</param>
+        /// <returns></returns>
         private static async Task<Bitmap> GetPSWaveImageAsync(string time)
         {
             var bitmap = new Bitmap(_instance.pictureBox_kyoshinMap.Width, _instance.pictureBox_kyoshinMap.Height);
@@ -365,6 +390,12 @@ namespace Temonis
             return bitmap;
         }
 
+        /// <summary>
+        /// 指定したピクセルの色を取得
+        /// </summary>
+        /// <param name="x">取得するピクセルの x 座標</param>
+        /// <param name="y">取得するピクセルの y 座標</param>
+        /// <returns></returns>
         private static unsafe Color GetColor(int x, int y)
         {
             var scan0 = (byte*)_dataRealTime.Scan0;
@@ -372,13 +403,22 @@ namespace Temonis
             return Color.FromArgb(scan0[index + 2], scan0[index + 1], scan0[index]);
         }
 
-        // 色から計測震度を取得
+        /// <summary>
+        /// 指定した色の計測震度を取得
+        /// </summary>
+        /// <param name="x">取得するピクセルの x 座標</param>
+        /// <param name="y">取得するピクセルの y 座標</param>
+        /// <returns></returns>
         private static float GetInstIntensity(int x, int y)
         {
             return !ColorTable.TryGetValue(GetColor(x, y), out var value) ? -3.0f : value;
         }
 
-        // 計測震度を整数に変換
+        /// <summary>
+        /// 計測震度を整数に変換
+        /// </summary>
+        /// <param name="seismicInt">変換する計測震度</param>
+        /// <returns></returns>
         private static int ToInteger(float seismicInt)
         {
             if (seismicInt < 0.5f) return 0;
@@ -392,7 +432,11 @@ namespace Temonis
             else return seismicInt < 6.5f ? 8 : 9;
         }
 
-        // 計測震度を気象庁震度階級に変換
+        /// <summary>
+        /// 計測震度を気象庁震度階級に変換
+        /// </summary>
+        /// <param name="seismicInt">変換する計測震度</param>
+        /// <returns></returns>
         private static string ToJMAIntensity(float seismicInt)
         {
             if (seismicInt < 0.5f) return "0";

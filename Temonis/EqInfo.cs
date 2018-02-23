@@ -28,7 +28,10 @@ namespace Temonis
             _instance = instance;
         }
 
-        // 地震情報を取得
+        /// <summary>
+        /// 地震情報を取得
+        /// </summary>
+        /// <returns></returns>
         public async Task UpdateEqInfoAsync()
         {
             var html = await HttpClient.GetStringAsync(Uri);
@@ -107,7 +110,11 @@ namespace Temonis
             CreateEpicenterImg(latitude, longitude);
         }
 
-        // 震央位置の画像を作成
+        /// <summary>
+        /// 震央位置の画像を作成
+        /// </summary>
+        /// <param name="latitude">震央の緯度</param>
+        /// <param name="longitude">震央の経度</param>
         private static void CreateEpicenterImg(double latitude, double longitude)
         {
             double lotMin;
@@ -148,7 +155,11 @@ namespace Temonis
             graphicsEpicenter.Dispose();
         }
 
-        // ページ更新チェック
+        /// <summary>
+        /// ページ更新チェック
+        /// </summary>
+        /// <param name="current">現在保持している HTML</param>
+        /// <returns></returns>
         private static bool IsUpdated(string current)
         {
             if (_lastInfo == current) return false;

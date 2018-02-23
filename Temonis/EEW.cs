@@ -88,7 +88,9 @@ namespace Temonis
         }
     }
 
-    // JSONクラス
+    /// <summary>
+    /// JSONクラス
+    /// </summary>
     [DataContract]
     public class EEWJson
     {

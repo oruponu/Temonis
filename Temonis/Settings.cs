@@ -34,7 +34,9 @@ namespace Temonis
         }
     }
 
-    // XMLクラス
+    /// <summary>
+    /// XMLクラス
+    /// </summary>
     [XmlRoot("configuration")]
     public class Configuration
     {

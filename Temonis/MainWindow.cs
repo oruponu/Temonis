@@ -60,7 +60,9 @@ namespace Temonis
             Timer(null, EventArgs.Empty);
         }
 
-        // ラベルを初期化
+        /// <summary>
+        /// ラベルを初期化
+        /// </summary>
         private void InitializeLabel()
         {
             label_kyoshinMaxInt.Text = "";
@@ -83,7 +85,9 @@ namespace Temonis
             label_eqinfoMessage.Text = "";
         }
 
-        // フォームの色を設定
+        /// <summary>
+        /// フォームの色を設定
+        /// </summary>
         private void SetFormColor()
         {
             BackColor = Black;
@@ -94,8 +98,10 @@ namespace Temonis
             textBox_eqInfoIntensity.BackColor = Black;
             textBox_eqInfoIntensity.ForeColor = White;
         }
-        
-        // フォントを設定
+
+        /// <summary>
+        /// フォントを設定
+        /// </summary>
         private void SetFormFont()
         {
             var name = "Meiryo UI";
@@ -138,7 +144,9 @@ namespace Temonis
             label_eqinfoMessage.Font = new Font(name, label_eqinfoMessage.Font.Size);
         }
 
-        // レベルを変更
+        /// <summary>
+        /// レベルを変更
+        /// </summary>
         private void ChangeLevel()
         {
             //強震モニタ
@@ -194,7 +202,11 @@ namespace Temonis
             }
         }
 
-        // メインタイマー
+        /// <summary>
+        /// メインタイマー
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void Timer(object sender, EventArgs e)
         {
             try
@@ -250,7 +262,10 @@ namespace Temonis
             _eqInfoCount++;
         }
 
-        // 強震モニタの時刻を取得
+        /// <summary>
+        /// 強震モニタの時刻を取得
+        /// </summary>
+        /// <returns></returns>
         private static async Task RequestLatestTimeAsync()
         {
             try
@@ -268,7 +283,10 @@ namespace Temonis
             }
         }
 
-        // 強震モニタの時刻を設定
+        /// <summary>
+        /// 強震モニタの時刻を設定
+        /// </summary>
+        /// <returns></returns>
         private static async Task SetLatestTimeAsync()
         {
             if (_timeResetCount >= TimeResetInterval)
@@ -295,7 +313,9 @@ namespace Temonis
         }
     }
 
-    // JSONクラス
+    /// <summary>
+    /// JSONクラス
+    /// </summary>
     [DataContract]
     public class LatestTimeJson
     {
