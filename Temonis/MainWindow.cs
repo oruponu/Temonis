@@ -14,15 +14,13 @@ namespace Temonis
 {
     public partial class MainWindow : Form
     {
-        public static readonly Color Black = Color.FromArgb(32, 32, 32);
-        public static readonly Color White = Color.FromArgb(224, 224, 224);
-        public static readonly Color Red = Color.FromArgb(224, 56, 0);
-        public static readonly Color Blue = Color.FromArgb(0, 56, 224);
-        public static readonly Color Yellow = Color.FromArgb(224, 224, 56);
-        public static readonly Color Purple = Color.FromArgb(224, 56, 224);
+        public static readonly Color Black = Color.FromArgb(26, 26, 36);
+        public static readonly Color White = Color.FromArgb(226, 226, 226);
+        public static readonly Color Red = Color.FromArgb(255, 40, 0);
+        public static readonly Color Blue = Color.FromArgb(0, 40, 255);
+        public static readonly Color Yellow = Color.FromArgb(250, 245, 0);
+        public static readonly Color Purple = Color.FromArgb(200, 0, 255);
         private static readonly HttpClient HttpClient = new HttpClient();
-        private static int _timeResetCount = TimeResetInterval;
-        private static int _eqInfoCount = EqInfoInterval;
         private const string LatestTimeUri = "http://www.kmoni.bosai.go.jp/new/webservice/server/pros/latest.json";
         private const int TimeResetInterval = 300;
         private const int EqInfoInterval = 10;
@@ -30,6 +28,8 @@ namespace Temonis
         private static EEW _eew;
         private static EqInfo _eqInfo;
         private static Sound _sound;
+        private static int _timeResetCount = TimeResetInterval;
+        private static int _eqInfoCount = EqInfoInterval;
         private static int _retryCount;
 
         public static DateTime LatestTime { get; private set; }

@@ -47,7 +47,8 @@ namespace Temonis
             ArrivalTime = DateTime.Parse(str, new CultureInfo("ja-JP"), DateTimeStyles.AssumeLocal);
             _instance.label_eqinfoTime.Text = ArrivalTime.ToString("yyyy年MM月dd日 HH時mm分");
             // 震源地
-            str = Regex.Match(html, @"<\w+>震源地</\w+></\w+>\n<.+><\w+>(<.+?>)?(.+?)(</\w+>)?</\w+>").Groups[2].Value;
+            str = Regex.Match(html, @"<\w+>震源地</\w+></\w+>\n<.+><\w+><.+?>(.+?)</\w+>").Groups[1].Value;
+            str += Regex.Match(html, @"<\w+>震源地</\w+></\w+>\n<.+><\w+><.+?>.+?</\w+>(.+?)</\w+></\w+>").Groups[1].Value;
             _instance.label_eqinfoEpicenter.Text = str;
             // 緯度
             double latitude, longitude;
