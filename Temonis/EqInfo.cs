@@ -39,20 +39,20 @@ namespace Temonis
             // 地震ID
             Id = Regex.Match(html, "<a href=\"/weather/jp/earthquake/(.+).html\">").Groups[1].Value;
 
-            html = Regex.Match(html, "<.+class=\"tracked_mods\">.+</div>", RegexOptions.Singleline).Value;
+            html = Regex.Match(html, "<div id=\"eqinfdtl\" class=\"tracked_mods\">.+?</div>", RegexOptions.Singleline).Value;
             if (!IsUpdated(html)) return;
 
             // 発生時刻
-            var str = Regex.Match(html, @"<\w+>発生時刻</\w+></\w+>\n<.+><\w+>(.+?)</\w+>").Groups[1].Value.Replace("ごろ", "");
+            var str = Regex.Match(html, @"<.+>発生時刻(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value.Replace("ごろ", "");
             ArrivalTime = DateTime.Parse(str, new CultureInfo("ja-JP"), DateTimeStyles.AssumeLocal);
             _instance.label_eqinfoTime.Text = ArrivalTime.ToString("yyyy年MM月dd日 HH時mm分");
             // 震源地
-            str = Regex.Match(html, @"<\w+>震源地</\w+></\w+>\n<.+><\w+><.+?>(.+?)</\w+>").Groups[1].Value;
-            str += Regex.Match(html, @"<\w+>震源地</\w+></\w+>\n<.+><\w+><.+?>.+?</\w+>(.+?)</\w+></\w+>").Groups[1].Value;
+            str = Regex.Match(html, @"<.+>震源地(</.+>)+\n(<.+>)+<.+?>(.+?)</.+>").Groups[3].Value;
+            str += Regex.Match(html, @"<.+>震源地(</.+>)+\n(<.+>)+<.+?>(.+?)</.+>(.+?)(</.+>){2}").Groups[4].Value;
             _instance.label_eqinfoEpicenter.Text = str;
             // 緯度
             double latitude, longitude;
-            str = Regex.Match(html, @"<\w+>緯度</\w+></\w+>\n<.+><\w+>(.+?)</\w+>").Groups[1].Value;
+            str = Regex.Match(html, @"<.+>緯度(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value;
             if (str == "---")
             {
                 latitude = 0.0;
@@ -65,7 +65,7 @@ namespace Temonis
                     : double.Parse("-" + str.Replace("南緯", ""));
             }
             // 経度
-            str = Regex.Match(html, @"<\w+>経度</\w+></\w+>\n<.+><\w+>(.+?)</\w+>").Groups[1].Value;
+            str = Regex.Match(html, @"<.+>経度(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value;
             if (str == "---")
             {
                 longitude = 0.0;
@@ -78,13 +78,13 @@ namespace Temonis
                     : double.Parse("-" + str.Replace("西経", ""));
             }
             // 深さ
-            str = Regex.Match(html, @"<\w+>深さ</\w+></\w+>\n\n<.+><\w+>(.+?)</\w+>").Groups[1].Value;
+            str = Regex.Match(html, @"<.+>深さ(</.+>)+\n\n(<.+>)+(.+?)</.+>").Groups[3].Value;
             _instance.label_eqinfoDepth.Text = str;
             // マグニチュード
-            str = Regex.Match(html, @"<\w+>マグニチュード</\w+></\w+>\n<.+><\w+>(.+?)</\w+>").Groups[1].Value;
+            str = Regex.Match(html, @"<.+>マグニチュード(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value;
             _instance.label_eqinfoMagnitude.Text = str;
             // 情報
-            str = Regex.Match(html, @"<\w+>情報</\w+></\w+>\n<.+><\w+>(.+?)</*\w+>").Groups[1].Value;
+            str = Regex.Match(html, @"<.+>情報(</.+>)+\n(<.+>)+(.+?)</*.+>").Groups[3].Value;
             _instance.label_eqinfoMessage.Font = new Font(_instance.label_eqinfoMessage.Font.FontFamily, 12f);
             if (str.Length > 32)
             {
@@ -99,12 +99,12 @@ namespace Temonis
             _instance.textBox_eqInfoIntensity.Clear();
             str = Regex.Match(html, @"<.+class=""yjw_table"">(.+?)</\w+>\n</div>",
                 RegexOptions.Singleline).Groups[1].Value.Replace("\n", "");
-            str = Regex.Replace(str, @"<\w+ \S+><\w+ \S+ \w+><\w+><\w+>", "［");
-            str = Regex.Replace(str, @"</\w+></\w+></\w+><\w+ \S+><\w+>", "］");
+            str = Regex.Replace(str, @"<\w+ \S+><\w+ \S+ \w+>(<\w+>)+", "［");
+            str = Regex.Replace(str, @"(</\w+>)+<\w+ \S+><\w+>", "］");
             str = Regex.Replace(str, @"<\w+ \S+><\w+ \S+ \S+ \S+><\w+>", "");
-            str = Regex.Replace(str, @"</\w+></\w+><\w+ \S+ \S+><.+?>", "\r\n");
-            str = Regex.Replace(str, @"　<\w+></\w+></\w+></\w+>", "\r\n");
-            str = Regex.Replace(str, @"</\w+></\w+></\w+>", "\r\n");
+            str = Regex.Replace(str, @"(</\w+>)+<\w+ \S+ \S+><.+?>", "\r\n");
+            str = Regex.Replace(str, @"　<\w+>(</\w+>){3}", "\r\n");
+            str = Regex.Replace(str, @"(</\w+>)+", "\r\n");
             Intensity = str.Trim();
             _instance.textBox_eqInfoIntensity.Text = Intensity;
 
@@ -118,19 +118,19 @@ namespace Temonis
         /// <param name="longitude">震央の経度</param>
         private static void CreateEpicenterImg(double latitude, double longitude)
         {
-            double lotMin;
+            double lonMin;
             double pxPerDigX;
             if (latitude > 30.0 || longitude > 130.9)
             {
-                lotMin = 128.6;
+                lonMin = 128.6;
                 pxPerDigX = _instance.pictureBox_kyoshinMap.Width / 17.3;
             }
             else
             {
-                lotMin = 122.5;
+                lonMin = 122.5;
                 pxPerDigX = (_instance.pictureBox_kyoshinMap.Width - 181) / 8.4;
             }
-            var x = (longitude - lotMin) * pxPerDigX;
+            var x = (longitude - lonMin) * pxPerDigX;
 
             double latMin;
             double pxPerDigY;

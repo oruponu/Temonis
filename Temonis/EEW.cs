@@ -23,6 +23,10 @@ namespace Temonis
             _instance = instance;
         }
 
+        /// <summary>
+        /// 緊急地震速報を取得
+        /// </summary>
+        /// <returns></returns>
         public async Task UpdateEEWAsync()
         {
             using (var stream = await HttpClient.GetStreamAsync($"{Uri}{MainWindow.LatestTime:yyyyMMddHHmmss}.json"))

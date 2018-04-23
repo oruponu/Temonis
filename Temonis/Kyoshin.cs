@@ -117,7 +117,7 @@ namespace Temonis
             { Color.FromArgb(200, 0, 0), 6.6f },
             { Color.FromArgb(192, 0, 0), 6.7f },
             { Color.FromArgb(185, 0, 0), 6.8f },
-            { Color.FromArgb(177, 0, 0), 6.9f },
+            { Color.FromArgb(177, 0, 0), 6.9f }
         };
         private static readonly HttpClient HttpClient = new HttpClient();
         /// <summary>
