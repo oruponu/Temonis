@@ -456,7 +456,7 @@ namespace Temonis
             this.MaximizeBox = false;
             this.Name = "MainWindow";
             this.Text = "Temonis";
-            this.Load += new System.EventHandler(this.Main_Load);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainWindow_FormClosed);
             this.groupBox_EqInfo.ResumeLayout(false);
             this.groupBox_EqInfo.PerformLayout();
             this.groupBox_EEW.ResumeLayout(false);

@@ -99,7 +99,7 @@ namespace Temonis
     public class EEWJson
     {
         [DataMember(Name = "result")]
-        public ResultEEW Result { get; set; }
+        public ResultJson Result { get; set; }
 
         [DataMember(Name = "report_time")]
         public string ReportTime { get; set; }
@@ -138,7 +138,7 @@ namespace Temonis
         public string OriginTime { get; set; }
 
         [DataMember(Name = "security")]
-        public SecurityEEW Security { get; set; }
+        public SecurityJson Security { get; set; }
 
         [DataMember(Name = "magunitude")]
         public string Magunitude { get; set; }
@@ -154,28 +154,28 @@ namespace Temonis
 
         [DataMember(Name = "alertflg")]
         public string Alertflg { get; set; }
-    }
 
-    [DataContract]
-    public class ResultEEW
-    {
-        [DataMember(Name = "status")]
-        public string Status { get; set; }
+        [DataContract]
+        public class ResultJson
+        {
+            [DataMember(Name = "status")]
+            public string Status { get; set; }
 
-        [DataMember(Name = "message")]
-        public string Message { get; set; }
+            [DataMember(Name = "message")]
+            public string Message { get; set; }
 
-        [DataMember(Name = "is_auth")]
-        public bool IsAuth { get; set; }
-    }
+            [DataMember(Name = "is_auth")]
+            public bool IsAuth { get; set; }
+        }
 
-    [DataContract]
-    public class SecurityEEW
-    {
-        [DataMember(Name = "realm")]
-        public string Realm { get; set; }
+        [DataContract]
+        public class SecurityJson
+        {
+            [DataMember(Name = "realm")]
+            public string Realm { get; set; }
 
-        [DataMember(Name = "hash")]
-        public string Hash { get; set; }
+            [DataMember(Name = "hash")]
+            public string Hash { get; set; }
+        }
     }
 }

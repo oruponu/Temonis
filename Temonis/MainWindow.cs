@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Text;
@@ -37,15 +38,13 @@ namespace Temonis
         public MainWindow()
         {
             InitializeComponent();
-        }
 
-        private void Main_Load(object sender, EventArgs e)
-        {
             _kyoshin = new Kyoshin(this);
             _eew = new EEW(this);
             _eqInfo = new EqInfo(this);
-            _sound = new Sound();
+            _sound = new Sound(this);
             Settings.LoadSettings();
+
             // フォームを初期化
             pictureBox_kyoshinMap.Image = Properties.Resources.BaseMap;
             InitializeLabel();
@@ -58,6 +57,14 @@ namespace Temonis
             timer.SynchronizingObject = this;
             timer.Start();
             Timer(null, EventArgs.Empty);
+            // 電源モード変更イベントを登録
+            SystemEvents.PowerModeChanged += PowerModeChanged;
+        }
+
+        private void MainWindow_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            // 電源モード変更イベントを解除
+            SystemEvents.PowerModeChanged -= PowerModeChanged;
         }
 
         /// <summary>
@@ -252,7 +259,7 @@ namespace Temonis
             ChangeLevel();
             try
             {
-                _sound.PlaySound();
+                await _sound.PlaySound().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -300,6 +307,17 @@ namespace Temonis
             }
         }
 
+        /// <summary>
+        /// 電源モード変更イベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static async void PowerModeChanged(object sender, PowerModeChangedEventArgs e)
+        {
+            if (e.Mode != PowerModes.Resume) return;
+            await RequestLatestTimeAsync();
+        }
+
         [Conditional("DEBUG")]
         private static void Logger(Exception ex)
         {
@@ -320,7 +338,7 @@ namespace Temonis
     public class LatestTimeJson
     {
         [DataMember(Name = "security")]
-        public SecurityLatest Security { get; set; }
+        public SecurityJson Security { get; set; }
 
         [DataMember(Name = "latest_time")]
         public string LatestTime { get; set; }
@@ -329,26 +347,26 @@ namespace Temonis
         public string RequestTime { get; set; }
 
         [DataMember(Name = "result")]
-        public ResultLatest Result { get; set; }
-    }
+        public ResultJson Result { get; set; }
 
-    [DataContract]
-    public class SecurityLatest
-    {
-        [DataMember(Name = "realm")]
-        public string Realm { get; set; }
+        [DataContract]
+        public class SecurityJson
+        {
+            [DataMember(Name = "realm")]
+            public string Realm { get; set; }
 
-        [DataMember(Name = "hash")]
-        public string Hash { get; set; }
-    }
+            [DataMember(Name = "hash")]
+            public string Hash { get; set; }
+        }
 
-    [DataContract]
-    public class ResultLatest
-    {
-        [DataMember(Name = "status")]
-        public string Status { get; set; }
+        [DataContract]
+        public class ResultJson
+        {
+            [DataMember(Name = "status")]
+            public string Status { get; set; }
 
-        [DataMember(Name = "message")]
-        public string Message { get; set; }
+            [DataMember(Name = "message")]
+            public string Message { get; set; }
+        }
     }
 }

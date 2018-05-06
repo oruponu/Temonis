@@ -84,7 +84,7 @@ namespace Temonis
             str = Regex.Match(html, @"<.+>マグニチュード(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value;
             _instance.label_eqinfoMagnitude.Text = str;
             // 情報
-            str = Regex.Match(html, @"<.+>情報(</.+>)+\n(<.+>)+(.+?)</*.+>").Groups[3].Value;
+            str = Regex.Match(html, @"<.+>情報(</.+>)+\n(<.+?>)+(.+?)</?.+>").Groups[3].Value;
             _instance.label_eqinfoMessage.Font = new Font(_instance.label_eqinfoMessage.Font.FontFamily, 12f);
             if (str.Length > 32)
             {
