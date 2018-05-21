@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Temonis
@@ -119,7 +118,6 @@ namespace Temonis
             { Color.FromArgb(185, 0, 0), 6.8f },
             { Color.FromArgb(177, 0, 0), 6.9f }
         };
-        private static readonly HttpClient HttpClient = new HttpClient();
         /// <summary>
         /// 観測点リスト
         /// </summary>
@@ -169,16 +167,15 @@ namespace Temonis
             _instance.comboBox_MapType.SelectedIndex = 0;
         }
 
-        public async Task UpdateKyoshinAsync()
+        public async Task UpdateAsync()
         {
             var time = $"{MainWindow.LatestTime:yyyyMMdd/yyyyMMddHHmmss}";
             using (var realTimeImg = await GetRealTimeImageAsync(time))
             {
                 using (var bitmapRealTime = (Bitmap)await RequestImageAsync($"{Uri}RealTimeImg/jma_s/{time}.jma_s.gif"))
                 {
-                    _dataRealTime =
-                        bitmapRealTime.LockBits(new Rectangle(0, 0, bitmapRealTime.Width, bitmapRealTime.Height),
-                            ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+                    _dataRealTime = bitmapRealTime.LockBits(new Rectangle(0, 0, bitmapRealTime.Width, bitmapRealTime.Height),
+                                    ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
                     GetRealtimeIntensity(realTimeImg);
                     bitmapRealTime.UnlockBits(_dataRealTime);
                 }
@@ -188,19 +185,16 @@ namespace Temonis
                 {
                     if (EEW.OnTrigger)
                     {
-                        graphicsEpicenter.DrawImage(await GetPSWaveImageAsync(time), 0, 0, realTimeImg.Width,
-                            realTimeImg.Height);
+                        graphicsEpicenter.DrawImage(await GetPSWaveImageAsync(time), 0, 0, realTimeImg.Width, realTimeImg.Height);
                     }
                     else
                     {
                         if (EqInfo.BitmapEpicenter != null)
                         {
-                            graphicsEpicenter.DrawImage(EqInfo.BitmapEpicenter, 0, 0, realTimeImg.Width,
-                                realTimeImg.Height);
+                            graphicsEpicenter.DrawImage(EqInfo.BitmapEpicenter, 0, 0, realTimeImg.Width, realTimeImg.Height);
                         }
                     }
-                    graphicsEpicenter.DrawImage(Properties.Resources.BaseMapBorder, 0, 0, realTimeImg.Width,
-                        realTimeImg.Height);
+                    graphicsEpicenter.DrawImage(Properties.Resources.BaseMapBorder, 0, 0, realTimeImg.Width, realTimeImg.Height);
                 }
 
                 var oldImage = _instance.pictureBox_kyoshinMap.Image;
@@ -216,7 +210,7 @@ namespace Temonis
         /// <returns></returns>
         private static async Task<Image> RequestImageAsync(string requestUri)
         {
-            using (var stream = await HttpClient.GetStreamAsync(requestUri))
+            using (var stream = await MainWindow.HttpClient.GetStreamAsync(requestUri))
             {
                 return Image.FromStream(stream, false, false);
             }
@@ -239,8 +233,7 @@ namespace Temonis
                 imageAttrs.SetRemapTable(MapRealTime);
                 graphics.DrawImage(
                     await RequestImageAsync($"{Uri}RealTimeImg/{mapType}_{mapSb}/{time}.{mapType}_{mapSb}.gif"),
-                    new Rectangle(Point.Empty, bitmap.Size), 0, 0, bitmap.Width, bitmap.Height, GraphicsUnit.Pixel,
-                    imageAttrs);
+                    new Rectangle(Point.Empty, bitmap.Size), 0, 0, bitmap.Width, bitmap.Height, GraphicsUnit.Pixel, imageAttrs);
             }
             return bitmap;
         }
@@ -384,8 +377,7 @@ namespace Temonis
             {
                 imageAttrs.SetRemapTable(MapPsWave);
                 graphics.DrawImage(await RequestImageAsync($"{Uri}PSWaveImg/eew/{time}.eew.gif"),
-                    new Rectangle(Point.Empty, bitmap.Size), 0, 0, bitmap.Width, bitmap.Height, GraphicsUnit.Pixel,
-                    imageAttrs);
+                    new Rectangle(Point.Empty, bitmap.Size), 0, 0, bitmap.Width, bitmap.Height, GraphicsUnit.Pixel, imageAttrs);
             }
             return bitmap;
         }

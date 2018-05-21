@@ -21,7 +21,7 @@ namespace Temonis
         public static readonly Color Blue = Color.FromArgb(0, 40, 255);
         public static readonly Color Yellow = Color.FromArgb(250, 245, 0);
         public static readonly Color Purple = Color.FromArgb(200, 0, 255);
-        private static readonly HttpClient HttpClient = new HttpClient();
+        public static readonly HttpClient HttpClient = new HttpClient();
         private const string LatestTimeUri = "http://www.kmoni.bosai.go.jp/new/webservice/server/pros/latest.json";
         private const int TimeResetInterval = 300;
         private const int EqInfoInterval = 10;
@@ -112,13 +112,16 @@ namespace Temonis
         private void SetFormFont()
         {
             var name = "Meiryo UI";
-            var fontCollection = new InstalledFontCollection();
-            var fontFamilies = fontCollection.Families;
-            foreach (var fontFamily in fontFamilies)
+            using (var fontCollection = new InstalledFontCollection())
             {
-                if (fontFamily.Name == "Yu Gothic UI")
+                var fontFamilies = fontCollection.Families;
+                foreach (var fontFamily in fontFamilies)
                 {
-                    name = fontFamily.Name;
+                    if (fontFamily.Name == "Yu Gothic UI")
+                    {
+                        name = fontFamily.Name;
+                    }
+                    fontFamily.Dispose();
                 }
             }
             label_kyoshinLatestTime.Font = new Font(name, label_kyoshinLatestTime.Font.Size);
@@ -226,7 +229,7 @@ namespace Temonis
             }
             try
             {
-                await _eew.UpdateEEWAsync();
+                await _eew.UpdateAsync();
             }
             catch (Exception ex)
             {
@@ -236,7 +239,7 @@ namespace Temonis
             {
                 try
                 {
-                    await _eqInfo.UpdateEqInfoAsync();
+                    await _eqInfo.UpdateAsync();
                 }
                 catch (Exception ex)
                 {
@@ -246,7 +249,7 @@ namespace Temonis
             }
             try
             {
-                await _kyoshin.UpdateKyoshinAsync();
+                await _kyoshin.UpdateAsync();
                 _retryCount = 0;
             }
             catch (Exception ex)
@@ -279,8 +282,8 @@ namespace Temonis
             {
                 using (var stream = await HttpClient.GetStreamAsync(LatestTimeUri))
                 {
-                    var serializer = new DataContractJsonSerializer(typeof(LatestTimeJson));
-                    var json = (LatestTimeJson)serializer.ReadObject(stream);
+                    var serializer = new DataContractJsonSerializer(typeof(Root));
+                    var json = (Root)serializer.ReadObject(stream);
                     LatestTime = DateTime.Parse(json.LatestTime);
                 }
             }
@@ -329,44 +332,44 @@ namespace Temonis
                 stream.WriteLine();
             }
         }
-    }
 
-    /// <summary>
-    /// JSONクラス
-    /// </summary>
-    [DataContract]
-    public class LatestTimeJson
-    {
-        [DataMember(Name = "security")]
-        public SecurityJson Security { get; set; }
-
-        [DataMember(Name = "latest_time")]
-        public string LatestTime { get; set; }
-
-        [DataMember(Name = "request_time")]
-        public string RequestTime { get; set; }
-
-        [DataMember(Name = "result")]
-        public ResultJson Result { get; set; }
-
+        /// <summary>
+        /// JSONクラス
+        /// </summary>
         [DataContract]
-        public class SecurityJson
+        public class Root
         {
-            [DataMember(Name = "realm")]
-            public string Realm { get; set; }
+            [DataMember(Name = "security")]
+            public SecurityJson Security { get; set; }
 
-            [DataMember(Name = "hash")]
-            public string Hash { get; set; }
-        }
+            [DataMember(Name = "latest_time")]
+            public string LatestTime { get; set; }
 
-        [DataContract]
-        public class ResultJson
-        {
-            [DataMember(Name = "status")]
-            public string Status { get; set; }
+            [DataMember(Name = "request_time")]
+            public string RequestTime { get; set; }
 
-            [DataMember(Name = "message")]
-            public string Message { get; set; }
+            [DataMember(Name = "result")]
+            public ResultJson Result { get; set; }
+
+            [DataContract]
+            public class SecurityJson
+            {
+                [DataMember(Name = "realm")]
+                public string Realm { get; set; }
+
+                [DataMember(Name = "hash")]
+                public string Hash { get; set; }
+            }
+
+            [DataContract]
+            public class ResultJson
+            {
+                [DataMember(Name = "status")]
+                public string Status { get; set; }
+
+                [DataMember(Name = "message")]
+                public string Message { get; set; }
+            }
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Temonis
         /// 地震情報を取得
         /// </summary>
         /// <returns></returns>
-        public async Task UpdateEqInfoAsync()
+        public async Task UpdateAsync()
         {
             var html = await HttpClient.GetStringAsync(Uri);
 
@@ -97,8 +97,7 @@ namespace Temonis
             _instance.label_eqinfoMessage.Text = str;
             // 各地の震度
             _instance.textBox_eqInfoIntensity.Clear();
-            str = Regex.Match(html, @"<.+class=""yjw_table"">(.+?)</\w+>\n</div>",
-                RegexOptions.Singleline).Groups[1].Value.Replace("\n", "");
+            str = Regex.Match(html, @"<.+class=""yjw_table"">(.+?)</\w+>\n</div>", RegexOptions.Singleline).Groups[1].Value.Replace("\n", "");
             str = Regex.Replace(str, @"<\w+ \S+><\w+ \S+ \w+>(<\w+>)+", "［");
             str = Regex.Replace(str, @"(</\w+>)+<\w+ \S+><\w+>", "］");
             str = Regex.Replace(str, @"<\w+ \S+><\w+ \S+ \S+ \S+><\w+>", "");
