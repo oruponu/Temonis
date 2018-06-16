@@ -1,25 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Threading.Tasks;
+using static Temonis.MainWindow;
 
 namespace Temonis
 {
     internal class EEW
     {
-        private const string Uri = "http://www.kmoni.bosai.go.jp/new/webservice/hypo/eew/";
-        private static MainWindow _instance;
-
         public static Dictionary<string, string> Info { get; private set; } = new Dictionary<string, string>();
 
-        public static bool OnTrigger { get; private set; }
-        
-        public EEW(MainWindow instance)
-        {
-            _instance = instance;
-        }
+        public static bool IsTriggerOn { get; private set; }
 
         /// <summary>
         /// 緊急地震速報を取得
@@ -27,64 +21,74 @@ namespace Temonis
         /// <returns></returns>
         public async Task UpdateAsync()
         {
-            using (var stream = await MainWindow.HttpClient.GetStreamAsync($"{Uri}{MainWindow.LatestTime:yyyyMMddHHmmss}.json"))
+            var json = default(Root);
+            try
             {
-                var serializer = new DataContractJsonSerializer(typeof(Root));
-                var json = (Root)serializer.ReadObject(stream);
-                if (json.Result.Message != "データがありません")
+                using (var stream = await MainWindow.HttpClient.GetStreamAsync($"{Properties.Resources.EEWUri}{LatestTime:yyyyMMddHHmmss}.json"))
                 {
-                    if ((bool)json.IsCancel)
-                    {
-                        OnTrigger = false;
-                        _instance.label_eewMessage.Text = "緊急地震速報は取り消されました。";
-                        _instance.label_eewTimeHeader.Visible = false;
-                        _instance.label_eewEpicenterHeader.Visible = false;
-                        _instance.label_eewDepthHeader.Visible = false;
-                        _instance.label_eewMagnitudeHeader.Visible = false;
-                        _instance.label_eewIntensityHeader.Visible = false;
-                        _instance.label_eewTime.Text = "";
-                        _instance.label_eewEpicenter.Text = "";
-                        _instance.label_eewDepth.Text = "";
-                        _instance.label_eewMagnitude.Text = "";
-                        _instance.label_eewIntensity.Text = "";
-                        Info[json.ReportId] = "0";
-                    }
-                    else if (EqInfo.Id == json.ReportId)
-                    {
-                        OnTrigger = false;
-                    }
-                    else
-                    {
-                        OnTrigger = true;
-                        var serial = "第" + json.ReportNum + "報";
-                        if ((bool)json.IsFinal) serial += " 最終";
-                        _instance.label_eewMessage.Text = $"緊急地震速報（{json.Alertflg}）{serial}";
-                        _instance.label_eewTimeHeader.Visible = true;
-                        _instance.label_eewEpicenterHeader.Visible = true;
-                        _instance.label_eewDepthHeader.Visible = true;
-                        _instance.label_eewMagnitudeHeader.Visible = true;
-                        _instance.label_eewIntensityHeader.Visible = true;
-                        _instance.label_eewTime.Text = DateTime.ParseExact(json.OriginTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture)
-                                                        .ToString("yyyy年MM月dd日 HH時mm分ss秒");
-                        _instance.label_eewEpicenter.Text = json.RegionName;
-                        _instance.label_eewDepth.Text = json.Depth;
-                        _instance.label_eewMagnitude.Text = json.Magunitude;
-                        _instance.label_eewIntensity.Text = json.Calcintensity;
-                        if (!Info.ContainsKey(json.ReportId))
-                        {
-                            Info.Add(json.ReportId, json.Calcintensity);
-                        }
-                        else if (Info[json.ReportId] != json.Calcintensity)
-                        {
-                            Info[json.ReportId] = json.Calcintensity;
-                        }
-                    }
+                    var serializer = new DataContractJsonSerializer(typeof(Root));
+                    json = (Root)serializer.ReadObject(stream);
+                }
+            }
+            catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException || ex is SerializationException)
+            {
+                Logger(ex);
+            }
+
+            if (json == default(Root)) return;
+
+            if (json.Result.Message != "データがありません")
+            {
+                if ((bool)json.IsCancel)
+                {
+                    IsTriggerOn = false;
+                    Instance.Label_EEWMessage.Text = "緊急地震速報は取り消されました。";
+                    Instance.Label_EEWTimeHeader.Visible = false;
+                    Instance.Label_EEWEpicenterHeader.Visible = false;
+                    Instance.Label_EEWDepthHeader.Visible = false;
+                    Instance.Label_EEWMagnitudeHeader.Visible = false;
+                    Instance.Label_EEWIntensityHeader.Visible = false;
+                    Instance.Label_EEWTime.Text = "";
+                    Instance.Label_EEWEpicenter.Text = "";
+                    Instance.Label_EEWDepth.Text = "";
+                    Instance.Label_EEWMagnitude.Text = "";
+                    Instance.Label_EEWIntensity.Text = "";
+                    Info[json.ReportId] = "0";
+                }
+                else if (EqInfo.Id == json.ReportId)
+                {
+                    IsTriggerOn = false;
                 }
                 else
                 {
-                    OnTrigger = false;
-                    Info = new Dictionary<string, string>();
+                    IsTriggerOn = true;
+                    var serial = "第" + json.ReportNum + "報";
+                    if ((bool)json.IsFinal) serial += " 最終";
+                    Instance.Label_EEWMessage.Text = $"緊急地震速報（{json.Alertflg}）{serial}";
+                    Instance.Label_EEWTimeHeader.Visible = true;
+                    Instance.Label_EEWEpicenterHeader.Visible = true;
+                    Instance.Label_EEWDepthHeader.Visible = true;
+                    Instance.Label_EEWMagnitudeHeader.Visible = true;
+                    Instance.Label_EEWIntensityHeader.Visible = true;
+                    Instance.Label_EEWTime.Text = DateTime.ParseExact(json.OriginTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture).ToString("yyyy年MM月dd日 HH時mm分ss秒");
+                    Instance.Label_EEWEpicenter.Text = json.RegionName;
+                    Instance.Label_EEWDepth.Text = json.Depth;
+                    Instance.Label_EEWMagnitude.Text = json.Magunitude;
+                    Instance.Label_EEWIntensity.Text = json.Calcintensity;
+                    if (!Info.ContainsKey(json.ReportId))
+                    {
+                        Info.Add(json.ReportId, json.Calcintensity);
+                    }
+                    else if (Info[json.ReportId] != json.Calcintensity)
+                    {
+                        Info[json.ReportId] = json.Calcintensity;
+                    }
                 }
+            }
+            else
+            {
+                IsTriggerOn = false;
+                Info = new Dictionary<string, string>();
             }
         }
 
@@ -95,7 +99,7 @@ namespace Temonis
         public class Root
         {
             [DataMember(Name = "result")]
-            public ResultJson Result { get; set; }
+            public ResultClass Result { get; set; }
 
             [DataMember(Name = "report_time")]
             public string ReportTime { get; set; }
@@ -134,7 +138,7 @@ namespace Temonis
             public string OriginTime { get; set; }
 
             [DataMember(Name = "security")]
-            public SecurityJson Security { get; set; }
+            public SecurityClass Security { get; set; }
 
             [DataMember(Name = "magunitude")]
             public string Magunitude { get; set; }
@@ -152,7 +156,7 @@ namespace Temonis
             public string Alertflg { get; set; }
 
             [DataContract]
-            public class ResultJson
+            public class ResultClass
             {
                 [DataMember(Name = "status")]
                 public string Status { get; set; }
@@ -165,7 +169,7 @@ namespace Temonis
             }
 
             [DataContract]
-            public class SecurityJson
+            public class SecurityClass
             {
                 [DataMember(Name = "realm")]
                 public string Realm { get; set; }

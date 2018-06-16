@@ -1,214 +1,103 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
+using Temonis.Resources;
+using static Temonis.MainWindow;
+using static Temonis.Resources.General.Kyoshin;
 
 namespace Temonis
 {
     internal class Kyoshin
     {
-        /// <summary>
-        /// マップの種類
-        /// </summary>
-        private static readonly string[] MapType =
-        {
-            "jma", "acmap", "vcmap", "dcmap", "rsp0125", "rsp0250", "rsp0500", "rsp1000", "rsp2000", "rsp4000"
-        };
-        private static readonly Dictionary<Color, float> ColorTable = new Dictionary<Color, float>
-        {
-            { Color.FromArgb(0, 0, 205), -3.0f },
-            { Color.FromArgb(0, 7, 209), -2.9f },
-            { Color.FromArgb(0, 14, 214), -2.8f },
-            { Color.FromArgb(0, 21, 218), -2.7f },
-            { Color.FromArgb(0, 28, 223), -2.6f },
-            { Color.FromArgb(0, 36, 227), -2.5f },
-            { Color.FromArgb(0, 43, 231), -2.4f },
-            { Color.FromArgb(0, 50, 236), -2.3f },
-            { Color.FromArgb(0, 57, 240), -2.2f },
-            { Color.FromArgb(0, 64, 245), -2.1f },
-            { Color.FromArgb(0, 72, 250), -2.0f },
-            { Color.FromArgb(0, 85, 238), -1.9f },
-            { Color.FromArgb(0, 99, 227), -1.8f },
-            { Color.FromArgb(0, 112, 216), -1.7f },
-            { Color.FromArgb(0, 126, 205), -1.6f },
-            { Color.FromArgb(0, 140, 194), -1.5f },
-            { Color.FromArgb(0, 153, 183), -1.4f },
-            { Color.FromArgb(0, 167, 172), -1.3f },
-            { Color.FromArgb(0, 180, 161), -1.2f },
-            { Color.FromArgb(0, 194, 150), -1.1f },
-            { Color.FromArgb(0, 208, 139), -1.0f },
-            { Color.FromArgb(6, 212, 130), -0.9f },
-            { Color.FromArgb(12, 216, 121), -0.8f },
-            { Color.FromArgb(18, 220, 113), -0.7f },
-            { Color.FromArgb(25, 224, 104), -0.6f },
-            { Color.FromArgb(31, 228, 96), -0.5f },
-            { Color.FromArgb(37, 233, 88), -0.4f },
-            { Color.FromArgb(44, 237, 79), -0.3f },
-            { Color.FromArgb(50, 241, 71), -0.2f },
-            { Color.FromArgb(56, 245, 62), -0.1f },
-            { Color.FromArgb(63, 250, 54), 0.0f },
-            { Color.FromArgb(75, 250, 49), 0.1f },
-            { Color.FromArgb(88, 250, 45), 0.2f },
-            { Color.FromArgb(100, 251, 41), 0.3f },
-            { Color.FromArgb(113, 251, 37), 0.4f },
-            { Color.FromArgb(125, 252, 33), 0.5f },
-            { Color.FromArgb(138, 252, 28), 0.6f },
-            { Color.FromArgb(151, 253, 24), 0.7f },
-            { Color.FromArgb(163, 253, 20), 0.8f },
-            { Color.FromArgb(176, 254, 16), 0.9f },
-            { Color.FromArgb(189, 255, 12), 1.0f },
-            { Color.FromArgb(195, 254, 10), 1.1f },
-            { Color.FromArgb(202, 254, 9), 1.2f },
-            { Color.FromArgb(208, 254, 8), 1.3f },
-            { Color.FromArgb(215, 254, 7), 1.4f },
-            { Color.FromArgb(222, 255, 5), 1.5f },
-            { Color.FromArgb(228, 254, 4), 1.6f },
-            { Color.FromArgb(235, 255, 3), 1.7f },
-            { Color.FromArgb(241, 254, 2), 1.8f },
-            { Color.FromArgb(248, 255, 1), 1.9f },
-            { Color.FromArgb(255, 255, 0), 2.0f },
-            { Color.FromArgb(254, 251, 0), 2.1f },
-            { Color.FromArgb(254, 248, 0), 2.2f },
-            { Color.FromArgb(254, 244, 0), 2.3f },
-            { Color.FromArgb(254, 241, 0), 2.4f },
-            { Color.FromArgb(255, 238, 0), 2.5f },
-            { Color.FromArgb(254, 234, 0), 2.6f },
-            { Color.FromArgb(255, 231, 0), 2.7f },
-            { Color.FromArgb(254, 227, 0), 2.8f },
-            { Color.FromArgb(255, 224, 0), 2.9f },
-            { Color.FromArgb(255, 221, 0), 3.0f },
-            { Color.FromArgb(254, 213, 0), 3.1f },
-            { Color.FromArgb(254, 205, 0), 3.2f },
-            { Color.FromArgb(254, 197, 0), 3.3f },
-            { Color.FromArgb(254, 190, 0), 3.4f },
-            { Color.FromArgb(255, 182, 0), 3.5f },
-            { Color.FromArgb(254, 174, 0), 3.6f },
-            { Color.FromArgb(255, 167, 0), 3.7f },
-            { Color.FromArgb(254, 159, 0), 3.8f },
-            { Color.FromArgb(255, 151, 0), 3.9f },
-            { Color.FromArgb(255, 144, 0), 4.0f },
-            { Color.FromArgb(254, 136, 0), 4.1f },
-            { Color.FromArgb(254, 128, 0), 4.2f },
-            { Color.FromArgb(254, 121, 0), 4.3f },
-            { Color.FromArgb(254, 113, 0), 4.4f },
-            { Color.FromArgb(255, 106, 0), 4.5f },
-            { Color.FromArgb(254, 98, 0), 4.6f },
-            { Color.FromArgb(255, 90, 0), 4.7f },
-            { Color.FromArgb(254, 83, 0), 4.8f },
-            { Color.FromArgb(255, 75, 0), 4.9f },
-            { Color.FromArgb(255, 68, 0), 5.0f },
-            { Color.FromArgb(254, 61, 0), 5.1f },
-            { Color.FromArgb(253, 54, 0), 5.2f },
-            { Color.FromArgb(252, 47, 0), 5.3f },
-            { Color.FromArgb(251, 40, 0), 5.4f },
-            { Color.FromArgb(250, 33, 0), 5.5f },
-            { Color.FromArgb(249, 27, 0), 5.6f },
-            { Color.FromArgb(248, 20, 0), 5.7f },
-            { Color.FromArgb(247, 13, 0), 5.8f },
-            { Color.FromArgb(246, 6, 0), 5.9f },
-            { Color.FromArgb(245, 0, 0), 6.0f },
-            { Color.FromArgb(238, 0, 0), 6.1f },
-            { Color.FromArgb(230, 0, 0), 6.2f },
-            { Color.FromArgb(223, 0, 0), 6.3f },
-            { Color.FromArgb(215, 0, 0), 6.4f },
-            { Color.FromArgb(208, 0, 0), 6.5f },
-            { Color.FromArgb(200, 0, 0), 6.6f },
-            { Color.FromArgb(192, 0, 0), 6.7f },
-            { Color.FromArgb(185, 0, 0), 6.8f },
-            { Color.FromArgb(177, 0, 0), 6.9f }
-        };
-        /// <summary>
-        /// 観測点リスト
-        /// </summary>
-        private static readonly string[] Station = Properties.Resources.Station.Split('\n');
-        /// <summary>
-        /// 強震モニタ
-        /// </summary>
-        private static readonly ColorMap[] MapRealTime =
-        {
-            new ColorMap
-            {
-                OldColor = Color.FromArgb(0, 0, 0),
-                NewColor = MainWindow.Black
-            }
-        };
-        /// <summary>
-        /// 緊急地震速報 P波・S波到達予想円
-        /// </summary>
-        private static readonly ColorMap[] MapPsWave = 
-        {
-            new ColorMap
-            {
-                OldColor = Color.FromArgb(0, 0, 255),
-                NewColor = MainWindow.Blue
-            },
-            new ColorMap
-            {
-                OldColor = Color.FromArgb(255, 0, 0),
-                NewColor = MainWindow.Red
-            }
-        };
-        private const string Uri = "http://www.kmoni.bosai.go.jp/new/data/map_img/";
-        private static MainWindow _instance;
-        /// <summary>
-        /// 地表震度
-        /// </summary>
+        private readonly int _pictureBoxWidth = Instance.PictureBox_KyoshinMap.Width;
+        private readonly int _pictureBoxHeight = Instance.PictureBox_KyoshinMap.Height;
         private static BitmapData _dataRealTime;
+        private static int _offTriggerTime;
 
-        public static bool OnTrigger { get; private set; }
+        public static bool IsTriggerOn { get; private set; }
 
-        public static int Intensity { get; private set; }
+        public static bool IsTriggerWait { get; private set; }
 
-        public Kyoshin(MainWindow instance)
+        public static int MaxIntensity { get; private set; }
+
+        public async Task<bool> UpdateAsync()
         {
-            _instance = instance;
-            // インデックスを「リアルタイム震度」に設定
-            _instance.comboBox_MapType.SelectedIndex = 0;
-        }
+            var isSucceeded = false;
+            var time = $"{LatestTime:yyyyMMdd/yyyyMMddHHmmss}";
 
-        public async Task UpdateAsync()
-        {
-            var time = $"{MainWindow.LatestTime:yyyyMMdd/yyyyMMddHHmmss}";
-            using (var realTimeImg = await GetRealTimeImageAsync(time))
+            var bitmap = Properties.Resources.BaseMap;
+            using (var graphics = Graphics.FromImage(bitmap))
             {
-                using (var bitmapRealTime = (Bitmap)await RequestImageAsync($"{Uri}RealTimeImg/jma_s/{time}.jma_s.gif"))
+                try
                 {
-                    _dataRealTime = bitmapRealTime.LockBits(new Rectangle(0, 0, bitmapRealTime.Width, bitmapRealTime.Height),
-                                    ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
-                    GetRealtimeIntensity(realTimeImg);
-                    bitmapRealTime.UnlockBits(_dataRealTime);
+                    await DrawRealTimeImageAsync(graphics, time);
+                    isSucceeded = true;
+                }
+                catch (Exception ex) when (ex is HttpRequestException || ex is IOException || ex is TaskCanceledException || ex is ArgumentException)
+                {
+                    Logger(ex);
                 }
 
-                var bitmapPictureBox = new Bitmap(realTimeImg);
-                using (var graphicsEpicenter = Graphics.FromImage(bitmapPictureBox))
+                try
                 {
-                    if (EEW.OnTrigger)
-                    {
-                        graphicsEpicenter.DrawImage(await GetPSWaveImageAsync(time), 0, 0, realTimeImg.Width, realTimeImg.Height);
-                    }
-                    else
-                    {
-                        if (EqInfo.BitmapEpicenter != null)
-                        {
-                            graphicsEpicenter.DrawImage(EqInfo.BitmapEpicenter, 0, 0, realTimeImg.Width, realTimeImg.Height);
-                        }
-                    }
-                    graphicsEpicenter.DrawImage(Properties.Resources.BaseMapBorder, 0, 0, realTimeImg.Width, realTimeImg.Height);
+                    var intensityBitmap = (Bitmap)await DownloadImageAsync($"{Properties.Resources.KyoshinUri}RealTimeImg/jma_s/{time}.jma_s.gif");
+                    var rect = new Rectangle(0, 0, _pictureBoxWidth, _pictureBoxHeight);
+                    _dataRealTime = intensityBitmap.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+                    GetRealtimeIntensity(graphics);
+                    intensityBitmap.UnlockBits(_dataRealTime);
+                    intensityBitmap.Dispose();
+
+                    isSucceeded = true;
+                }
+                catch (Exception ex) when (ex is HttpRequestException || ex is IOException || ex is TaskCanceledException || ex is ArgumentException)
+                {
+                    Logger(ex);
                 }
 
-                var oldImage = _instance.pictureBox_kyoshinMap.Image;
-                _instance.pictureBox_kyoshinMap.Image = bitmapPictureBox;
-                oldImage?.Dispose();
+                if (EEW.IsTriggerOn)
+                {
+                    try
+                    {
+                        await DrawPSWaveImageAsync(graphics, time);
+                        isSucceeded = true;
+                    }
+                    catch (Exception ex) when (ex is HttpRequestException || ex is IOException || ex is TaskCanceledException || ex is ArgumentException)
+                    {
+                        Logger(ex);
+                    }
+                }
+                else
+                {
+                    if (EqInfo.Epicenter != null)
+                    {
+                        graphics.DrawImage(EqInfo.EpicenterBitmap, 0, 0, _pictureBoxWidth, _pictureBoxHeight);
+                    }
+                }
+
+                var baseMapBorder = Properties.Resources.BaseMapBorder;
+                graphics.DrawImage(baseMapBorder, 0, 0, _pictureBoxWidth, _pictureBoxHeight);
+                baseMapBorder.Dispose();
             }
+
+            var oldImage = Instance.PictureBox_KyoshinMap.Image;
+            Instance.PictureBox_KyoshinMap.Image = bitmap;
+            oldImage?.Dispose();
+
+            return isSucceeded;
         }
 
         /// <summary>
-        /// 画像を要求
+        /// 画像をダウンロード
         /// </summary>
         /// <param name="requestUri">要求の送信先 URI</param>
         /// <returns></returns>
-        private static async Task<Image> RequestImageAsync(string requestUri)
+        private static async Task<Image> DownloadImageAsync(string requestUri)
         {
             using (var stream = await MainWindow.HttpClient.GetStreamAsync(requestUri))
             {
@@ -217,169 +106,262 @@ namespace Temonis
         }
 
         /// <summary>
-        /// 強震モニタの画像を取得
+        /// 強震モニタの画像を描画
         /// </summary>
+        /// <param name="graphics">描画対象のオブジェクト</param>
         /// <param name="time">取得する時刻</param>
         /// <returns></returns>
-        private static async Task<Bitmap> GetRealTimeImageAsync(string time)
+        private async Task DrawRealTimeImageAsync(Graphics graphics, string time)
         {
             // コントロールから設定を取得
-            var mapType = MapType[_instance.comboBox_MapType.SelectedIndex];
-            var mapSb = _instance.radioButton_Surface.Checked ? "s" : "b";
-            var bitmap = Properties.Resources.BaseMap;
-            using (var graphics = Graphics.FromImage(bitmap))
+            var mapType = MapType[Instance.ComboBox_MapType.SelectedIndex];
+            var mapSb = Instance.RadioButton_Surface.Checked ? "s" : "b";
             using (var imageAttrs = new ImageAttributes())
             {
                 imageAttrs.SetRemapTable(MapRealTime);
-                graphics.DrawImage(
-                    await RequestImageAsync($"{Uri}RealTimeImg/{mapType}_{mapSb}/{time}.{mapType}_{mapSb}.gif"),
-                    new Rectangle(Point.Empty, bitmap.Size), 0, 0, bitmap.Width, bitmap.Height, GraphicsUnit.Pixel, imageAttrs);
+                var image = await DownloadImageAsync($"{Properties.Resources.KyoshinUri}RealTimeImg/{mapType}_{mapSb}/{time}.{mapType}_{mapSb}.gif");
+                var destRect = new Rectangle(0, 0, _pictureBoxWidth, _pictureBoxHeight);
+                graphics.DrawImage(image, destRect, 0, 0, _pictureBoxWidth, _pictureBoxHeight, GraphicsUnit.Pixel, imageAttrs);
+                image.Dispose();
             }
-            return bitmap;
+        }
+
+        /// <summary>
+        /// 緊急地震速報 P波・S波到達予想円を描画
+        /// </summary>
+        /// <param name="time">取得する時刻</param>
+        /// <returns></returns>
+        private async Task DrawPSWaveImageAsync(Graphics graphics, string time)
+        {
+            using (var imageAttrs = new ImageAttributes())
+            {
+                imageAttrs.SetRemapTable(MapPSWave);
+                var image = await DownloadImageAsync($"{Properties.Resources.KyoshinUri}PSWaveImg/eew/{time}.eew.gif");
+                var destRect = new Rectangle(0, 0, _pictureBoxWidth, _pictureBoxHeight);
+                graphics.DrawImage(image, destRect, 0, 0, _pictureBoxWidth, _pictureBoxHeight, GraphicsUnit.Pixel, imageAttrs);
+                image.Dispose();
+            }
         }
 
         /// <summary>
         /// 画像から最大地表震度を取得
         /// </summary>
-        /// <param name="realTimeImg">取得する画像</param>
-        private static void GetRealtimeIntensity(Image realTimeImg)
+        /// <param name="graphics">描画対象のオブジェクト</param>
+        private void GetRealtimeIntensity(Graphics graphics)
         {
-            OnTrigger = false;
-            var pointList = new Dictionary<Dictionary<string, Point>, float>(); // 観測点リスト
-            var prefList = new Dictionary<string, int>();   // 地震を検知した都道府県リスト
-            var prefName = "";  // 地震を検知した都道府県名
-            var pointNum = 0;   // 地震を検知した都道府県別の地点数
-            foreach (var line in Station)
+            var intensity = new Intensity
             {
-                var items = line.Split(',');
-                var intensity = GetInstIntensity(int.Parse(items[3]), int.Parse(items[4]));
-                if (items[0] == "0" || intensity <= -3.0f) continue;
-                var pointInfo = new Dictionary<string, Point>
+                Prefs = new List<Intensity.Pref>(47),
+                Stations = new List<Intensity.Station>(Stations.Length)
+            };
+            foreach (var items in Stations)
+            {
+                var realtimeInt = GetInstIntensity(int.Parse(items[3]), int.Parse(items[4]));
+                if (items[0] == "0" || realtimeInt <= -3.0f) continue;
+
+                if (intensity.MaxInt < realtimeInt)
                 {
-                    { $"{items[2]} {items[1]}", new Point(int.Parse(items[3]), int.Parse(items[4])) }
-                };
-                if (!pointList.ContainsKey(pointInfo))
-                {
-                    pointList.Add(pointInfo, intensity);
-                }
-                else if (pointList[pointInfo] < intensity)
-                {
-                    pointList[pointInfo] = intensity;
+                    intensity.MaxInt = realtimeInt;
                 }
 
+                var station = new Intensity.Station
+                {
+                    Name = items[1],
+                    PrefName = items[2],
+                    Int = realtimeInt,
+                    Point = new Point(int.Parse(items[3]), int.Parse(items[4]))
+                };
+                intensity.Stations.Add(station);
+
                 // 都道府県リストを作成
-                if (intensity <= 0.0f) continue;
-                if (prefName != items[2] || pointNum == 0)
+                if (realtimeInt < 0.5f) continue;
+                if (!station.PrefName.Contains("県") && !station.PrefName.Contains("府") &&
+                    !station.PrefName.Contains("道") && !station.PrefName.Contains("都")) continue;
+                if (!intensity.Prefs.Select(x => x.Name).Contains(items[2]))
                 {
-                    prefName = items[2];
-                    pointNum = 1;
-                }
-                else
-                {
-                    pointNum++;
-                }
-                if (pointNum <= 2) continue;
-                if (!prefList.ContainsKey(items[2]))
-                {
-                    prefList.Add(prefName, pointNum);
-                }
-                else
-                {
-                    prefList[prefName] = pointNum;
-                }
-            }
-            var maxInt = pointList.Values.Max();
-            Intensity = ToInteger(maxInt);
-            // トリガチェック（レガシー）
-            if (prefList.Count != 0)
-            {
-                OnTrigger = true;
-            }
-            // 最大震度（気象庁震度階級）を検知した地点数
-            var pointSorted = pointList.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
-            var maxIntNum = -1 + pointSorted.Where(x => x.Value >= 0.5).Count(kvp => ToJMAIntensity(kvp.Value) == ToJMAIntensity(maxInt));
-            // トリガチェック（テリトリー）
-            var trigger = -1;
-            var maxIntPoint = pointSorted.First().Key.Values.First();
-            for (var y = maxIntPoint.Y - 2; y <= maxIntPoint.Y + 2; y += 2)
-            {
-                for (var x = maxIntPoint.X - 2; x <= maxIntPoint.X + 2; x += 2)
-                {
-                    if (GetInstIntensity(x, y) >= 1.5f)
+                    var pref = new Intensity.Pref
                     {
-                        trigger++;
+                        Name = items[2],
+                        MaxInt = realtimeInt,
+                        Number = 1
+                    };
+                    intensity.Prefs.Add(pref);
+                }
+                else
+                {
+                    var index = intensity.Prefs.FindIndex(x => x.Name == items[2]);
+                    if (intensity.Prefs[index].MaxInt < realtimeInt)
+                    {
+                        intensity.Prefs[index].MaxInt = realtimeInt;
+                    }
+
+                    intensity.Prefs[index].Number++;
+                }
+            }
+
+            MaxIntensity = ToInteger(intensity.MaxInt);
+            intensity.Stations = intensity.Stations.OrderByDescending(x => x.Int).ToList();
+            var firstIntStation = intensity.Stations.First();
+            var secondIntStation = intensity.Stations.ElementAt(1);
+
+            // トリガチェック
+            var range = SetComputeRange(firstIntStation.PrefName);
+            var stations = intensity.Stations.Where(x => Math.Sqrt(Math.Pow(x.Point.X - firstIntStation.Point.X, 2) + Math.Pow(x.Point.Y - firstIntStation.Point.Y, 2)) <= range).ToArray();
+            var firstScore = ComputeScore(stations);
+            range = SetComputeRange(secondIntStation.PrefName);
+            stations = intensity.Stations.Where(x => x.Point.X != firstIntStation.Point.X && x.Point.Y != firstIntStation.Point.Y).Where(x => Math.Sqrt(Math.Pow(x.Point.X - secondIntStation.Point.X, 2) + Math.Pow(x.Point.Y - secondIntStation.Point.Y, 2)) <= range).ToArray();
+            var secondScore = 0;
+            if (secondIntStation.Int >= 0.5) secondScore = ComputeScore(stations);
+            var maxScore = Math.Max(firstScore, secondScore);
+            if (maxScore != firstScore && firstIntStation.Int <= secondIntStation.Int)
+            {
+                //var temp = firstIntStation;
+                firstIntStation = secondIntStation;
+                //secondIntStation = temp;
+            }
+
+            var d = Math.Sqrt(Math.Pow(firstIntStation.Point.X - secondIntStation.Point.X, 2) + Math.Pow(firstIntStation.Point.Y - secondIntStation.Point.Y, 2));
+            if (d < 15) maxScore += 5;  // ボーナススコア
+
+            if (maxScore >= 100)
+            {
+                IsTriggerOn = true;
+                IsTriggerWait = false;
+            }
+            else if (IsTriggerOn)
+            {
+                if (firstIntStation.Int < 0.5)
+                {
+                    if (++_offTriggerTime >= 10)
+                    {
+                        IsTriggerOn = false;
+                        IsTriggerWait = false;
+                        _offTriggerTime = 0;
+                    }
+                    else
+                    {
+                        IsTriggerWait = true;
                     }
                 }
+                else
+                {
+                    IsTriggerWait = true;
+                    _offTriggerTime = 0;
+                }
             }
-            if (trigger > 0) OnTrigger = true;
+
+            intensity.Prefs = intensity.Prefs.Where(x => x.Number > 2).ToList();
+
             // 最大震度を検知した地点に円を描画
-            using (var graphicsMaxInt = Graphics.FromImage(realTimeImg))
+            using (var pen = new Pen(GetColor(firstIntStation.Point.X, firstIntStation.Point.Y)))
             {
-                graphicsMaxInt.DrawEllipse(new Pen(GetColor(maxIntPoint.X, maxIntPoint.Y)),
-                    maxIntPoint.X - 12, maxIntPoint.Y - 12, 24, 24);
+                graphics.DrawEllipse(pen, firstIntStation.Point.X - 12, firstIntStation.Point.Y - 12, 24, 24);
             }
+
             // 最大震度を検知した地点をラベルに設定
-            _instance.label_kyoshinMaxInt.Text = $"{ToJMAIntensity(maxInt)}（{pointSorted.First().Key.Keys.First()}）";
+            Instance.Label_KyoshinMaxInt.Text = $"{ToJMAIntensity(intensity.MaxInt)}（{firstIntStation.PrefName} {firstIntStation.Name}）";
+
+            // 最大震度（気象庁震度階級）を検知した地点数
+            var maxIntNum = -1 + intensity.Stations.Where(x => x.Int >= 0.5).Count(x => ToInteger(x.Int) == ToInteger(intensity.MaxInt));
             if (maxIntNum > 1)
             {
-                _instance.label_kyoshinMaxIntDetail.Text = $"他 {maxIntNum - 1} 地点";
-                _instance.label_kyoshinMaxIntDetail.Location =
-                    new Point(_instance.label_kyoshinMaxInt.Location.X + _instance.label_kyoshinMaxInt.Size.Width,
-                        _instance.label_kyoshinMaxIntDetail.Location.Y);
+                Instance.Label_KyoshinMaxIntDetail.Text = $"他 {maxIntNum - 1} 地点";
+                Instance.Label_KyoshinMaxIntDetail.Location = new Point(Instance.Label_KyoshinMaxInt.Location.X + Instance.Label_KyoshinMaxInt.Size.Width, Instance.Label_KyoshinMaxIntDetail.Location.Y);
             }
             else
             {
-                _instance.label_kyoshinMaxIntDetail.Text = "";
+                Instance.Label_KyoshinMaxIntDetail.Text = "";
             }
-            // 地表リアルアイム震度0.1以上を検知した都道府県をラベルに設定
-            if (prefList.Count == 0)
+
+            // 地表リアルアイム震度0.5以上を検知した都道府県をラベルに設定
+            if (IsTriggerOn && !IsTriggerWait && firstIntStation.Int >= 0.5)
             {
-                _instance.label_kyoshinPrefecture.Text = "";
-            }
-            else
-            {
-                var prefSorted = prefList.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
-                prefName = "";
-                var num = 0;
-                foreach (var valuePair in prefSorted)
+                if (intensity.Prefs.Any())
                 {
-                    prefName += valuePair.Key + "　";
-                    if (prefList.Count > 5 && prefList.Count < 10 && num == (prefList.Count - 1) >> 1 ||
-                        prefList.Count > 9 && num == 4)
+                    var text = string.Join("　", intensity.Prefs.Take(9).Select(x => x.Name));
+                    if (intensity.Prefs.Count >= 11)
                     {
-                        prefName = $"{prefName.TrimEnd('　')}\n";
+                        text += $"　他 {intensity.Prefs.Count - 9} 都道府県";
                     }
-                    if (num >= 8)
+                    else if (intensity.Prefs.Count >= 10)
                     {
-                        prefName += $"他 {prefList.Count - num} 都道府県";
-                        break;
+                        text += "　" + intensity.Prefs.Last().Name;
                     }
-                    num++;
+
+                    var space = text.Length - text.Replace("　", "").Length;
+                    var insert = (int)Math.Ceiling(space / 2.0);
+                    if (insert >= 3)
+                    {
+                        var split = text.Split('　');
+                        var builder = new StringBuilder();
+                        for (var i = 0; i < split.Length; i++)
+                        {
+                            if (insert == i + 1)
+                            {
+                                builder.Append(split[i] + "\n");
+                            }
+                            else
+                            {
+                                builder.Append(split[i] + "　");
+                            }
+                        }
+
+                        text = builder.ToString().TrimEnd();
+                    }
+
+                    Instance.Label_KyoshinPrefecture.Text = text;
                 }
-                prefName = prefName.TrimEnd('　');
-                _instance.label_kyoshinPrefecture.Text = prefName;
-                _instance.label_kyoshinPrefecture.Location =
-                    new Point(_instance.pictureBox_kyoshinMap.Width - _instance.label_kyoshinPrefecture.Size.Width + 4,
-                        _instance.pictureBox_kyoshinMap.Height - _instance.label_kyoshinPrefecture.Size.Height + 54);
+                else
+                {
+                    Instance.Label_KyoshinPrefecture.Text = firstIntStation.PrefName;
+                }
+
+                Instance.Label_KyoshinPrefecture.Location = new Point(_pictureBoxWidth - Instance.Label_KyoshinPrefecture.Size.Width + 4, _pictureBoxHeight - Instance.Label_KyoshinPrefecture.Size.Height + 54);
+            }
+            else
+            {
+                Instance.Label_KyoshinPrefecture.Text = "";
             }
         }
 
         /// <summary>
-        /// 緊急地震速報 P波・S波到達予想円を取得
+        /// スコアを計算する観測点の範囲を設定
         /// </summary>
-        /// <param name="time">取得する時刻</param>
+        /// <param name="pref"></param>
         /// <returns></returns>
-        private static async Task<Bitmap> GetPSWaveImageAsync(string time)
+        private static int SetComputeRange(string pref)
         {
-            var bitmap = new Bitmap(_instance.pictureBox_kyoshinMap.Width, _instance.pictureBox_kyoshinMap.Height);
-            using (var graphics = Graphics.FromImage(bitmap))
-            using (var imageAttrs = new ImageAttributes())
+            switch (pref)
             {
-                imageAttrs.SetRemapTable(MapPsWave);
-                graphics.DrawImage(await RequestImageAsync($"{Uri}PSWaveImg/eew/{time}.eew.gif"),
-                    new Rectangle(Point.Empty, bitmap.Size), 0, 0, bitmap.Width, bitmap.Height, GraphicsUnit.Pixel, imageAttrs);
+                case "東京都":
+                    return 3;   // 観測点同士の間隔が狭い地域では範囲を狭く設定
+                case "茨城県":
+                case "栃木県":
+                case "千葉県":
+                case "神奈川県":
+                    return 4;   // 観測点同士の間隔が狭い地域では範囲を狭く設定
+                case "北海道":
+                case "鹿児島県":
+                case "沖縄県":
+                    return 10;  // 観測点同士の間隔が広い地域では範囲を広く設定
+                default:
+                    return 7;
             }
-            return bitmap;
+        }
+
+        /// <summary>
+        /// 地震判定用スコアを計算
+        /// </summary>
+        /// <param name="stations"></param>
+        /// <returns></returns>
+        private static int ComputeScore(Intensity.Station[] stations)
+        {
+            var score = stations.Count(x => x.Int >= 1.5) * 60;
+            score += stations.Count(x => x.Int < 1.5 && x.Int >= 0.6) * 50;
+            score += stations.Count(x => x.Int < 0.6 && x.Int >= 0.5) * 45;
+            score += stations.Count(x => x.Int < 0.5 && x.Int >= 0.0) * 25;
+            score += stations.Count(x => x.Int < 0.0 && x.Int >= -0.5) * 20;
+            return score;
         }
 
         /// <summary>
@@ -401,10 +383,7 @@ namespace Temonis
         /// <param name="x">取得するピクセルの x 座標</param>
         /// <param name="y">取得するピクセルの y 座標</param>
         /// <returns></returns>
-        private static float GetInstIntensity(int x, int y)
-        {
-            return !ColorTable.TryGetValue(GetColor(x, y), out var value) ? -3.0f : value;
-        }
+        private static float GetInstIntensity(int x, int y) => !General.Kyoshin.ColorMap.TryGetValue(GetColor(x, y), out var value) ? -3.0f : value;
 
         /// <summary>
         /// 計測震度を整数に変換
@@ -440,6 +419,65 @@ namespace Temonis
             else if (seismicInt < 5.5f) return "5強";
             else if (seismicInt < 6.0f) return "6弱";
             else return seismicInt < 6.5f ? "6強" : "7";
+        }
+
+        public class Intensity
+        {
+            /// <summary>
+            /// 最大リアルタイム震度
+            /// </summary>
+            public float MaxInt { get; set; }
+
+            /// <summary>
+            /// 都道府県
+            /// </summary>
+            public List<Pref> Prefs { get; set; }
+
+            /// <summary>
+            /// 観測点
+            /// </summary>
+            public List<Station> Stations { get; set; }
+
+            public class Pref
+            {
+                /// <summary>
+                /// 都道府県名
+                /// </summary>
+                public string Name { get; set; }
+
+                /// <summary>
+                /// 最大リアルタイム震度
+                /// </summary>
+                public float MaxInt { get; set; }
+
+                /// <summary>
+                /// リアルタイム震度1以上の観測点数
+                /// </summary>
+                public int Number { get;set; }
+            }
+
+            public class Station
+            {
+                /// <summary>
+                /// 観測点名
+                /// </summary>
+                public string Name { get; set; }
+
+                /// <summary>
+                /// 都道府県名
+                /// </summary>
+                public string PrefName { get; set; }
+
+                /// <summary>
+                /// リアルタイム震度
+                /// </summary>
+                public float Int { get; set; }
+
+                /// <summary>
+                /// 座標
+                /// </summary>
+                public Point Point { get; set; }
+            }
         }
     }
 }

@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Temonis
+namespace Temonis.Controls
 {
     public class GroupBox : System.Windows.Forms.GroupBox
     {
@@ -22,7 +22,7 @@ namespace Temonis
         public GroupBox()
         {
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
-            _borderColor = MainWindow.White;
+            _borderColor = Resources.General.White;
         }
 
         protected override void OnPaint(PaintEventArgs e)

@@ -124,13 +124,22 @@
   <data name="BaseMapBorder" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\BaseMapBorder.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Dummy" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Dummy.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="EEWUri" xml:space="preserve">
+    <value>http://www.kmoni.bosai.go.jp/new/webservice/hypo/eew/</value>
   </data>
   <data name="Epicenter" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Epicenter.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Station" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Station.utd;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  <data name="EqInfoUri" xml:space="preserve">
+    <value>https://typhoon.yahoo.co.jp/weather/earthquake/</value>
+  </data>
+  <data name="KyoshinUri" xml:space="preserve">
+    <value>http://www.kmoni.bosai.go.jp/new/data/map_img/</value>
+  </data>
+  <data name="LatestTimeUri" xml:space="preserve">
+    <value>http://www.kmoni.bosai.go.jp/new/webservice/server/pros/latest.json</value>
+  </data>
+  <data name="Stations" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Stations.utd;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

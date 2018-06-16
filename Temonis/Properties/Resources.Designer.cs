@@ -81,11 +81,11 @@ namespace Temonis.Properties {
         }
         
         /// <summary>
-        ///   System.IO.MemoryStream に類似した型 System.IO.UnmanagedMemoryStream のローカライズされたリソースを検索します。
+        ///   http://www.kmoni.bosai.go.jp/new/webservice/hypo/eew/ に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream Dummy {
+        internal static string EEWUri {
             get {
-                return ResourceManager.GetStream("Dummy", resourceCulture);
+                return ResourceManager.GetString("EEWUri", resourceCulture);
             }
         }
         
@@ -100,40 +100,39 @@ namespace Temonis.Properties {
         }
         
         /// <summary>
-        ///   1,尾西,愛知県,166,268
-        ///1,小牧,愛知県,169,268
-        ///1,津島,愛知県,165,272
-        ///1,名古屋,愛知県,170,274
-        ///1,藤岡,愛知県,175,271
-        ///1,稲武,愛知県,181,271
-        ///0,足助,愛知県,177,272
-        ///1,設楽,愛知県,183,274
-        ///1,豊田,愛知県,173,274
-        ///0,作手,愛知県,179,276
-        ///1,知多,愛知県,168,276
-        ///1,安城,愛知県,170,279
-        ///1,長篠,愛知県,182,277
-        ///1,蒲郡,愛知県,175,280
-        ///0,豊橋,愛知県,179,282
-        ///1,美浜,愛知県,169,280
-        ///1,田原,愛知県,176,284
-        ///1,渥美,愛知県,173,285
-        ///1,小坂,秋田県,247,145
-        ///0,大館,秋田県,243,147
-        ///0,藤里,秋田県,237,146
-        ///1,八森,秋田県,231,144
-        ///1,能代,秋田県,232,148
-        ///1,鹿角,秋田県,247,148
-        ///1,琴丘,秋田県,233,152
-        ///1,飯田川,秋田県,233,156
-        ///1,男鹿,秋田県,228,156
-        ///1,秋田,秋田県,233,160
-        ///0,宮田,秋田県,243,158
-        ///1,田沢湖,秋田県,246,160 [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        ///   https://typhoon.yahoo.co.jp/weather/earthquake/ に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string Station {
+        internal static string EqInfoUri {
             get {
-                return ResourceManager.GetString("Station", resourceCulture);
+                return ResourceManager.GetString("EqInfoUri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   http://www.kmoni.bosai.go.jp/new/data/map_img/ に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string KyoshinUri {
+            get {
+                return ResourceManager.GetString("KyoshinUri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   http://www.kmoni.bosai.go.jp/new/webservice/server/pros/latest.json に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LatestTimeUri {
+            get {
+                return ResourceManager.GetString("LatestTimeUri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Byte[] のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static byte[] Stations {
+            get {
+                object obj = ResourceManager.GetObject("Stations", resourceCulture);
+                return ((byte[])(obj));
             }
         }
     }
