@@ -32,7 +32,7 @@ namespace Temonis
             }
             catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException || ex is SerializationException)
             {
-                Logger(ex);
+                InternalLog(ex);
             }
 
             if (json == default(Root)) return;
@@ -55,7 +55,7 @@ namespace Temonis
                     Instance.Label_EEWIntensity.Text = "";
                     Info[json.ReportId] = "0";
                 }
-                else if (EqInfo.Id == json.ReportId)
+                else if (EqInfo.Id == json.ReportId && !Kyoshin.IsTriggerOn)
                 {
                     IsTriggerOn = false;
                 }

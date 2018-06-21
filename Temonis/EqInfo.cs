@@ -40,58 +40,58 @@ namespace Temonis
             }
             catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
             {
-                Logger(ex);
+                InternalLog(ex);
             }
 
             if (string.IsNullOrEmpty(html)) return;
 
-            html = Regex.Match(html, "<div id=\"eqinfdtl\" class=\"tracked_mods\">.+?</div>", RegexOptions.Singleline).Value;
-            if (!IsUpdated(html)) return;
+            var info = Regex.Match(html, "<div id=\"eqinfdtl\" class=\"tracked_mods\">.+?</div>", RegexOptions.Singleline).Value;
+            if (!IsUpdated(info)) return;
 
             // 発生時刻
-            var time = Regex.Match(html, @"<.+>発生時刻(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value.Replace("ごろ", "");
+            var time = Regex.Match(info, @"<.+>発生時刻(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value.Replace("ごろ", "");
             var arrivalTime = DateTime.Parse(time, new CultureInfo("ja-JP"), DateTimeStyles.AssumeLocal);
             Instance.Label_EqInfoTime.Text = arrivalTime.ToString("yyyy年MM月dd日 HH時mm分");
 
             // 震源地
-            var epicenter = Regex.Match(html, @"<.+>震源地(</.+>)+\n(<.+>)+<.+?>(.+?)</.+>").Groups[3].Value;
-            epicenter += Regex.Match(html, @"<.+>震源地(</.+>)+\n(<.+>)+<.+?>(.+?)</.+>(.+?)(</.+>){2}").Groups[4].Value;
+            var epicenter = Regex.Match(info, @"<.+>震源地(</.+>)+\n(<.+>)+<.+?>(.+?)</.+>").Groups[3].Value;
+            epicenter += Regex.Match(info, @"<.+>震源地(</.+>)+\n(<.+>)+<.+?>(.+?)</.+>(.+?)(</.+>){2}").Groups[4].Value;
             Epicenter = epicenter;
             Instance.Label_EqInfoEpicenter.Text = epicenter;
 
             // 緯度
-            double parsedLatitude, parsedLongitude;
-            var latitude = Regex.Match(html, @"<.+>緯度(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value;
-            if (latitude == "---")
+            double dLatitude, dLongitude;
+            var sLatitude = Regex.Match(info, @"<.+>緯度(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value;
+            if (sLatitude == "---")
             {
-                parsedLatitude = 0.0;
+                dLatitude = 0.0;
             }
             else
             {
-                latitude = latitude.Replace("度", "");
-                parsedLatitude = latitude.Contains("北緯") ? double.Parse(latitude.Replace("北緯", "")) : double.Parse("-" + latitude.Replace("南緯", ""));
+                sLatitude = sLatitude.Replace("度", "");
+                dLatitude = sLatitude.Contains("北緯") ? double.Parse(sLatitude.Replace("北緯", "")) : double.Parse("-" + sLatitude.Replace("南緯", ""));
             }
 
             // 経度
-            var longitude = Regex.Match(html, @"<.+>経度(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value;
-            if (longitude == "---")
+            var sLongitude = Regex.Match(info, @"<.+>経度(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value;
+            if (sLongitude == "---")
             {
-                parsedLongitude = 0.0;
+                dLongitude = 0.0;
             }
             else
             {
-                longitude = longitude.Replace("度", "");
-                parsedLongitude = longitude.Contains("東経") ? double.Parse(longitude.Replace("東経", "")) : double.Parse("-" + longitude.Replace("西経", ""));
+                sLongitude = sLongitude.Replace("度", "");
+                dLongitude = sLongitude.Contains("東経") ? double.Parse(sLongitude.Replace("東経", "")) : double.Parse("-" + sLongitude.Replace("西経", ""));
             }
 
             // 深さ
-            Instance.Label_EqInfoDepth.Text = Regex.Match(html, @"<.+>深さ(</.+>)+\n\n(<.+>)+(.+?)</.+>").Groups[3].Value;
+            Instance.Label_EqInfoDepth.Text = Regex.Match(info, @"<.+>深さ(</.+>)+\n\n(<.+>)+(.+?)</.+>").Groups[3].Value;
 
             // マグニチュード
-            Instance.Label_EqInfoMagnitude.Text = Regex.Match(html, @"<.+>マグニチュード(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value;
+            Instance.Label_EqInfoMagnitude.Text = Regex.Match(info, @"<.+>マグニチュード(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value;
 
             // 情報
-            var message = Regex.Match(html, @"<.+>情報(</.+>)+\n(<.+?>)+(.+?)</?.+>").Groups[3].Value;
+            var message = Regex.Match(info, @"<.+>情報(</.+>)+\n(<.+?>)+(.+?)</?.+>").Groups[3].Value;
             Instance.Label_EqInfoMessage.Font = new Font(Instance.Label_EqInfoMessage.Font.FontFamily, 12f);
             if (message.Length > 32)
             {
@@ -106,7 +106,7 @@ namespace Temonis
             Instance.Label_EqInfoMessage.Text = message;
 
             // 各地の震度
-            var intensity = Regex.Match(html, @"<.+class=""yjw_table"">(.+?)</\w+>\n</div>", RegexOptions.Singleline).Groups[1].Value.Replace("\n", "");
+            var intensity = Regex.Match(info, @"<.+class=""yjw_table"">(.+?)</\w+>\n</div>", RegexOptions.Singleline).Groups[1].Value.Replace("\n", "");
             intensity = Regex.Replace(intensity, @"<\w+ \S+><\w+ \S+ \w+>(<\w+>)+", "[");
             intensity = Regex.Replace(intensity, @"(</\w+>)+<\w+ \S+><\w+>", "]");
             intensity = Regex.Replace(intensity, @"<\w+ \S+><\w+ \S+ \S+ \S+><\w+>震度", "");
@@ -133,7 +133,7 @@ namespace Temonis
             // 地震ID
             Id = Regex.Match(html, "<a href=\"/weather/jp/earthquake/(.+).html\">").Groups[1].Value;
 
-            CreateEpicenterImage(parsedLatitude, parsedLongitude);
+            CreateEpicenterImage(dLatitude, dLongitude);
         }
 
         /// <summary>
@@ -258,9 +258,10 @@ namespace Temonis
             }
 
             EpicenterBitmap = new Bitmap(Instance.PictureBox_KyoshinMap.Width, Instance.PictureBox_KyoshinMap.Height);
-            var graphicsEpicenter = Graphics.FromImage(EpicenterBitmap);
-            graphicsEpicenter.DrawImage(Properties.Resources.Epicenter, (int)(Math.Round(x) - Properties.Resources.Epicenter.Width / 2.0f), (int)(Math.Round(y) - Properties.Resources.Epicenter.Height / 2.0f));
-            graphicsEpicenter.Dispose();
+            using (var graphicsEpicenter = Graphics.FromImage(EpicenterBitmap))
+            {
+                graphicsEpicenter.DrawImage(Properties.Resources.Epicenter, (int)(Math.Round(x) - Properties.Resources.Epicenter.Width / 2.0f), (int)(Math.Round(y) - Properties.Resources.Epicenter.Height / 2.0f));
+            }
         }
 
         /// <summary>

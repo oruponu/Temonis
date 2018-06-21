@@ -35,13 +35,13 @@ namespace Temonis
                 {
                     setActive = true;
                     await _sound.PlayKyoshinAsync();
-                    Logger(Instance.Label_KyoshinMaxInt.Text);
+                    InternalLog(Instance.Label_KyoshinMaxInt.Text);
                 }
                 else if (Kyoshin.MaxIntensity >= 1 && (!_isKyoshinOn || _lastKyoshinIntensity < Kyoshin.MaxIntensity))
                 {
                     setActive = true;
                     await _sound.PlayKyoshinAsync();
-                    Logger(Instance.Label_KyoshinMaxInt.Text);
+                    InternalLog(Instance.Label_KyoshinMaxInt.Text);
                 }
                 else if (_lastKyoshinIntensity > Kyoshin.MaxIntensity)
                 {

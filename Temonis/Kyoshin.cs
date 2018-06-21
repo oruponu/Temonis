@@ -41,23 +41,24 @@ namespace Temonis
                 }
                 catch (Exception ex) when (ex is HttpRequestException || ex is IOException || ex is TaskCanceledException || ex is ArgumentException)
                 {
-                    Logger(ex);
+                    InternalLog(ex);
                 }
 
                 try
                 {
-                    var intensityBitmap = (Bitmap)await DownloadImageAsync($"{Properties.Resources.KyoshinUri}RealTimeImg/jma_s/{time}.jma_s.gif");
-                    var rect = new Rectangle(0, 0, _pictureBoxWidth, _pictureBoxHeight);
-                    _dataRealTime = intensityBitmap.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
-                    GetRealtimeIntensity(graphics);
-                    intensityBitmap.UnlockBits(_dataRealTime);
-                    intensityBitmap.Dispose();
+                    using (var intensityBitmap = (Bitmap)await DownloadImageAsync($"{Properties.Resources.KyoshinUri}RealTimeImg/jma_s/{time}.jma_s.gif"))
+                    {
+                        var rect = new Rectangle(0, 0, _pictureBoxWidth, _pictureBoxHeight);
+                        _dataRealTime = intensityBitmap.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+                        GetRealtimeIntensity(graphics);
+                        intensityBitmap.UnlockBits(_dataRealTime);
+                    }
 
                     isSucceeded = true;
                 }
                 catch (Exception ex) when (ex is HttpRequestException || ex is IOException || ex is TaskCanceledException || ex is ArgumentException)
                 {
-                    Logger(ex);
+                    InternalLog(ex);
                 }
 
                 if (EEW.IsTriggerOn)
@@ -69,7 +70,7 @@ namespace Temonis
                     }
                     catch (Exception ex) when (ex is HttpRequestException || ex is IOException || ex is TaskCanceledException || ex is ArgumentException)
                     {
-                        Logger(ex);
+                        InternalLog(ex);
                     }
                 }
                 else
@@ -80,9 +81,10 @@ namespace Temonis
                     }
                 }
 
-                var baseMapBorder = Properties.Resources.BaseMapBorder;
-                graphics.DrawImage(baseMapBorder, 0, 0, _pictureBoxWidth, _pictureBoxHeight);
-                baseMapBorder.Dispose();
+                using (var baseMapBorder = Properties.Resources.BaseMapBorder)
+                {
+                    graphics.DrawImage(baseMapBorder, 0, 0, _pictureBoxWidth, _pictureBoxHeight);
+                }
             }
 
             var oldImage = Instance.PictureBox_KyoshinMap.Image;
@@ -99,7 +101,7 @@ namespace Temonis
         /// <returns></returns>
         private static async Task<Image> DownloadImageAsync(string requestUri)
         {
-            using (var stream = await MainWindow.HttpClient.GetStreamAsync(requestUri))
+            using (var stream = await MainWindow.HttpClient.GetStreamAsync(requestUri).ConfigureAwait(false))
             {
                 return Image.FromStream(stream, false, false);
             }
@@ -119,16 +121,18 @@ namespace Temonis
             using (var imageAttrs = new ImageAttributes())
             {
                 imageAttrs.SetRemapTable(MapRealTime);
-                var image = await DownloadImageAsync($"{Properties.Resources.KyoshinUri}RealTimeImg/{mapType}_{mapSb}/{time}.{mapType}_{mapSb}.gif");
-                var destRect = new Rectangle(0, 0, _pictureBoxWidth, _pictureBoxHeight);
-                graphics.DrawImage(image, destRect, 0, 0, _pictureBoxWidth, _pictureBoxHeight, GraphicsUnit.Pixel, imageAttrs);
-                image.Dispose();
+                using (var image = await DownloadImageAsync($"{Properties.Resources.KyoshinUri}RealTimeImg/{mapType}_{mapSb}/{time}.{mapType}_{mapSb}.gif"))
+                {
+                    var destRect = new Rectangle(0, 0, _pictureBoxWidth, _pictureBoxHeight);
+                    graphics.DrawImage(image, destRect, 0, 0, _pictureBoxWidth, _pictureBoxHeight, GraphicsUnit.Pixel, imageAttrs);
+                }
             }
         }
 
         /// <summary>
         /// 緊急地震速報 P波・S波到達予想円を描画
         /// </summary>
+        /// <param name="graphics">描画対象のオブジェクト</param>
         /// <param name="time">取得する時刻</param>
         /// <returns></returns>
         private async Task DrawPSWaveImageAsync(Graphics graphics, string time)
@@ -136,10 +140,11 @@ namespace Temonis
             using (var imageAttrs = new ImageAttributes())
             {
                 imageAttrs.SetRemapTable(MapPSWave);
-                var image = await DownloadImageAsync($"{Properties.Resources.KyoshinUri}PSWaveImg/eew/{time}.eew.gif");
-                var destRect = new Rectangle(0, 0, _pictureBoxWidth, _pictureBoxHeight);
-                graphics.DrawImage(image, destRect, 0, 0, _pictureBoxWidth, _pictureBoxHeight, GraphicsUnit.Pixel, imageAttrs);
-                image.Dispose();
+                using (var image = await DownloadImageAsync($"{Properties.Resources.KyoshinUri}PSWaveImg/eew/{time}.eew.gif"))
+                {
+                    var destRect = new Rectangle(0, 0, _pictureBoxWidth, _pictureBoxHeight);
+                    graphics.DrawImage(image, destRect, 0, 0, _pictureBoxWidth, _pictureBoxHeight, GraphicsUnit.Pixel, imageAttrs);
+                }
             }
         }
 
@@ -199,29 +204,55 @@ namespace Temonis
                 }
             }
 
-            MaxIntensity = ToInteger(intensity.MaxInt);
+            MaxIntensity = ToIntensityInt(intensity.MaxInt);
             intensity.Stations = intensity.Stations.OrderByDescending(x => x.Int).ToList();
             var firstIntStation = intensity.Stations.First();
             var secondIntStation = intensity.Stations.ElementAt(1);
+            var thirdIntStation = intensity.Stations.ElementAt(2);
 
             // トリガチェック
-            var range = SetComputeRange(firstIntStation.PrefName);
+            var nearest = intensity.Stations.OrderBy(x => Math.Sqrt(Math.Pow(x.Point.X - firstIntStation.Point.X, 2) + Math.Pow(x.Point.Y - firstIntStation.Point.Y, 2))).ElementAt(1);
+            var range = Math.Sqrt(Math.Pow(nearest.Point.X - firstIntStation.Point.X, 2) + Math.Pow(nearest.Point.Y - firstIntStation.Point.Y, 2)) * 1.1;
+            var minRange = SetComputeRange(firstIntStation.PrefName);
+            if (range < minRange) range = minRange;
             var stations = intensity.Stations.Where(x => Math.Sqrt(Math.Pow(x.Point.X - firstIntStation.Point.X, 2) + Math.Pow(x.Point.Y - firstIntStation.Point.Y, 2)) <= range).ToArray();
             var firstScore = ComputeScore(stations);
-            range = SetComputeRange(secondIntStation.PrefName);
-            stations = intensity.Stations.Where(x => x.Point.X != firstIntStation.Point.X && x.Point.Y != firstIntStation.Point.Y).Where(x => Math.Sqrt(Math.Pow(x.Point.X - secondIntStation.Point.X, 2) + Math.Pow(x.Point.Y - secondIntStation.Point.Y, 2)) <= range).ToArray();
+            nearest = intensity.Stations.OrderBy(x => Math.Sqrt(Math.Pow(x.Point.X - secondIntStation.Point.X, 2) + Math.Pow(x.Point.Y - secondIntStation.Point.Y, 2))).ElementAt(1);
+            range = Math.Sqrt(Math.Pow(nearest.Point.X - secondIntStation.Point.X, 2) + Math.Pow(nearest.Point.Y - secondIntStation.Point.Y, 2)) * 1.1;
+            minRange = SetComputeRange(secondIntStation.PrefName);
+            if (range < minRange) range = minRange;
+            stations = intensity.Stations.Skip(1).Where(x => Math.Sqrt(Math.Pow(x.Point.X - secondIntStation.Point.X, 2) + Math.Pow(x.Point.Y - secondIntStation.Point.Y, 2)) <= range).ToArray();
             var secondScore = 0;
             if (secondIntStation.Int >= 0.5) secondScore = ComputeScore(stations);
-            var maxScore = Math.Max(firstScore, secondScore);
-            if (maxScore != firstScore && firstIntStation.Int <= secondIntStation.Int)
-            {
-                //var temp = firstIntStation;
-                firstIntStation = secondIntStation;
-                //secondIntStation = temp;
-            }
+            nearest = intensity.Stations.OrderBy(x => Math.Sqrt(Math.Pow(x.Point.X - thirdIntStation.Point.X, 2) + Math.Pow(x.Point.Y - thirdIntStation.Point.Y, 2))).ElementAt(1);
+            range = Math.Sqrt(Math.Pow(nearest.Point.X - thirdIntStation.Point.X, 2) + Math.Pow(nearest.Point.Y - thirdIntStation.Point.Y, 2)) * 1.1;
+            minRange = SetComputeRange(thirdIntStation.PrefName);
+            if (range < minRange) range = minRange;
+            stations = intensity.Stations.Skip(2).Where(x => Math.Sqrt(Math.Pow(x.Point.X - thirdIntStation.Point.X, 2) + Math.Pow(x.Point.Y - thirdIntStation.Point.Y, 2)) <= range).ToArray();
+            var thirdScore = 0;
+            if (thirdIntStation.Int >= 0.5) thirdScore = ComputeScore(stations);
 
-            var d = Math.Sqrt(Math.Pow(firstIntStation.Point.X - secondIntStation.Point.X, 2) + Math.Pow(firstIntStation.Point.Y - secondIntStation.Point.Y, 2));
-            if (d < 15) maxScore += 5;  // ボーナススコア
+            var firstPref = firstIntStation;
+            var maxScore = firstScore;
+            if (maxScore < secondScore)
+            {
+                firstPref = secondIntStation;
+                maxScore = secondScore;
+                if (firstIntStation.Int <= secondIntStation.Int)
+                {
+                    firstIntStation = secondIntStation;
+                }
+
+                if (maxScore < thirdScore)
+                {
+                    firstPref = thirdIntStation;
+                    maxScore = thirdScore;
+                    if (secondIntStation.Int <= thirdIntStation.Int)
+                    {
+                        firstIntStation = thirdIntStation;
+                    }
+                }
+            }
 
             if (maxScore >= 100)
             {
@@ -259,10 +290,10 @@ namespace Temonis
             }
 
             // 最大震度を検知した地点をラベルに設定
-            Instance.Label_KyoshinMaxInt.Text = $"{ToJMAIntensity(intensity.MaxInt)}（{firstIntStation.PrefName} {firstIntStation.Name}）";
+            Instance.Label_KyoshinMaxInt.Text = $"{ToIntensityString(intensity.MaxInt)}（{firstIntStation.PrefName} {firstIntStation.Name}）";
 
             // 最大震度（気象庁震度階級）を検知した地点数
-            var maxIntNum = -1 + intensity.Stations.Where(x => x.Int >= 0.5).Count(x => ToInteger(x.Int) == ToInteger(intensity.MaxInt));
+            var maxIntNum = -1 + intensity.Stations.Where(x => x.Int >= 0.5).Count(x => ToIntensityInt(x.Int) == ToIntensityInt(intensity.MaxInt));
             if (maxIntNum > 1)
             {
                 Instance.Label_KyoshinMaxIntDetail.Text = $"他 {maxIntNum - 1} 地点";
@@ -313,7 +344,15 @@ namespace Temonis
                 }
                 else
                 {
-                    Instance.Label_KyoshinPrefecture.Text = firstIntStation.PrefName;
+                    if (firstPref.PrefName.Contains("県") || firstPref.PrefName.Contains("府") ||
+                        firstPref.PrefName.Contains("道") || firstPref.PrefName.Contains("都"))
+                    {
+                        Instance.Label_KyoshinPrefecture.Text = firstPref.PrefName;
+                    }
+                    else
+                    {
+                        Instance.Label_KyoshinPrefecture.Text = "";
+                    }
                 }
 
                 Instance.Label_KyoshinPrefecture.Location = new Point(_pictureBoxWidth - Instance.Label_KyoshinPrefecture.Size.Width + 4, _pictureBoxHeight - Instance.Label_KyoshinPrefecture.Size.Height + 54);
@@ -333,19 +372,17 @@ namespace Temonis
         {
             switch (pref)
             {
-                case "東京都":
-                    return 3;   // 観測点同士の間隔が狭い地域では範囲を狭く設定
                 case "茨城県":
                 case "栃木県":
                 case "千葉県":
+                case "東京都":
                 case "神奈川県":
-                    return 4;   // 観測点同士の間隔が狭い地域では範囲を狭く設定
-                case "北海道":
+                    return 5;   // 観測点同士の間隔が狭い地域では範囲を狭く設定
                 case "鹿児島県":
                 case "沖縄県":
                     return 10;  // 観測点同士の間隔が広い地域では範囲を広く設定
                 default:
-                    return 7;
+                    return 8;
             }
         }
 
@@ -356,11 +393,12 @@ namespace Temonis
         /// <returns></returns>
         private static int ComputeScore(Intensity.Station[] stations)
         {
-            var score = stations.Count(x => x.Int >= 1.5) * 60;
-            score += stations.Count(x => x.Int < 1.5 && x.Int >= 0.6) * 50;
-            score += stations.Count(x => x.Int < 0.6 && x.Int >= 0.5) * 45;
-            score += stations.Count(x => x.Int < 0.5 && x.Int >= 0.0) * 25;
-            score += stations.Count(x => x.Int < 0.0 && x.Int >= -0.5) * 20;
+            var score = stations.Count(x => x.Int >= 1.5) * 59;
+            score += stations.Count(x => x.Int < 1.5 && x.Int >= 1.0) * 48;
+            score += stations.Count(x => x.Int < 1.0 && x.Int >= 0.5) * 37;
+            score += stations.Count(x => x.Int < 0.5 && x.Int >= 0.0) * 26;
+            score += stations.Count(x => x.Int < 0.0 && x.Int >= -0.5) * 15;
+            score += stations.Count(x => x.Int < -0.5 && x.Int >= -1.0) * 4;
             return score;
         }
 
@@ -386,11 +424,11 @@ namespace Temonis
         private static float GetInstIntensity(int x, int y) => !General.Kyoshin.ColorMap.TryGetValue(GetColor(x, y), out var value) ? -3.0f : value;
 
         /// <summary>
-        /// 計測震度を整数に変換
+        /// 計測震度を気象庁震度階級の整数に変換
         /// </summary>
         /// <param name="seismicInt">変換する計測震度</param>
         /// <returns></returns>
-        private static int ToInteger(float seismicInt)
+        private static int ToIntensityInt(float seismicInt)
         {
             if (seismicInt < 0.5f) return 0;
             else if (seismicInt < 1.5f) return 1;
@@ -404,11 +442,11 @@ namespace Temonis
         }
 
         /// <summary>
-        /// 計測震度を気象庁震度階級に変換
+        /// 計測震度を気象庁震度階級の文字列に変換
         /// </summary>
         /// <param name="seismicInt">変換する計測震度</param>
         /// <returns></returns>
-        private static string ToJMAIntensity(float seismicInt)
+        private static string ToIntensityString(float seismicInt)
         {
             if (seismicInt < 0.5f) return "0";
             else if (seismicInt < 1.5f) return "1";

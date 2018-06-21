@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Text;
 using System.IO;
@@ -205,6 +206,8 @@ namespace Temonis
             }
             else
             {
+                Label_KyoshinMaxInt.Text = "";
+                Label_KyoshinPrefecture.Text = "";
                 await RequestLatestTimeAsync();
                 _retryCount++;
             }
@@ -227,7 +230,7 @@ namespace Temonis
             var json = default(Root);
             try
             {
-                using (var stream = await HttpClient.GetStreamAsync(Properties.Resources.LatestTimeUri))
+                using (var stream = await HttpClient.GetStreamAsync(Properties.Resources.LatestTimeUri).ConfigureAwait(false))
                 {
                     var serializer = new DataContractJsonSerializer(typeof(Root));
                     json = (Root)serializer.ReadObject(stream);
@@ -235,7 +238,7 @@ namespace Temonis
             }
             catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException || ex is SerializationException)
             {
-                Logger(ex);
+                InternalLog(ex);
             }
 
             if (json == default(Root)) return;
@@ -271,33 +274,27 @@ namespace Temonis
             await RequestLatestTimeAsync();
         }
 
-        public static void Logger(string str)
+        [Conditional("DEBUG")]
+        public static void InternalLog(string str)
         {
             var value = $"{DateTime.Now}\n";
             value += $"[Log]\n{str}\n\n";
-#if DEBUG
             using (var stream = new StreamWriter("Log.txt", true))
             {
                 stream.WriteLine(value);
             }
-#else
-            Console.WriteLine(value);
-#endif
         }
 
-        public static void Logger(Exception ex)
+        [Conditional("DEBUG")]
+        public static void InternalLog(Exception ex)
         {
             var value = $"{DateTime.Now}\n";
             value += $"[Message]\n{ex.Message}\n";
             value += $"[StackTrace]\n{ex.StackTrace}\n\n";
-#if DEBUG
-            using (var stream = new StreamWriter("Log.txt", true))
+            using (var stream = new StreamWriter("Exception.txt", true))
             {
                 stream.WriteLine(value);
             }
-#else
-            Console.WriteLine(value);
-#endif
         }
 
         /// <summary>
