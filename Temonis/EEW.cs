@@ -55,11 +55,12 @@ namespace Temonis
                     Instance.Label_EEWIntensity.Text = "";
                     Info[json.ReportId] = "0";
                 }
-                else if (EqInfo.Id == json.ReportId && !Kyoshin.IsTriggerOn)
+                else if (EqInfo.Id == json.ReportId && !Kyoshin.IsTriggerOn && (bool)json.IsFinal)
                 {
                     IsTriggerOn = false;
+                    Info[json.ReportId] = "-1";
                 }
-                else
+                else if (!Info.ContainsKey(json.ReportId) || Info.ContainsKey(json.ReportId) && Info[json.ReportId] != "-1")
                 {
                     IsTriggerOn = true;
                     var serial = "第" + json.ReportNum + "報";

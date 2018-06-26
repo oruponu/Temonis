@@ -50,8 +50,14 @@ namespace Temonis
                     {
                         var rect = new Rectangle(0, 0, _pictureBoxWidth, _pictureBoxHeight);
                         _dataRealTime = intensityBitmap.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
-                        GetRealtimeIntensity(graphics);
-                        intensityBitmap.UnlockBits(_dataRealTime);
+                        try
+                        {
+                            GetRealtimeIntensity(graphics);
+                        }
+                        finally
+                        {
+                            intensityBitmap.UnlockBits(_dataRealTime);
+                        }
                     }
 
                     isSucceeded = true;

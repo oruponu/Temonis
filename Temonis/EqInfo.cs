@@ -60,28 +60,28 @@ namespace Temonis
             Instance.Label_EqInfoEpicenter.Text = epicenter;
 
             // 緯度
-            double dLatitude, dLongitude;
+            float fLatitude, fLongitude;
             var sLatitude = Regex.Match(info, @"<.+>緯度(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value;
             if (sLatitude == "---")
             {
-                dLatitude = 0.0;
+                fLatitude = 0.0f;
             }
             else
             {
                 sLatitude = sLatitude.Replace("度", "");
-                dLatitude = sLatitude.Contains("北緯") ? double.Parse(sLatitude.Replace("北緯", "")) : double.Parse("-" + sLatitude.Replace("南緯", ""));
+                fLatitude = sLatitude.Contains("北緯") ? float.Parse(sLatitude.Replace("北緯", "")) : float.Parse("-" + sLatitude.Replace("南緯", ""));
             }
 
             // 経度
             var sLongitude = Regex.Match(info, @"<.+>経度(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value;
             if (sLongitude == "---")
             {
-                dLongitude = 0.0;
+                fLongitude = 0.0f;
             }
             else
             {
                 sLongitude = sLongitude.Replace("度", "");
-                dLongitude = sLongitude.Contains("東経") ? double.Parse(sLongitude.Replace("東経", "")) : double.Parse("-" + sLongitude.Replace("西経", ""));
+                fLongitude = sLongitude.Contains("東経") ? float.Parse(sLongitude.Replace("東経", "")) : float.Parse("-" + sLongitude.Replace("西経", ""));
             }
 
             // 深さ
@@ -133,7 +133,7 @@ namespace Temonis
             // 地震ID
             Id = Regex.Match(html, "<a href=\"/weather/jp/earthquake/(.+).html\">").Groups[1].Value;
 
-            CreateEpicenterImage(dLatitude, dLongitude);
+            CreateEpicenterImage(fLatitude, fLongitude);
         }
 
         /// <summary>
@@ -225,35 +225,35 @@ namespace Temonis
         /// </summary>
         /// <param name="latitude">震央の緯度</param>
         /// <param name="longitude">震央の経度</param>
-        private static void CreateEpicenterImage(double latitude, double longitude)
+        private static void CreateEpicenterImage(float latitude, float longitude)
         {
-            double lonMin;
-            double pxPerDigX;
-            if (latitude > 30.0 || longitude > 130.9)
+            float lonMin;
+            float pxPerDigX;
+            if (latitude > 30.0f || longitude > 130.9f)
             {
-                lonMin = 128.6;
-                pxPerDigX = Instance.PictureBox_KyoshinMap.Width / 17.3;
+                lonMin = 128.6f;
+                pxPerDigX = Instance.PictureBox_KyoshinMap.Width / 17.3f;
             }
             else
             {
-                lonMin = 122.5;
-                pxPerDigX = (Instance.PictureBox_KyoshinMap.Width - 181) / 8.4;
+                lonMin = 122.5f;
+                pxPerDigX = (Instance.PictureBox_KyoshinMap.Width - 181) / 8.4f;
             }
 
             var x = (longitude - lonMin) * pxPerDigX;
-            double latMin;
-            double pxPerDigY;
-            double y;
-            if (latitude > 30.0 || longitude > 130.9)
+            float latMin;
+            float pxPerDigY;
+            float y;
+            if (latitude > 30.0f || longitude > 130.9f)
             {
-                latMin = 30.0;
-                pxPerDigY = Instance.PictureBox_KyoshinMap.Height / 16.0;
+                latMin = 30.0f;
+                pxPerDigY = Instance.PictureBox_KyoshinMap.Height / 16.0f;
                 y = Instance.PictureBox_KyoshinMap.Height - (latitude - latMin) * pxPerDigY;
             }
             else
             {
-                latMin = 23.6;
-                pxPerDigY = (Instance.PictureBox_KyoshinMap.Height - 244) / 6.4;
+                latMin = 23.6f;
+                pxPerDigY = (Instance.PictureBox_KyoshinMap.Height - 244) / 6.4f;
                 y = Instance.PictureBox_KyoshinMap.Height - 193 - (latitude - latMin) * pxPerDigY;
             }
 

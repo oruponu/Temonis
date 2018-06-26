@@ -18,7 +18,7 @@ namespace Temonis.Resources
 
         public static readonly Color Red = Color.FromArgb(255, 40, 0);
 
-        public static readonly Color Blue = Color.FromArgb(0, 40, 255);
+        public static readonly Color Blue = Color.FromArgb(0, 65, 255);
 
         public static readonly Color Yellow = Color.FromArgb(250, 245, 0);
 
