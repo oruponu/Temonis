@@ -43,12 +43,12 @@ namespace Temonis
                 {
                     IsTriggerOn = false;
                     Instance.Label_EEWMessage.Text = "緊急地震速報は取り消されました。";
-                    Instance.Label_EEWTimeHeader.Visible = false;
+                    Instance.Label_EEWDateTimeHeader.Visible = false;
                     Instance.Label_EEWEpicenterHeader.Visible = false;
                     Instance.Label_EEWDepthHeader.Visible = false;
                     Instance.Label_EEWMagnitudeHeader.Visible = false;
                     Instance.Label_EEWIntensityHeader.Visible = false;
-                    Instance.Label_EEWTime.Text = "";
+                    Instance.Label_EEWDateTime.Text = "";
                     Instance.Label_EEWEpicenter.Text = "";
                     Instance.Label_EEWDepth.Text = "";
                     Instance.Label_EEWMagnitude.Text = "";
@@ -66,12 +66,12 @@ namespace Temonis
                     var serial = "第" + json.ReportNum + "報";
                     if ((bool)json.IsFinal) serial += " 最終";
                     Instance.Label_EEWMessage.Text = $"緊急地震速報（{json.Alertflg}）{serial}";
-                    Instance.Label_EEWTimeHeader.Visible = true;
+                    Instance.Label_EEWDateTimeHeader.Visible = true;
                     Instance.Label_EEWEpicenterHeader.Visible = true;
                     Instance.Label_EEWDepthHeader.Visible = true;
                     Instance.Label_EEWMagnitudeHeader.Visible = true;
                     Instance.Label_EEWIntensityHeader.Visible = true;
-                    Instance.Label_EEWTime.Text = DateTime.ParseExact(json.OriginTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture).ToString("yyyy年MM月dd日 HH時mm分ss秒");
+                    Instance.Label_EEWDateTime.Text = DateTime.ParseExact(json.OriginTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture).ToString("yyyy年MM月dd日 HH時mm分ss秒");
                     Instance.Label_EEWEpicenter.Text = json.RegionName;
                     Instance.Label_EEWDepth.Text = json.Depth;
                     Instance.Label_EEWMagnitude.Text = json.Magunitude;

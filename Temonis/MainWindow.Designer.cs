@@ -46,8 +46,8 @@ namespace Temonis
             this.label_EqInfoDepthHeader = new Temonis.Controls.Label();
             this.Label_EqInfoEpicenter = new Temonis.Controls.Label();
             this.label_EqInfoEpicenterHeader = new Temonis.Controls.Label();
-            this.Label_EqInfoTime = new Temonis.Controls.Label();
-            this.label_EqInfoTimeHeader = new Temonis.Controls.Label();
+            this.Label_EqInfoDateTime = new Temonis.Controls.Label();
+            this.label_EqInfoDateTimeHeader = new Temonis.Controls.Label();
             this.GroupBox_EEW = new Temonis.Controls.GroupBox();
             this.Label_EEWIntensity = new Temonis.Controls.Label();
             this.Label_EEWIntensityHeader = new Temonis.Controls.Label();
@@ -57,8 +57,8 @@ namespace Temonis
             this.Label_EEWDepthHeader = new Temonis.Controls.Label();
             this.Label_EEWEpicenter = new Temonis.Controls.Label();
             this.Label_EEWEpicenterHeader = new Temonis.Controls.Label();
-            this.Label_EEWTime = new Temonis.Controls.Label();
-            this.Label_EEWTimeHeader = new Temonis.Controls.Label();
+            this.Label_EEWDateTime = new Temonis.Controls.Label();
+            this.Label_EEWDateTimeHeader = new Temonis.Controls.Label();
             this.Label_EEWMessage = new Temonis.Controls.Label();
             this.GroupBox_Kyoshin = new Temonis.Controls.GroupBox();
             this.Label_KyoshinPrefecture = new Temonis.Controls.Label();
@@ -88,8 +88,8 @@ namespace Temonis
             this.GroupBox_EqInfo.Controls.Add(this.label_EqInfoDepthHeader);
             this.GroupBox_EqInfo.Controls.Add(this.Label_EqInfoEpicenter);
             this.GroupBox_EqInfo.Controls.Add(this.label_EqInfoEpicenterHeader);
-            this.GroupBox_EqInfo.Controls.Add(this.Label_EqInfoTime);
-            this.GroupBox_EqInfo.Controls.Add(this.label_EqInfoTimeHeader);
+            this.GroupBox_EqInfo.Controls.Add(this.Label_EqInfoDateTime);
+            this.GroupBox_EqInfo.Controls.Add(this.label_EqInfoDateTimeHeader);
             this.GroupBox_EqInfo.Location = new System.Drawing.Point(420, 186);
             this.GroupBox_EqInfo.Name = "GroupBox_EqInfo";
             this.GroupBox_EqInfo.Size = new System.Drawing.Size(512, 338);
@@ -226,25 +226,25 @@ namespace Temonis
             this.label_EqInfoEpicenterHeader.TabIndex = 0;
             this.label_EqInfoEpicenterHeader.Text = "震源地";
             // 
-            // Label_EqInfoTime
+            // Label_EqInfoDateTime
             // 
-            this.Label_EqInfoTime.AutoSize = true;
-            this.Label_EqInfoTime.Font = new System.Drawing.Font("Meiryo UI", 12F);
-            this.Label_EqInfoTime.Location = new System.Drawing.Point(130, 24);
-            this.Label_EqInfoTime.Name = "Label_EqInfoTime";
-            this.Label_EqInfoTime.Size = new System.Drawing.Size(51, 20);
-            this.Label_EqInfoTime.TabIndex = 0;
-            this.Label_EqInfoTime.Text = "NULL";
+            this.Label_EqInfoDateTime.AutoSize = true;
+            this.Label_EqInfoDateTime.Font = new System.Drawing.Font("Meiryo UI", 12F);
+            this.Label_EqInfoDateTime.Location = new System.Drawing.Point(130, 24);
+            this.Label_EqInfoDateTime.Name = "Label_EqInfoDateTime";
+            this.Label_EqInfoDateTime.Size = new System.Drawing.Size(51, 20);
+            this.Label_EqInfoDateTime.TabIndex = 0;
+            this.Label_EqInfoDateTime.Text = "NULL";
             // 
-            // label_EqInfoTimeHeader
+            // label_EqInfoDateTimeHeader
             // 
-            this.label_EqInfoTimeHeader.AutoSize = true;
-            this.label_EqInfoTimeHeader.Font = new System.Drawing.Font("Meiryo UI", 12F);
-            this.label_EqInfoTimeHeader.Location = new System.Drawing.Point(20, 24);
-            this.label_EqInfoTimeHeader.Name = "label_EqInfoTimeHeader";
-            this.label_EqInfoTimeHeader.Size = new System.Drawing.Size(73, 20);
-            this.label_EqInfoTimeHeader.TabIndex = 0;
-            this.label_EqInfoTimeHeader.Text = "発生時刻";
+            this.label_EqInfoDateTimeHeader.AutoSize = true;
+            this.label_EqInfoDateTimeHeader.Font = new System.Drawing.Font("Meiryo UI", 12F);
+            this.label_EqInfoDateTimeHeader.Location = new System.Drawing.Point(20, 24);
+            this.label_EqInfoDateTimeHeader.Name = "label_EqInfoDateTimeHeader";
+            this.label_EqInfoDateTimeHeader.Size = new System.Drawing.Size(73, 20);
+            this.label_EqInfoDateTimeHeader.TabIndex = 0;
+            this.label_EqInfoDateTimeHeader.Text = "発生時刻";
             // 
             // GroupBox_EEW
             // 
@@ -257,8 +257,8 @@ namespace Temonis
             this.GroupBox_EEW.Controls.Add(this.Label_EEWDepthHeader);
             this.GroupBox_EEW.Controls.Add(this.Label_EEWEpicenter);
             this.GroupBox_EEW.Controls.Add(this.Label_EEWEpicenterHeader);
-            this.GroupBox_EEW.Controls.Add(this.Label_EEWTime);
-            this.GroupBox_EEW.Controls.Add(this.Label_EEWTimeHeader);
+            this.GroupBox_EEW.Controls.Add(this.Label_EEWDateTime);
+            this.GroupBox_EEW.Controls.Add(this.Label_EEWDateTimeHeader);
             this.GroupBox_EEW.Controls.Add(this.Label_EEWMessage);
             this.GroupBox_EEW.Location = new System.Drawing.Point(420, 8);
             this.GroupBox_EEW.Name = "GroupBox_EEW";
@@ -347,25 +347,25 @@ namespace Temonis
             this.Label_EEWEpicenterHeader.TabIndex = 0;
             this.Label_EEWEpicenterHeader.Text = "震源地";
             // 
-            // Label_EEWTime
+            // Label_EEWDateTime
             // 
-            this.Label_EEWTime.AutoSize = true;
-            this.Label_EEWTime.Font = new System.Drawing.Font("Meiryo UI", 12F);
-            this.Label_EEWTime.Location = new System.Drawing.Point(130, 44);
-            this.Label_EEWTime.Name = "Label_EEWTime";
-            this.Label_EEWTime.Size = new System.Drawing.Size(51, 20);
-            this.Label_EEWTime.TabIndex = 0;
-            this.Label_EEWTime.Text = "NULL";
+            this.Label_EEWDateTime.AutoSize = true;
+            this.Label_EEWDateTime.Font = new System.Drawing.Font("Meiryo UI", 12F);
+            this.Label_EEWDateTime.Location = new System.Drawing.Point(130, 44);
+            this.Label_EEWDateTime.Name = "Label_EEWDateTime";
+            this.Label_EEWDateTime.Size = new System.Drawing.Size(51, 20);
+            this.Label_EEWDateTime.TabIndex = 0;
+            this.Label_EEWDateTime.Text = "NULL";
             // 
-            // Label_EEWTimeHeader
+            // Label_EEWDateTimeHeader
             // 
-            this.Label_EEWTimeHeader.AutoSize = true;
-            this.Label_EEWTimeHeader.Font = new System.Drawing.Font("Meiryo UI", 12F);
-            this.Label_EEWTimeHeader.Location = new System.Drawing.Point(20, 44);
-            this.Label_EEWTimeHeader.Name = "Label_EEWTimeHeader";
-            this.Label_EEWTimeHeader.Size = new System.Drawing.Size(73, 20);
-            this.Label_EEWTimeHeader.TabIndex = 0;
-            this.Label_EEWTimeHeader.Text = "発生時刻";
+            this.Label_EEWDateTimeHeader.AutoSize = true;
+            this.Label_EEWDateTimeHeader.Font = new System.Drawing.Font("Meiryo UI", 12F);
+            this.Label_EEWDateTimeHeader.Location = new System.Drawing.Point(20, 44);
+            this.Label_EEWDateTimeHeader.Name = "Label_EEWDateTimeHeader";
+            this.Label_EEWDateTimeHeader.Size = new System.Drawing.Size(73, 20);
+            this.Label_EEWDateTimeHeader.TabIndex = 0;
+            this.Label_EEWDateTimeHeader.Text = "発生時刻";
             // 
             // Label_EEWMessage
             // 
@@ -534,8 +534,8 @@ namespace Temonis
         private Temonis.Controls.Label label_EqInfoDepthHeader;
         internal Temonis.Controls.Label Label_EqInfoEpicenter;
         private Temonis.Controls.Label label_EqInfoEpicenterHeader;
-        private Temonis.Controls.Label label_EqInfoTimeHeader;
-        internal Temonis.Controls.Label Label_EqInfoTime;
+        private Temonis.Controls.Label label_EqInfoDateTimeHeader;
+        internal Temonis.Controls.Label Label_EqInfoDateTime;
         internal Temonis.Controls.Label Label_EEWIntensity;
         internal Temonis.Controls.Label Label_EEWIntensityHeader;
         internal Temonis.Controls.Label Label_EEWMagnitude;
@@ -544,8 +544,8 @@ namespace Temonis
         internal Temonis.Controls.Label Label_EEWDepthHeader;
         internal Temonis.Controls.Label Label_EEWEpicenter;
         internal Temonis.Controls.Label Label_EEWEpicenterHeader;
-        internal Temonis.Controls.Label Label_EEWTime;
-        internal Temonis.Controls.Label Label_EEWTimeHeader;
+        internal Temonis.Controls.Label Label_EEWDateTime;
+        internal Temonis.Controls.Label Label_EEWDateTimeHeader;
         internal Temonis.Controls.Label Label_EEWMessage;
         internal Temonis.Controls.Label Label_KyoshinPrefecture;
         private System.Windows.Forms.RadioButton radioButton_Borehore;

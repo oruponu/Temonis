@@ -83,7 +83,7 @@ namespace Temonis
                 }
             }
 
-            using (var pen = new Pen(General.EqInfo.ColorMap[intensity]))
+            using (var pen = new Pen(Utility.EqInfo.ColorMap[intensity]))
             {
                 e.Graphics.DrawLine(pen, 1, e.RowBounds.Top, 1, e.RowBounds.Top + e.RowBounds.Height);
             }
@@ -97,17 +97,17 @@ namespace Temonis
             Label_KyoshinMaxInt.Text = "";
             Label_KyoshinMaxIntDetail.Text = "";
             Label_KyoshinPrefecture.Text = "";
-            Label_EEWTimeHeader.Visible = false;
+            Label_EEWDateTimeHeader.Visible = false;
             Label_EEWEpicenterHeader.Visible = false;
             Label_EEWDepthHeader.Visible = false;
             Label_EEWMagnitudeHeader.Visible = false;
             Label_EEWIntensityHeader.Visible = false;
-            Label_EEWTime.Text = "";
+            Label_EEWDateTime.Text = "";
             Label_EEWEpicenter.Text = "";
             Label_EEWDepth.Text = "";
             Label_EEWMagnitude.Text = "";
             Label_EEWIntensity.Text = "";
-            Label_EqInfoTime.Text = "";
+            Label_EqInfoDateTime.Text = "";
             Label_EqInfoEpicenter.Text = "";
             Label_EqInfoDepth.Text = "";
             Label_EqInfoMagnitude.Text = "";
@@ -119,14 +119,14 @@ namespace Temonis
         /// </summary>
         private void SetFormColor()
         {
-            BackColor = General.Black;
-            GroupBox_Kyoshin.ForeColor = General.White;
-            GroupBox_EEW.ForeColor = General.White;
-            GroupBox_EqInfo.ForeColor = General.White;
-            DataGridView_EqInfoIntensity.BackgroundColor = General.Black;
-            DataGridView_EqInfoIntensity.DefaultCellStyle.BackColor = General.Black;
-            DataGridView_EqInfoIntensity.DefaultCellStyle.SelectionBackColor = General.Black;
-            DataGridView_EqInfoIntensity.DefaultCellStyle.SelectionForeColor = General.White;
+            BackColor = Utility.Black;
+            GroupBox_Kyoshin.ForeColor = Utility.White;
+            GroupBox_EEW.ForeColor = Utility.White;
+            GroupBox_EqInfo.ForeColor = Utility.White;
+            DataGridView_EqInfoIntensity.BackgroundColor = Utility.Black;
+            DataGridView_EqInfoIntensity.DefaultCellStyle.BackColor = Utility.Black;
+            DataGridView_EqInfoIntensity.DefaultCellStyle.SelectionBackColor = Utility.Black;
+            DataGridView_EqInfoIntensity.DefaultCellStyle.SelectionForeColor = Utility.White;
         }
 
         /// <summary>
@@ -150,8 +150,8 @@ namespace Temonis
                         Label_KyoshinPrefecture.Font = new Font(fontFamily.Name, Label_KyoshinPrefecture.Font.Size);
                         GroupBox_EEW.Font = new Font(fontFamily.Name, GroupBox_EEW.Font.Size);
                         Label_EEWMessage.Font = new Font(fontFamily.Name, Label_EEWMessage.Font.Size);
-                        Label_EEWTimeHeader.Font = new Font(fontFamily.Name, Label_EEWTimeHeader.Font.Size);
-                        Label_EEWTime.Font = new Font(fontFamily.Name, Label_EEWTime.Font.Size);
+                        Label_EEWDateTimeHeader.Font = new Font(fontFamily.Name, Label_EEWDateTimeHeader.Font.Size);
+                        Label_EEWDateTime.Font = new Font(fontFamily.Name, Label_EEWDateTime.Font.Size);
                         Label_EEWEpicenterHeader.Font = new Font(fontFamily.Name, Label_EEWEpicenterHeader.Font.Size);
                         Label_EEWEpicenter.Font = new Font(fontFamily.Name, Label_EEWEpicenter.Font.Size);
                         Label_EEWDepthHeader.Font = new Font(fontFamily.Name, Label_EEWDepthHeader.Font.Size);
@@ -161,8 +161,8 @@ namespace Temonis
                         Label_EEWIntensityHeader.Font = new Font(fontFamily.Name, Label_EEWIntensityHeader.Font.Size);
                         Label_EEWIntensity.Font = new Font(fontFamily.Name, Label_EEWIntensity.Font.Size);
                         GroupBox_EqInfo.Font = new Font(fontFamily.Name, GroupBox_EqInfo.Font.Size);
-                        label_EqInfoTimeHeader.Font = new Font(fontFamily.Name, label_EqInfoTimeHeader.Font.Size);
-                        Label_EqInfoTime.Font = new Font(fontFamily.Name, Label_EqInfoTime.Font.Size);
+                        label_EqInfoDateTimeHeader.Font = new Font(fontFamily.Name, label_EqInfoDateTimeHeader.Font.Size);
+                        Label_EqInfoDateTime.Font = new Font(fontFamily.Name, Label_EqInfoDateTime.Font.Size);
                         label_EqInfoEpicenterHeader.Font = new Font(fontFamily.Name, label_EqInfoEpicenterHeader.Font.Size);
                         Label_EqInfoEpicenter.Font = new Font(fontFamily.Name, Label_EqInfoEpicenter.Font.Size);
                         label_EqInfoDepthHeader.Font = new Font(fontFamily.Name, label_EqInfoDepthHeader.Font.Size);
@@ -244,6 +244,7 @@ namespace Temonis
             if (json == default(Root)) return;
 
             LatestTime = DateTime.Parse(json.LatestTime);
+            //LatestTime = LatestTime.AddDays(-10).AddMinutes(16);
         }
 
         /// <summary>

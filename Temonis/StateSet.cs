@@ -119,20 +119,20 @@ namespace Temonis
             {
                 if (Instance.Label_KyoshinMaxInt.Text.Contains("弱") || Instance.Label_KyoshinMaxInt.Text.Contains("強") || Instance.Label_KyoshinMaxInt.Text.Contains("7（"))
                 {
-                    Instance.GroupBox_Kyoshin.BorderColor = General.Red;
+                    Instance.GroupBox_Kyoshin.BorderColor = Utility.Red;
                 }
                 else if (Instance.Label_KyoshinMaxInt.Text.Contains("3（") || Instance.Label_KyoshinMaxInt.Text.Contains("4（"))
                 {
-                    Instance.GroupBox_Kyoshin.BorderColor = General.Yellow;
+                    Instance.GroupBox_Kyoshin.BorderColor = Utility.Yellow;
                 }
                 else
                 {
-                    Instance.GroupBox_Kyoshin.BorderColor = General.White;
+                    Instance.GroupBox_Kyoshin.BorderColor = Utility.White;
                 }
             }
             else
             {
-                Instance.GroupBox_Kyoshin.BorderColor = General.White;
+                Instance.GroupBox_Kyoshin.BorderColor = Utility.White;
             }
 
             //緊急地震速報
@@ -140,30 +140,30 @@ namespace Temonis
             {
                 if (Instance.Label_EEWMessage.Text.Contains("警報"))
                 {
-                    Instance.GroupBox_EEW.BorderColor = General.Red;
+                    Instance.GroupBox_EEW.BorderColor = Utility.Red;
                 }
                 else if (Instance.Label_EEWMessage.Text.Contains("予報"))
                 {
-                    Instance.GroupBox_EEW.BorderColor = General.Yellow;
+                    Instance.GroupBox_EEW.BorderColor = Utility.Yellow;
                 }
             }
             else
             {
-                Instance.GroupBox_EEW.BorderColor = General.White;
+                Instance.GroupBox_EEW.BorderColor = Utility.White;
             }
 
             //地震情報
             if (EqInfo.MaxInt.Contains("弱") || EqInfo.MaxInt.Contains("強") || EqInfo.MaxInt.Contains("7") || Instance.Label_EqInfoMessage.Text.Contains("警報"))
             {
-                Instance.GroupBox_EqInfo.BorderColor = General.Red;
+                Instance.GroupBox_EqInfo.BorderColor = Utility.Red;
             }
             else if (EqInfo.MaxInt.Contains("3") || EqInfo.MaxInt.Contains("4") || Instance.Label_EqInfoMessage.Text.Contains("注意報"))
             {
-                Instance.GroupBox_EqInfo.BorderColor = General.Yellow;
+                Instance.GroupBox_EqInfo.BorderColor = Utility.Yellow;
             }
             else
             {
-                Instance.GroupBox_EqInfo.BorderColor = General.White;
+                Instance.GroupBox_EqInfo.BorderColor = Utility.White;
             }
         }
 

@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Temonis.Resources
 {
-    internal class General
+    internal class Utility
     {
         public static readonly Color Black = Color.FromArgb(26, 26, 36);
 

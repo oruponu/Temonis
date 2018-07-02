@@ -51,7 +51,7 @@ namespace Temonis
             // 発生時刻
             var time = Regex.Match(info, @"<.+>発生時刻(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value.Replace("ごろ", "");
             var arrivalTime = DateTime.Parse(time, new CultureInfo("ja-JP"), DateTimeStyles.AssumeLocal);
-            Instance.Label_EqInfoTime.Text = arrivalTime.ToString("yyyy年MM月dd日 HH時mm分");
+            Instance.Label_EqInfoDateTime.Text = arrivalTime.ToString("yyyy年MM月dd日 HH時mm分");
 
             // 震源地
             var epicenter = Regex.Match(info, @"<.+>震源地(</.+>)+\n(<.+>)+<.+?>(.+?)</.+>").Groups[3].Value;
@@ -60,28 +60,27 @@ namespace Temonis
             Instance.Label_EqInfoEpicenter.Text = epicenter;
 
             // 緯度
-            float fLatitude, fLongitude;
-            var sLatitude = Regex.Match(info, @"<.+>緯度(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value;
-            if (sLatitude == "---")
+            float latitude, longitude;
+            var latLon = Regex.Match(info, @"<.+>緯度/経度(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value.Split('/');
+            if (latLon[0] == "---")
             {
-                fLatitude = 0.0f;
+                latitude = 0.0f;
             }
             else
             {
-                sLatitude = sLatitude.Replace("度", "");
-                fLatitude = sLatitude.Contains("北緯") ? float.Parse(sLatitude.Replace("北緯", "")) : float.Parse("-" + sLatitude.Replace("南緯", ""));
+                latLon[0] = latLon[0].Replace("度", "");
+                latitude = latLon[0].Contains("北緯") ? float.Parse(latLon[0].Replace("北緯", "")) : float.Parse("-" + latLon[0].Replace("南緯", ""));
             }
 
             // 経度
-            var sLongitude = Regex.Match(info, @"<.+>経度(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value;
-            if (sLongitude == "---")
+            if (latLon[1] == "---")
             {
-                fLongitude = 0.0f;
+                longitude = 0.0f;
             }
             else
             {
-                sLongitude = sLongitude.Replace("度", "");
-                fLongitude = sLongitude.Contains("東経") ? float.Parse(sLongitude.Replace("東経", "")) : float.Parse("-" + sLongitude.Replace("西経", ""));
+                latLon[1] = latLon[1].Replace("度", "");
+                longitude = latLon[1].Contains("東経") ? float.Parse(latLon[1].Replace("東経", "")) : float.Parse("-" + latLon[1].Replace("西経", ""));
             }
 
             // 深さ
@@ -133,7 +132,7 @@ namespace Temonis
             // 地震ID
             Id = Regex.Match(html, "<a href=\"/weather/jp/earthquake/(.+).html\">").Groups[1].Value;
 
-            CreateEpicenterImage(fLatitude, fLongitude);
+            CreateEpicenterImage(latitude, longitude);
         }
 
         /// <summary>
@@ -217,7 +216,7 @@ namespace Temonis
                 return pref == "東京" ? city.Replace("東京", "") : city;
             }
 
-            return General.EqInfo.CityAbbreviation.TryGetValue(city, out var value) ? value : city;
+            return Utility.EqInfo.CityAbbreviation.TryGetValue(city, out var value) ? value : city;
         }
 
         /// <summary>

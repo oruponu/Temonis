@@ -85,7 +85,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Configuration.cs" />
-    <Compile Include="Resources\General.cs" />
+    <Compile Include="Resources\Utility.cs" />
     <Compile Include="Sound.cs" />
     <Compile Include="StateSet.cs" />
     <EmbeddedResource Include="MainWindow.resx">
