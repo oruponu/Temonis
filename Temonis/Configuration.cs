@@ -39,8 +39,18 @@ namespace Temonis
         [XmlRoot("configuration")]
         public class Root
         {
+            [XmlElement("behavior")]
+            public BehaviorClass Behavior { get; set; }
+
             [XmlElement("sounds")]
             public SoundsClass Sounds { get; set; }
+
+            [XmlRoot("behavior")]
+            public class BehaviorClass
+            {
+                [XmlElement("forceActive")]
+                public bool ForceActive { get; set; }
+            }
 
             [XmlRoot("sounds")]
             public class SoundsClass

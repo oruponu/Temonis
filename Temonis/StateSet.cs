@@ -106,7 +106,7 @@ namespace Temonis
             }
 
             if (changeLevel || setActive) ChangeLevel();
-            if (setActive) SetActive();
+            if (Configuration.RootClass.Behavior.ForceActive && setActive) SetActive();
         }
 
         /// <summary>
