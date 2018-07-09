@@ -8,12 +8,12 @@ namespace Temonis
 {
     internal class StateSet
     {
-        private static Dictionary<string, string> _lastEEWInfo = new Dictionary<string, string>();
+        private static Dictionary<string, string> _lastEewInfo = new Dictionary<string, string>();
         private static Sound _sound;
         private static bool _isKyoshinOn;
         private static bool _isKyoshinWait = true;
         private static int _lastKyoshinIntensity;
-        private static bool _isEEWOn;
+        private static bool _isEewOn;
         private static string _lastEqInfoId;
         private static string _lastEqInfoEpicenter;
         private static string _lastEqInfoIntensity;
@@ -29,7 +29,7 @@ namespace Temonis
             var setActive = false;
 
             // 強震モニタ
-            if (Kyoshin.IsTriggerOn && !Kyoshin.IsTriggerWait && !EEW.IsTriggerOn)
+            if (Kyoshin.IsTriggerOn && !Kyoshin.IsTriggerWait && !Eew.IsTriggerOn)
             {
                 if (Kyoshin.MaxIntensity >= 2 && (_isKyoshinWait != Kyoshin.IsTriggerWait || _lastKyoshinIntensity < Kyoshin.MaxIntensity))
                 {
@@ -58,32 +58,32 @@ namespace Temonis
             _lastKyoshinIntensity = Kyoshin.MaxIntensity;
 
             // 緊急地震速報
-            if (EEW.IsTriggerOn)
+            if (Eew.IsTriggerOn)
             {
-                foreach (var key in EEW.Info.Keys)
+                foreach (var key in Eew.Info.Keys)
                 {
-                    if (!_lastEEWInfo.ContainsKey(key))
+                    if (!_lastEewInfo.ContainsKey(key))
                     {
-                        _lastEEWInfo.Add(key, EEW.Info[key]);
+                        _lastEewInfo.Add(key, Eew.Info[key]);
                         setActive = true;
                         await _sound.PlayFirstReportAsync(key);
                     }
                     else
                     {
-                        if (_lastEEWInfo[key] == EEW.Info[key]) continue;
-                        _lastEEWInfo[key] = EEW.Info[key];
+                        if (_lastEewInfo[key] == Eew.Info[key]) continue;
+                        _lastEewInfo[key] = Eew.Info[key];
                         setActive = true;
                         await _sound.PlayMaxIntChangeAsync(key);
                     }
                 }
             }
-            else if (_isEEWOn != EEW.IsTriggerOn)
+            else if (_isEewOn != Eew.IsTriggerOn)
             {
                 changeLevel = true;
-                _lastEEWInfo = new Dictionary<string, string>();
+                _lastEewInfo = new Dictionary<string, string>();
             }
 
-            _isEEWOn = EEW.IsTriggerOn;
+            _isEewOn = Eew.IsTriggerOn;
 
             // 地震情報
             if (_lastEqInfoId != EqInfo.Id || _lastEqInfoEpicenter != EqInfo.Epicenter || _lastEqInfoIntensity != EqInfo.Intensity)
@@ -110,7 +110,7 @@ namespace Temonis
         }
 
         /// <summary>
-        /// レベルを変更
+        /// レベルを変更します。
         /// </summary>
         private static void ChangeLevel()
         {
@@ -136,28 +136,28 @@ namespace Temonis
             }
 
             //緊急地震速報
-            if (EEW.IsTriggerOn)
+            if (Eew.IsTriggerOn)
             {
-                if (Instance.Label_EEWMessage.Text.Contains("警報"))
+                if (Instance.Label_EewMessage.Text.Contains("警報"))
                 {
-                    Instance.GroupBox_EEW.BorderColor = Utility.Red;
+                    Instance.GroupBox_Eew.BorderColor = Utility.Red;
                 }
-                else if (Instance.Label_EEWMessage.Text.Contains("予報"))
+                else if (Instance.Label_EewMessage.Text.Contains("予報"))
                 {
-                    Instance.GroupBox_EEW.BorderColor = Utility.Yellow;
+                    Instance.GroupBox_Eew.BorderColor = Utility.Yellow;
                 }
             }
             else
             {
-                Instance.GroupBox_EEW.BorderColor = Utility.White;
+                Instance.GroupBox_Eew.BorderColor = Utility.White;
             }
 
             //地震情報
-            if (EqInfo.MaxInt.Contains("弱") || EqInfo.MaxInt.Contains("強") || EqInfo.MaxInt.Contains("7") || Instance.Label_EqInfoMessage.Text.Contains("警報"))
+            if (EqInfo.MaxInt.Contains("弱") || EqInfo.MaxInt.Contains("強") || EqInfo.MaxInt.Contains("7") || Instance.Label_EqInfoComment.Text.Contains("警報"))
             {
                 Instance.GroupBox_EqInfo.BorderColor = Utility.Red;
             }
-            else if (EqInfo.MaxInt.Contains("3") || EqInfo.MaxInt.Contains("4") || Instance.Label_EqInfoMessage.Text.Contains("注意報"))
+            else if (EqInfo.MaxInt.Contains("3") || EqInfo.MaxInt.Contains("4") || Instance.Label_EqInfoComment.Text.Contains("注意報"))
             {
                 Instance.GroupBox_EqInfo.BorderColor = Utility.Yellow;
             }
@@ -168,7 +168,7 @@ namespace Temonis
         }
 
         /// <summary>
-        /// ウィンドウをアクティブにする
+        /// ウィンドウをアクティブにします。
         /// </summary>
         private static void SetActive()
         {

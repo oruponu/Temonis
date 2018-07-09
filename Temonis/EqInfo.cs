@@ -50,8 +50,7 @@ namespace Temonis
 
             // 発生時刻
             var time = Regex.Match(info, @"<.+>発生時刻(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value.Replace("ごろ", "");
-            var arrivalTime = DateTime.Parse(time, new CultureInfo("ja-JP"), DateTimeStyles.AssumeLocal);
-            Instance.Label_EqInfoDateTime.Text = arrivalTime.ToString("yyyy年MM月dd日 HH時mm分");
+            Instance.Label_EqInfoDateTime.Text = DateTime.TryParse(time, new CultureInfo("ja-JP"), DateTimeStyles.AssumeLocal, out var arrivalTime) ? arrivalTime.ToString("yyyy年MM月dd日 HH時mm分") : "---";
 
             // 震源地
             var epicenter = Regex.Match(info, @"<.+>震源地(</.+>)+\n(<.+>)+<.+?>(.+?)</.+>").Groups[3].Value;
@@ -60,27 +59,34 @@ namespace Temonis
             Instance.Label_EqInfoEpicenter.Text = epicenter;
 
             // 緯度
-            float latitude, longitude;
+            var latitude = 0.0f;
             var latLon = Regex.Match(info, @"<.+>緯度/経度(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value.Split('/');
-            if (latLon[0] == "---")
-            {
-                latitude = 0.0f;
-            }
-            else
+            if (latLon[0] != "---")
             {
                 latLon[0] = latLon[0].Replace("度", "");
-                latitude = latLon[0].Contains("北緯") ? float.Parse(latLon[0].Replace("北緯", "")) : float.Parse("-" + latLon[0].Replace("南緯", ""));
+                if (latLon[0].Contains("北緯"))
+                {
+                    float.TryParse(latLon[0].Replace("北緯", ""), out latitude);
+                }
+                else
+                {
+                    float.TryParse("-" + latLon[0].Replace("南緯", ""), out latitude);
+                }
             }
 
             // 経度
-            if (latLon[1] == "---")
-            {
-                longitude = 0.0f;
-            }
-            else
+            var longitude = 0.0f;
+            if (latLon.Length > 1 && latLon[1] != "---")
             {
                 latLon[1] = latLon[1].Replace("度", "");
-                longitude = latLon[1].Contains("東経") ? float.Parse(latLon[1].Replace("東経", "")) : float.Parse("-" + latLon[1].Replace("西経", ""));
+                if (latLon[1].Contains("東経"))
+                {
+                    float.TryParse(latLon[1].Replace("東経", ""), out longitude);
+                }
+                else
+                {
+                    float.TryParse('-' + latLon[1].Replace("西経", ""), out longitude);
+                }
             }
 
             // 深さ
@@ -90,19 +96,19 @@ namespace Temonis
             Instance.Label_EqInfoMagnitude.Text = Regex.Match(info, @"<.+>マグニチュード(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value;
 
             // 情報
-            var message = Regex.Match(info, @"<.+>情報(</.+>)+\n(<.+?>)+(.+?)</?.+>").Groups[3].Value;
-            Instance.Label_EqInfoMessage.Font = new Font(Instance.Label_EqInfoMessage.Font.FontFamily, 12f);
-            if (message.Length > 32)
+            var comment = Regex.Match(info, @"<.+>情報(</.+>)+\n(<.+?>)+(.+?)</?.+>").Groups[3].Value;
+            Instance.Label_EqInfoComment.Font = new Font(Instance.Label_EqInfoComment.Font.FontFamily, 12f);
+            if (comment.Length > 32)
             {
-                Instance.Label_EqInfoMessage.Font = new Font(Instance.Label_EqInfoMessage.Font.FontFamily, 11f);
+                Instance.Label_EqInfoComment.Font = new Font(Instance.Label_EqInfoComment.Font.FontFamily, 11f);
             }
 
-            if (message.Count(x => x == '。') == 2)  // 付加文の情報が2つの場合は2行に分割
+            if (comment.Count(x => x == '。') == 2)  // 付加文の情報が2つの場合は2行に分割
             {
-                message = message.Replace("。", "。\n");
+                comment = comment.Replace("。", "。\n");
             }
 
-            Instance.Label_EqInfoMessage.Text = message;
+            Instance.Label_EqInfoComment.Text = comment;
 
             // 各地の震度
             var intensity = Regex.Match(info, @"<.+class=""yjw_table"">(.+?)</\w+>\n</div>", RegexOptions.Singleline).Groups[1].Value.Replace("\n", "");
@@ -154,7 +160,7 @@ namespace Temonis
                     foreach (var city in split[1].Split('　'))
                     {
                         var cityName = AbbreviateCityName(city, split[0]);
-                        if (cities.Length + ("　" + cityName).Length > 28)
+                        if (cities.Length + ('　' + cityName).Length > 28)
                         {
                             if (Instance.DataGridView_EqInfoIntensity.Rows.Count > 0)
                             {
@@ -176,7 +182,7 @@ namespace Temonis
 
                         if (cities.Length > 0)
                         {
-                            cities.Append("　");
+                            cities.Append('　');
                         }
 
                         cities.Append(cityName);
@@ -202,7 +208,7 @@ namespace Temonis
         }
 
         /// <summary>
-        /// 市町村名を省略
+        /// 市町村名を省略します。
         /// </summary>
         /// <param name="city">市町村名</param>
         /// <param name="pref">属する都道府県</param>
@@ -211,7 +217,7 @@ namespace Temonis
         {
             pref = pref.TrimEnd('都').TrimEnd('府').TrimEnd('県');
             if (!city.StartsWith(pref) && pref != "北海道") return city;
-            if (city.EndsWith("区") && !city.Contains("堺市"))
+            if (city.EndsWith("区") && !city.EndsWith("２３区") && !city.Contains("堺市"))
             {
                 return pref == "東京" ? city.Replace("東京", "") : city;
             }
@@ -220,7 +226,7 @@ namespace Temonis
         }
 
         /// <summary>
-        /// 震央位置の画像を作成
+        /// 震央位置の画像を作成します。
         /// </summary>
         /// <param name="latitude">震央の緯度</param>
         /// <param name="longitude">震央の経度</param>
@@ -264,7 +270,7 @@ namespace Temonis
         }
 
         /// <summary>
-        /// ページ更新チェック
+        /// ページの更新を確認します。
         /// </summary>
         /// <param name="current">現在保持している HTML</param>
         /// <returns></returns>

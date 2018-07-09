@@ -9,14 +9,14 @@ using static Temonis.MainWindow;
 
 namespace Temonis
 {
-    internal class EEW
+    internal class Eew
     {
         public static Dictionary<string, string> Info { get; private set; } = new Dictionary<string, string>();
 
         public static bool IsTriggerOn { get; private set; }
 
         /// <summary>
-        /// 緊急地震速報を取得
+        /// 緊急地震速報を取得します。
         /// </summary>
         /// <returns></returns>
         public async Task UpdateAsync()
@@ -24,7 +24,7 @@ namespace Temonis
             var json = default(Root);
             try
             {
-                using (var stream = await MainWindow.HttpClient.GetStreamAsync($"{Properties.Resources.EEWUri}{LatestTime:yyyyMMddHHmmss}.json"))
+                using (var stream = await MainWindow.HttpClient.GetStreamAsync($"{Properties.Resources.EewUri}{LatestTime:yyyyMMddHHmmss}.json"))
                 {
                     var serializer = new DataContractJsonSerializer(typeof(Root));
                     json = (Root)serializer.ReadObject(stream);
@@ -42,17 +42,17 @@ namespace Temonis
                 if ((bool)json.IsCancel)
                 {
                     IsTriggerOn = false;
-                    Instance.Label_EEWMessage.Text = "緊急地震速報は取り消されました。";
-                    Instance.Label_EEWDateTimeHeader.Visible = false;
-                    Instance.Label_EEWEpicenterHeader.Visible = false;
-                    Instance.Label_EEWDepthHeader.Visible = false;
-                    Instance.Label_EEWMagnitudeHeader.Visible = false;
-                    Instance.Label_EEWIntensityHeader.Visible = false;
-                    Instance.Label_EEWDateTime.Text = "";
-                    Instance.Label_EEWEpicenter.Text = "";
-                    Instance.Label_EEWDepth.Text = "";
-                    Instance.Label_EEWMagnitude.Text = "";
-                    Instance.Label_EEWIntensity.Text = "";
+                    Instance.Label_EewMessage.Text = "緊急地震速報は取り消されました。";
+                    Instance.Label_EewDateTimeHeader.Visible = false;
+                    Instance.Label_EewEpicenterHeader.Visible = false;
+                    Instance.Label_EewDepthHeader.Visible = false;
+                    Instance.Label_EewMagnitudeHeader.Visible = false;
+                    Instance.Label_EewIntensityHeader.Visible = false;
+                    Instance.Label_EewDateTime.Text = "";
+                    Instance.Label_EewEpicenter.Text = "";
+                    Instance.Label_EewDepth.Text = "";
+                    Instance.Label_EewMagnitude.Text = "";
+                    Instance.Label_EewIntensity.Text = "";
                     Info[json.ReportId] = "0";
                 }
                 else if (EqInfo.Id == json.ReportId && !Kyoshin.IsTriggerOn && (bool)json.IsFinal)
@@ -65,17 +65,17 @@ namespace Temonis
                     IsTriggerOn = true;
                     var serial = "第" + json.ReportNum + "報";
                     if ((bool)json.IsFinal) serial += " 最終";
-                    Instance.Label_EEWMessage.Text = $"緊急地震速報（{json.Alertflg}）{serial}";
-                    Instance.Label_EEWDateTimeHeader.Visible = true;
-                    Instance.Label_EEWEpicenterHeader.Visible = true;
-                    Instance.Label_EEWDepthHeader.Visible = true;
-                    Instance.Label_EEWMagnitudeHeader.Visible = true;
-                    Instance.Label_EEWIntensityHeader.Visible = true;
-                    Instance.Label_EEWDateTime.Text = DateTime.ParseExact(json.OriginTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture).ToString("yyyy年MM月dd日 HH時mm分ss秒");
-                    Instance.Label_EEWEpicenter.Text = json.RegionName;
-                    Instance.Label_EEWDepth.Text = json.Depth;
-                    Instance.Label_EEWMagnitude.Text = json.Magunitude;
-                    Instance.Label_EEWIntensity.Text = json.Calcintensity;
+                    Instance.Label_EewMessage.Text = $"緊急地震速報（{json.Alertflg}）{serial}";
+                    Instance.Label_EewDateTimeHeader.Visible = true;
+                    Instance.Label_EewEpicenterHeader.Visible = true;
+                    Instance.Label_EewDepthHeader.Visible = true;
+                    Instance.Label_EewMagnitudeHeader.Visible = true;
+                    Instance.Label_EewIntensityHeader.Visible = true;
+                    Instance.Label_EewDateTime.Text = DateTime.ParseExact(json.OriginTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture).ToString("yyyy年MM月dd日 HH時mm分ss秒");
+                    Instance.Label_EewEpicenter.Text = json.RegionName;
+                    Instance.Label_EewDepth.Text = json.Depth;
+                    Instance.Label_EewMagnitude.Text = json.Magunitude;
+                    Instance.Label_EewIntensity.Text = json.Calcintensity;
                     if (!Info.ContainsKey(json.ReportId))
                     {
                         Info.Add(json.ReportId, json.Calcintensity);

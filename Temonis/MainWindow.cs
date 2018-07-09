@@ -21,7 +21,7 @@ namespace Temonis
         private const int EqInfoInterval = 10;
         private readonly Timer _timer = new Timer();
         private static Kyoshin _kyoshin;
-        private static EEW _eew;
+        private static Eew _eew;
         private static EqInfo _eqInfo;
         private static StateSet _stateSet;
         private static int _timeResetCount = TimeResetInterval;
@@ -38,7 +38,7 @@ namespace Temonis
 
             Instance = this;
             _kyoshin = new Kyoshin();
-            _eew = new EEW();
+            _eew = new Eew();
             _eqInfo = new EqInfo();
             _stateSet = new StateSet();
             Configuration.LoadSettings();
@@ -90,38 +90,38 @@ namespace Temonis
         }
 
         /// <summary>
-        /// ラベルを初期化
+        /// ラベルを初期化します。
         /// </summary>
         private void InitializeLabel()
         {
             Label_KyoshinMaxInt.Text = "";
             Label_KyoshinMaxIntDetail.Text = "";
             Label_KyoshinPrefecture.Text = "";
-            Label_EEWDateTimeHeader.Visible = false;
-            Label_EEWEpicenterHeader.Visible = false;
-            Label_EEWDepthHeader.Visible = false;
-            Label_EEWMagnitudeHeader.Visible = false;
-            Label_EEWIntensityHeader.Visible = false;
-            Label_EEWDateTime.Text = "";
-            Label_EEWEpicenter.Text = "";
-            Label_EEWDepth.Text = "";
-            Label_EEWMagnitude.Text = "";
-            Label_EEWIntensity.Text = "";
+            Label_EewDateTimeHeader.Visible = false;
+            Label_EewEpicenterHeader.Visible = false;
+            Label_EewDepthHeader.Visible = false;
+            Label_EewMagnitudeHeader.Visible = false;
+            Label_EewIntensityHeader.Visible = false;
+            Label_EewDateTime.Text = "";
+            Label_EewEpicenter.Text = "";
+            Label_EewDepth.Text = "";
+            Label_EewMagnitude.Text = "";
+            Label_EewIntensity.Text = "";
             Label_EqInfoDateTime.Text = "";
             Label_EqInfoEpicenter.Text = "";
             Label_EqInfoDepth.Text = "";
             Label_EqInfoMagnitude.Text = "";
-            Label_EqInfoMessage.Text = "";
+            Label_EqInfoComment.Text = "";
         }
 
         /// <summary>
-        /// フォームの色を設定
+        /// フォームの色を設定します。
         /// </summary>
         private void SetFormColor()
         {
             BackColor = Utility.Black;
             GroupBox_Kyoshin.ForeColor = Utility.White;
-            GroupBox_EEW.ForeColor = Utility.White;
+            GroupBox_Eew.ForeColor = Utility.White;
             GroupBox_EqInfo.ForeColor = Utility.White;
             DataGridView_EqInfoIntensity.BackgroundColor = Utility.Black;
             DataGridView_EqInfoIntensity.DefaultCellStyle.BackColor = Utility.Black;
@@ -130,7 +130,7 @@ namespace Temonis
         }
 
         /// <summary>
-        /// フォントを設定
+        /// フォントを設定します。
         /// </summary>
         private void SetFormFont()
         {
@@ -148,18 +148,18 @@ namespace Temonis
                         Label_KyoshinMaxInt.Location = new Point(Label_KyoshinMaxInt.Location.X + 1, Label_KyoshinMaxInt.Location.Y);
                         Label_KyoshinMaxIntDetail.Font = new Font(fontFamily.Name, Label_KyoshinMaxIntDetail.Font.Size);
                         Label_KyoshinPrefecture.Font = new Font(fontFamily.Name, Label_KyoshinPrefecture.Font.Size);
-                        GroupBox_EEW.Font = new Font(fontFamily.Name, GroupBox_EEW.Font.Size);
-                        Label_EEWMessage.Font = new Font(fontFamily.Name, Label_EEWMessage.Font.Size);
-                        Label_EEWDateTimeHeader.Font = new Font(fontFamily.Name, Label_EEWDateTimeHeader.Font.Size);
-                        Label_EEWDateTime.Font = new Font(fontFamily.Name, Label_EEWDateTime.Font.Size);
-                        Label_EEWEpicenterHeader.Font = new Font(fontFamily.Name, Label_EEWEpicenterHeader.Font.Size);
-                        Label_EEWEpicenter.Font = new Font(fontFamily.Name, Label_EEWEpicenter.Font.Size);
-                        Label_EEWDepthHeader.Font = new Font(fontFamily.Name, Label_EEWDepthHeader.Font.Size);
-                        Label_EEWDepth.Font = new Font(fontFamily.Name, Label_EEWDepth.Font.Size);
-                        Label_EEWMagnitudeHeader.Font = new Font(fontFamily.Name, Label_EEWMagnitudeHeader.Font.Size);
-                        Label_EEWMagnitude.Font = new Font(fontFamily.Name, Label_EEWMagnitude.Font.Size);
-                        Label_EEWIntensityHeader.Font = new Font(fontFamily.Name, Label_EEWIntensityHeader.Font.Size);
-                        Label_EEWIntensity.Font = new Font(fontFamily.Name, Label_EEWIntensity.Font.Size);
+                        GroupBox_Eew.Font = new Font(fontFamily.Name, GroupBox_Eew.Font.Size);
+                        Label_EewMessage.Font = new Font(fontFamily.Name, Label_EewMessage.Font.Size);
+                        Label_EewDateTimeHeader.Font = new Font(fontFamily.Name, Label_EewDateTimeHeader.Font.Size);
+                        Label_EewDateTime.Font = new Font(fontFamily.Name, Label_EewDateTime.Font.Size);
+                        Label_EewEpicenterHeader.Font = new Font(fontFamily.Name, Label_EewEpicenterHeader.Font.Size);
+                        Label_EewEpicenter.Font = new Font(fontFamily.Name, Label_EewEpicenter.Font.Size);
+                        Label_EewDepthHeader.Font = new Font(fontFamily.Name, Label_EewDepthHeader.Font.Size);
+                        Label_EewDepth.Font = new Font(fontFamily.Name, Label_EewDepth.Font.Size);
+                        Label_EewMagnitudeHeader.Font = new Font(fontFamily.Name, Label_EewMagnitudeHeader.Font.Size);
+                        Label_EewMagnitude.Font = new Font(fontFamily.Name, Label_EewMagnitude.Font.Size);
+                        Label_EewIntensityHeader.Font = new Font(fontFamily.Name, Label_EewIntensityHeader.Font.Size);
+                        Label_EewIntensity.Font = new Font(fontFamily.Name, Label_EewIntensity.Font.Size);
                         GroupBox_EqInfo.Font = new Font(fontFamily.Name, GroupBox_EqInfo.Font.Size);
                         label_EqInfoDateTimeHeader.Font = new Font(fontFamily.Name, label_EqInfoDateTimeHeader.Font.Size);
                         Label_EqInfoDateTime.Font = new Font(fontFamily.Name, Label_EqInfoDateTime.Font.Size);
@@ -169,7 +169,7 @@ namespace Temonis
                         Label_EqInfoDepth.Font = new Font(fontFamily.Name, Label_EqInfoDepth.Font.Size);
                         label_EqInfoMagnitudeHeader.Font = new Font(fontFamily.Name, label_EqInfoMagnitudeHeader.Font.Size);
                         Label_EqInfoMagnitude.Font = new Font(fontFamily.Name, Label_EqInfoMagnitude.Font.Size);
-                        Label_EqInfoMessage.Font = new Font(fontFamily.Name, Label_EqInfoMessage.Font.Size);
+                        Label_EqInfoComment.Font = new Font(fontFamily.Name, Label_EqInfoComment.Font.Size);
 
                         fontFamily.Dispose();
                         break;
@@ -222,7 +222,7 @@ namespace Temonis
         }
 
         /// <summary>
-        /// 強震モニタの時刻を取得
+        /// 強震モニタから時刻を取得します。
         /// </summary>
         /// <returns></returns>
         private static async Task RequestLatestTimeAsync()
@@ -248,7 +248,7 @@ namespace Temonis
         }
 
         /// <summary>
-        /// 強震モニタの時刻を設定
+        /// 強震モニタの時刻を設定します。
         /// </summary>
         /// <returns></returns>
         private static async Task SetLatestTimeAsync()

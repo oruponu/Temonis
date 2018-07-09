@@ -83,9 +83,9 @@ namespace Temonis.Properties {
         /// <summary>
         ///   http://www.kmoni.bosai.go.jp/new/webservice/hypo/eew/ に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string EEWUri {
+        internal static string EewUri {
             get {
-                return ResourceManager.GetString("EEWUri", resourceCulture);
+                return ResourceManager.GetString("EewUri", resourceCulture);
             }
         }
         

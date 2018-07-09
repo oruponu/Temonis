@@ -67,7 +67,7 @@ namespace Temonis
                     InternalLog(ex);
                 }
 
-                if (EEW.IsTriggerOn)
+                if (Eew.IsTriggerOn)
                 {
                     try
                     {
@@ -101,7 +101,7 @@ namespace Temonis
         }
 
         /// <summary>
-        /// 画像をダウンロード
+        /// 画像をダウンロードします。
         /// </summary>
         /// <param name="requestUri">要求の送信先 URI</param>
         /// <returns></returns>
@@ -114,7 +114,7 @@ namespace Temonis
         }
 
         /// <summary>
-        /// 強震モニタの画像を描画
+        /// 強震モニタの画像を描画します。
         /// </summary>
         /// <param name="graphics">描画対象のオブジェクト</param>
         /// <param name="time">取得する時刻</param>
@@ -123,7 +123,7 @@ namespace Temonis
         {
             // コントロールから設定を取得
             var mapType = MapType[Instance.ComboBox_MapType.SelectedIndex];
-            var mapSb = Instance.RadioButton_Surface.Checked ? "s" : "b";
+            var mapSb = Instance.RadioButton_Surface.Checked ? 's' : 'b';
             using (var imageAttrs = new ImageAttributes())
             {
                 imageAttrs.SetRemapTable(MapRealTime);
@@ -136,7 +136,7 @@ namespace Temonis
         }
 
         /// <summary>
-        /// 緊急地震速報 P波・S波到達予想円を描画
+        /// 緊急地震速報 P波・S波到達予想円を描画します。
         /// </summary>
         /// <param name="graphics">描画対象のオブジェクト</param>
         /// <param name="time">取得する時刻</param>
@@ -155,7 +155,7 @@ namespace Temonis
         }
 
         /// <summary>
-        /// 画像から最大地表震度を取得
+        /// 画像から最大地表震度を取得します。
         /// </summary>
         /// <param name="graphics">描画対象のオブジェクト</param>
         private void GetRealtimeIntensity(Graphics graphics)
@@ -186,8 +186,8 @@ namespace Temonis
 
                 // 都道府県リストを作成
                 if (realtimeInt < 0.5f) continue;
-                if (!station.PrefName.Contains("県") && !station.PrefName.Contains("府") &&
-                    !station.PrefName.Contains("道") && !station.PrefName.Contains("都")) continue;
+                if (!station.PrefName.Contains('県') && !station.PrefName.Contains('府') &&
+                    !station.PrefName.Contains('道') && !station.PrefName.Contains('都')) continue;
                 if (!intensity.Prefs.Select(x => x.Name).Contains(items[2]))
                 {
                     var pref = new Intensity.Pref
@@ -322,7 +322,7 @@ namespace Temonis
                     }
                     else if (intensity.Prefs.Count >= 10)
                     {
-                        text += "　" + intensity.Prefs.Last().Name;
+                        text += '　' + intensity.Prefs.Last().Name;
                     }
 
                     var space = text.Length - text.Replace("　", "").Length;
@@ -335,11 +335,11 @@ namespace Temonis
                         {
                             if (insert == i + 1)
                             {
-                                builder.Append(split[i] + "\n");
+                                builder.Append(split[i] + '\n');
                             }
                             else
                             {
-                                builder.Append(split[i] + "　");
+                                builder.Append(split[i] + '　');
                             }
                         }
 
@@ -350,8 +350,8 @@ namespace Temonis
                 }
                 else
                 {
-                    if (firstPref.PrefName.Contains("県") || firstPref.PrefName.Contains("府") ||
-                        firstPref.PrefName.Contains("道") || firstPref.PrefName.Contains("都"))
+                    if (firstPref.PrefName.Contains('県') || firstPref.PrefName.Contains('府') ||
+                        firstPref.PrefName.Contains('道') || firstPref.PrefName.Contains('都'))
                     {
                         Instance.Label_KyoshinPrefecture.Text = firstPref.PrefName;
                     }
@@ -370,7 +370,7 @@ namespace Temonis
         }
 
         /// <summary>
-        /// スコアを計算する観測点の範囲を設定
+        /// スコアを計算する観測点の範囲を設定します。
         /// </summary>
         /// <param name="pref"></param>
         /// <returns></returns>
@@ -393,7 +393,7 @@ namespace Temonis
         }
 
         /// <summary>
-        /// 地震判定用スコアを計算
+        /// 地震判定用スコアを計算します。
         /// </summary>
         /// <param name="stations"></param>
         /// <returns></returns>
@@ -409,7 +409,7 @@ namespace Temonis
         }
 
         /// <summary>
-        /// 指定したピクセルの色を取得
+        /// 指定したピクセルの色を取得します。
         /// </summary>
         /// <param name="x">取得するピクセルの x 座標</param>
         /// <param name="y">取得するピクセルの y 座標</param>
@@ -422,7 +422,7 @@ namespace Temonis
         }
 
         /// <summary>
-        /// 指定した色の計測震度を取得
+        /// 指定した色の計測震度を取得します。
         /// </summary>
         /// <param name="x">取得するピクセルの x 座標</param>
         /// <param name="y">取得するピクセルの y 座標</param>
@@ -430,7 +430,7 @@ namespace Temonis
         private static float GetInstIntensity(int x, int y) => !Utility.Kyoshin.ColorMap.TryGetValue(GetColor(x, y), out var value) ? -3.0f : value;
 
         /// <summary>
-        /// 計測震度を気象庁震度階級の整数に変換
+        /// 計測震度を気象庁震度階級の整数に変換します。
         /// </summary>
         /// <param name="seismicInt">変換する計測震度</param>
         /// <returns></returns>
@@ -448,7 +448,7 @@ namespace Temonis
         }
 
         /// <summary>
-        /// 計測震度を気象庁震度階級の文字列に変換
+        /// 計測震度を気象庁震度階級の文字列に変換します。
         /// </summary>
         /// <param name="seismicInt">変換する計測震度</param>
         /// <returns></returns>

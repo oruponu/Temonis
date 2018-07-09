@@ -58,7 +58,7 @@
     <Compile Include="Controls\DataGridView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="EEW.cs" />
+    <Compile Include="Eew.cs" />
     <Compile Include="EqInfo.cs" />
     <Compile Include="Controls\GroupBox.cs">
       <SubType>Component</SubType>

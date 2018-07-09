@@ -51,77 +51,77 @@ namespace Temonis
 
         public async Task PlayFirstReportAsync(string key)
         {
-            switch (EEW.Info[key])
+            switch (Eew.Info[key])
             {
                 case "1":
-                    await PlayAsync(Configuration.RootClass.Sounds.EEW.FirstReport.Intensity1);
+                    await PlayAsync(Configuration.RootClass.Sounds.Eew.FirstReport.Intensity1);
                     break;
                 case "2":
-                    await PlayAsync(Configuration.RootClass.Sounds.EEW.FirstReport.Intensity2);
+                    await PlayAsync(Configuration.RootClass.Sounds.Eew.FirstReport.Intensity2);
                     break;
                 case "3":
-                    await PlayAsync(Configuration.RootClass.Sounds.EEW.FirstReport.Intensity3);
+                    await PlayAsync(Configuration.RootClass.Sounds.Eew.FirstReport.Intensity3);
                     break;
                 case "4":
-                    await PlayAsync(Configuration.RootClass.Sounds.EEW.FirstReport.Intensity4);
+                    await PlayAsync(Configuration.RootClass.Sounds.Eew.FirstReport.Intensity4);
                     break;
                 case "5弱":
-                    await PlayAsync(Configuration.RootClass.Sounds.EEW.FirstReport.Intensity5);
+                    await PlayAsync(Configuration.RootClass.Sounds.Eew.FirstReport.Intensity5);
                     break;
                 case "5強":
-                    await PlayAsync(Configuration.RootClass.Sounds.EEW.FirstReport.Intensity6);
+                    await PlayAsync(Configuration.RootClass.Sounds.Eew.FirstReport.Intensity6);
                     break;
                 case "6弱":
-                    await PlayAsync(Configuration.RootClass.Sounds.EEW.FirstReport.Intensity7);
+                    await PlayAsync(Configuration.RootClass.Sounds.Eew.FirstReport.Intensity7);
                     break;
                 case "6強":
-                    await PlayAsync(Configuration.RootClass.Sounds.EEW.FirstReport.Intensity8);
+                    await PlayAsync(Configuration.RootClass.Sounds.Eew.FirstReport.Intensity8);
                     break;
                 case "7":
-                    await PlayAsync(Configuration.RootClass.Sounds.EEW.FirstReport.Intensity9);
+                    await PlayAsync(Configuration.RootClass.Sounds.Eew.FirstReport.Intensity9);
                     break;
                 case "不明":
-                    await PlayAsync(Configuration.RootClass.Sounds.EEW.FirstReport.Unknown);
+                    await PlayAsync(Configuration.RootClass.Sounds.Eew.FirstReport.Unknown);
                     break;
             }
         }
 
         public async Task PlayMaxIntChangeAsync(string key)
         {
-            switch (EEW.Info[key])
+            switch (Eew.Info[key])
             {
                 case "1":
-                    await PlayAsync(Configuration.RootClass.Sounds.EEW.MaxIntChange.Intensity1);
+                    await PlayAsync(Configuration.RootClass.Sounds.Eew.MaxIntChange.Intensity1);
                     break;
                 case "2":
-                    await PlayAsync(Configuration.RootClass.Sounds.EEW.MaxIntChange.Intensity2);
+                    await PlayAsync(Configuration.RootClass.Sounds.Eew.MaxIntChange.Intensity2);
                     break;
                 case "3":
-                    await PlayAsync(Configuration.RootClass.Sounds.EEW.MaxIntChange.Intensity3);
+                    await PlayAsync(Configuration.RootClass.Sounds.Eew.MaxIntChange.Intensity3);
                     break;
                 case "4":
-                    await PlayAsync(Configuration.RootClass.Sounds.EEW.MaxIntChange.Intensity4);
+                    await PlayAsync(Configuration.RootClass.Sounds.Eew.MaxIntChange.Intensity4);
                     break;
                 case "5弱":
-                    await PlayAsync(Configuration.RootClass.Sounds.EEW.MaxIntChange.Intensity5);
+                    await PlayAsync(Configuration.RootClass.Sounds.Eew.MaxIntChange.Intensity5);
                     break;
                 case "5強":
-                    await PlayAsync(Configuration.RootClass.Sounds.EEW.MaxIntChange.Intensity6);
+                    await PlayAsync(Configuration.RootClass.Sounds.Eew.MaxIntChange.Intensity6);
                     break;
                 case "6弱":
-                    await PlayAsync(Configuration.RootClass.Sounds.EEW.MaxIntChange.Intensity7);
+                    await PlayAsync(Configuration.RootClass.Sounds.Eew.MaxIntChange.Intensity7);
                     break;
                 case "6強":
-                    await PlayAsync(Configuration.RootClass.Sounds.EEW.MaxIntChange.Intensity8);
+                    await PlayAsync(Configuration.RootClass.Sounds.Eew.MaxIntChange.Intensity8);
                     break;
                 case "7":
-                    await PlayAsync(Configuration.RootClass.Sounds.EEW.MaxIntChange.Intensity9);
+                    await PlayAsync(Configuration.RootClass.Sounds.Eew.MaxIntChange.Intensity9);
                     break;
                 case "不明":
-                    await PlayAsync(Configuration.RootClass.Sounds.EEW.MaxIntChange.Unknown);
+                    await PlayAsync(Configuration.RootClass.Sounds.Eew.MaxIntChange.Unknown);
                     break;
                 default:
-                    await PlayAsync(Configuration.RootClass.Sounds.EEW.MaxIntChange.Cancel);
+                    await PlayAsync(Configuration.RootClass.Sounds.Eew.MaxIntChange.Cancel);
                     break;
             }
         }

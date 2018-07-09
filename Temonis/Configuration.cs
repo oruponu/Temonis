@@ -59,7 +59,7 @@ namespace Temonis
                 public Kyoshin Kyoshin { get; set; }
 
                 [XmlElement("eew")]
-                public EEW EEW { get; set; }
+                public Eew Eew { get; set; }
 
                 [XmlElement("eqInfo")]
                 public EqInfo EqInfo { get; set; }
@@ -97,7 +97,7 @@ namespace Temonis
             }
 
             [XmlRoot("eewSound")]
-            public class EEW
+            public class Eew
             {
                 [XmlElement("firstReport")]
                 public FirstReport FirstReport { get; set; }
