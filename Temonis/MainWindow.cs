@@ -83,7 +83,7 @@ namespace Temonis
                 }
             }
 
-            using (var pen = new Pen(Utility.EqInfo.ColorMap[intensity]))
+            using (var pen = new Pen(Util.EqInfo.ColorMap[intensity]))
             {
                 e.Graphics.DrawLine(pen, 1, e.RowBounds.Top, 1, e.RowBounds.Top + e.RowBounds.Height);
             }
@@ -119,14 +119,14 @@ namespace Temonis
         /// </summary>
         private void SetFormColor()
         {
-            BackColor = Utility.Black;
-            GroupBox_Kyoshin.ForeColor = Utility.White;
-            GroupBox_Eew.ForeColor = Utility.White;
-            GroupBox_EqInfo.ForeColor = Utility.White;
-            DataGridView_EqInfoIntensity.BackgroundColor = Utility.Black;
-            DataGridView_EqInfoIntensity.DefaultCellStyle.BackColor = Utility.Black;
-            DataGridView_EqInfoIntensity.DefaultCellStyle.SelectionBackColor = Utility.Black;
-            DataGridView_EqInfoIntensity.DefaultCellStyle.SelectionForeColor = Utility.White;
+            BackColor = Util.Black;
+            GroupBox_Kyoshin.ForeColor = Util.White;
+            GroupBox_Eew.ForeColor = Util.White;
+            GroupBox_EqInfo.ForeColor = Util.White;
+            DataGridView_EqInfoIntensity.BackgroundColor = Util.Black;
+            DataGridView_EqInfoIntensity.DefaultCellStyle.BackColor = Util.Black;
+            DataGridView_EqInfoIntensity.DefaultCellStyle.SelectionBackColor = Util.Black;
+            DataGridView_EqInfoIntensity.DefaultCellStyle.SelectionForeColor = Util.White;
         }
 
         /// <summary>

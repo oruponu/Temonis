@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Temonis.Resources;
 using static Temonis.MainWindow;
-using static Temonis.Resources.Utility.Kyoshin;
+using static Temonis.Resources.Util.Kyoshin;
 
 namespace Temonis
 {
@@ -427,7 +427,7 @@ namespace Temonis
         /// <param name="x">取得するピクセルの x 座標</param>
         /// <param name="y">取得するピクセルの y 座標</param>
         /// <returns></returns>
-        private static float GetInstIntensity(int x, int y) => !Utility.Kyoshin.ColorMap.TryGetValue(GetColor(x, y), out var value) ? -3.0f : value;
+        private static float GetInstIntensity(int x, int y) => !Util.Kyoshin.ColorMap.TryGetValue(GetColor(x, y), out var value) ? -3.0f : value;
 
         /// <summary>
         /// 計測震度を気象庁震度階級の整数に変換します。

@@ -58,7 +58,7 @@ namespace Temonis
             Epicenter = epicenter;
             Instance.Label_EqInfoEpicenter.Text = epicenter;
 
-            // 緯度
+            // 震源の緯度
             var latitude = 0.0f;
             var latLon = Regex.Match(info, @"<.+>緯度/経度(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value.Split('/');
             if (latLon[0] != "---")
@@ -74,7 +74,7 @@ namespace Temonis
                 }
             }
 
-            // 経度
+            // 震源の経度
             var longitude = 0.0f;
             if (latLon.Length > 1 && latLon[1] != "---")
             {
@@ -89,13 +89,13 @@ namespace Temonis
                 }
             }
 
-            // 深さ
+            // 震源の深さ
             Instance.Label_EqInfoDepth.Text = Regex.Match(info, @"<.+>深さ(</.+>)+\n\n(<.+>)+(.+?)</.+>").Groups[3].Value;
 
             // マグニチュード
             Instance.Label_EqInfoMagnitude.Text = Regex.Match(info, @"<.+>マグニチュード(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value;
 
-            // 情報
+            // 付加文
             var comment = Regex.Match(info, @"<.+>情報(</.+>)+\n(<.+?>)+(.+?)</?.+>").Groups[3].Value;
             Instance.Label_EqInfoComment.Font = new Font(Instance.Label_EqInfoComment.Font.FontFamily, 12f);
             if (comment.Length > 32)
@@ -222,14 +222,14 @@ namespace Temonis
                 return pref == "東京" ? city.Replace("東京", "") : city;
             }
 
-            return Utility.EqInfo.CityAbbreviation.TryGetValue(city, out var value) ? value : city;
+            return Util.EqInfo.CityAbbreviation.TryGetValue(city, out var value) ? value : city;
         }
 
         /// <summary>
         /// 震央位置の画像を作成します。
         /// </summary>
-        /// <param name="latitude">震央の緯度</param>
-        /// <param name="longitude">震央の経度</param>
+        /// <param name="latitude">震源の緯度</param>
+        /// <param name="longitude">震源の経度</param>
         private static void CreateEpicenterImage(float latitude, float longitude)
         {
             float lonMin;

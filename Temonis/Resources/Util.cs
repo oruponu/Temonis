@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Temonis.Resources
 {
-    internal class Utility
+    internal class Util
     {
         public static readonly Color Black = Color.FromArgb(26, 26, 36);
 
@@ -177,7 +177,7 @@ namespace Temonis.Resources
             /// <summary>
             /// 観測点リスト
             /// </summary>
-            public static readonly string[][] Stations = Encoding.UTF8.GetString(DecompressResource(Properties.Resources.Stations, 49152)).TrimEnd('\0').Split('\n').Select(x => x.Split(',')).ToArray();
+            public static readonly string[][] Stations = Encoding.UTF8.GetString(DecompressResource(Properties.Resources.Stations, 48141)).TrimEnd('\0').Split('\n').Select(x => x.Split(',')).ToArray();
 
             /// <summary>
             /// 強震モニタ

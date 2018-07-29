@@ -21,7 +21,7 @@ namespace Temonis.Controls
         public PictureBox()
         {
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
-            _borderColor = Resources.Utility.Gray;
+            _borderColor = Resources.Util.Gray;
         }
 
         protected override void OnPaint(PaintEventArgs e)

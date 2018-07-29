@@ -22,7 +22,7 @@ namespace Temonis.Controls
         public GroupBox()
         {
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
-            _borderColor = Resources.Utility.White;
+            _borderColor = Resources.Util.White;
         }
 
         protected override void OnPaint(PaintEventArgs e)

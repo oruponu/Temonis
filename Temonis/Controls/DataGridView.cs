@@ -23,7 +23,7 @@ namespace Temonis.Controls
         {
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
             SetStyle(ControlStyles.Selectable, false);
-            _borderColor = Resources.Utility.Gray;
+            _borderColor = Resources.Util.Gray;
 
             foreach (var control in Controls)
             {
