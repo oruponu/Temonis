@@ -127,7 +127,7 @@ namespace Temonis
             using (var imageAttrs = new ImageAttributes())
             {
                 imageAttrs.SetRemapTable(MapRealTime);
-                using (var image = await DownloadImageAsync($"{Properties.Resources.KyoshinUri}RealTimeImg/{mapType}_{mapSb}/{time}.{mapType}_{mapSb}.gif"))
+                using (var image = await DownloadImageAsync($"{Properties.Resources.KyoshinUri}RealTimeImg/{mapType}_{mapSb}/{time}.{mapType}_{mapSb}.gif").ConfigureAwait(false))
                 {
                     var destRect = new Rectangle(0, 0, _pictureBoxWidth, _pictureBoxHeight);
                     graphics.DrawImage(image, destRect, 0, 0, _pictureBoxWidth, _pictureBoxHeight, GraphicsUnit.Pixel, imageAttrs);
@@ -146,7 +146,7 @@ namespace Temonis
             using (var imageAttrs = new ImageAttributes())
             {
                 imageAttrs.SetRemapTable(MapPSWave);
-                using (var image = await DownloadImageAsync($"{Properties.Resources.KyoshinUri}PSWaveImg/eew/{time}.eew.gif"))
+                using (var image = await DownloadImageAsync($"{Properties.Resources.KyoshinUri}PSWaveImg/eew/{time}.eew.gif").ConfigureAwait(false))
                 {
                     var destRect = new Rectangle(0, 0, _pictureBoxWidth, _pictureBoxHeight);
                     graphics.DrawImage(image, destRect, 0, 0, _pictureBoxWidth, _pictureBoxHeight, GraphicsUnit.Pixel, imageAttrs);
@@ -287,7 +287,7 @@ namespace Temonis
                 }
             }
 
-            intensity.Prefs = intensity.Prefs.Where(x => x.Number > 2).ToList();
+            intensity.Prefs = intensity.Prefs.Where(x => x.Number > 2).OrderByDescending(x => x.MaxInt).ThenBy(x => x.Number).ToList();
 
             // 最大震度を検知した地点に円を描画
             using (var pen = new Pen(GetColor(firstIntStation.Point.X, firstIntStation.Point.Y)))

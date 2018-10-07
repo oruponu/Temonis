@@ -17,7 +17,7 @@ namespace Temonis
     public partial class MainWindow : Form
     {
         public static readonly HttpClient HttpClient = new HttpClient();
-        private const int TimeResetInterval = 300;
+        private const int TimeResetInterval = 60;
         private const int EqInfoInterval = 10;
         private readonly Timer _timer = new Timer();
         private static Kyoshin _kyoshin;
@@ -208,7 +208,7 @@ namespace Temonis
             {
                 Label_KyoshinMaxInt.Text = "";
                 Label_KyoshinPrefecture.Text = "";
-                await RequestLatestTimeAsync();
+                LatestTime = await RequestLatestTimeAsync(LatestTime).ConfigureAwait(false);
                 _retryCount++;
             }
 
@@ -224,8 +224,9 @@ namespace Temonis
         /// <summary>
         /// 強震モニタから時刻を取得します。
         /// </summary>
+        /// <param name="dateTime"></param>
         /// <returns></returns>
-        private static async Task RequestLatestTimeAsync()
+        private static async Task<DateTime> RequestLatestTimeAsync(DateTime dateTime)
         {
             var json = default(Root);
             try
@@ -241,10 +242,7 @@ namespace Temonis
                 InternalLog(ex);
             }
 
-            if (json == default(Root)) return;
-
-            LatestTime = DateTime.Parse(json.LatestTime);
-            //LatestTime = LatestTime.AddDays(-10).AddMinutes(16);
+            return json == default(Root) ? dateTime : DateTime.Parse(json.LatestTime);
         }
 
         /// <summary>
@@ -255,7 +253,7 @@ namespace Temonis
         {
             if (_timeResetCount >= TimeResetInterval)
             {
-                await RequestLatestTimeAsync();
+                LatestTime = await RequestLatestTimeAsync(LatestTime).ConfigureAwait(false);
                 _timeResetCount = 0;
             }
             else
@@ -272,7 +270,7 @@ namespace Temonis
         private static async void PowerModeChanged(object sender, PowerModeChangedEventArgs e)
         {
             if (e.Mode != PowerModes.Resume) return;
-            await RequestLatestTimeAsync();
+            LatestTime = await RequestLatestTimeAsync(LatestTime).ConfigureAwait(false);
         }
 
         [Conditional("DEBUG")]

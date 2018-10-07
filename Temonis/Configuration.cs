@@ -31,6 +31,47 @@ namespace Temonis
             {
                 MessageBox.Show("設定ファイルが見つかりませんでした。\n音声は再生されません。", "Temonis", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
+
+            Sound.OpenFile(RootClass.Sounds.Kyoshin.Intensity1);
+            Sound.OpenFile(RootClass.Sounds.Kyoshin.Intensity2);
+            Sound.OpenFile(RootClass.Sounds.Kyoshin.Intensity3);
+            Sound.OpenFile(RootClass.Sounds.Kyoshin.Intensity4);
+            Sound.OpenFile(RootClass.Sounds.Kyoshin.Intensity5);
+            Sound.OpenFile(RootClass.Sounds.Kyoshin.Intensity6);
+            Sound.OpenFile(RootClass.Sounds.Kyoshin.Intensity7);
+            Sound.OpenFile(RootClass.Sounds.Kyoshin.Intensity8);
+            Sound.OpenFile(RootClass.Sounds.Kyoshin.Intensity9);
+            Sound.OpenFile(RootClass.Sounds.Eew.FirstReport.Unknown);
+            Sound.OpenFile(RootClass.Sounds.Eew.FirstReport.Intensity1);
+            Sound.OpenFile(RootClass.Sounds.Eew.FirstReport.Intensity2);
+            Sound.OpenFile(RootClass.Sounds.Eew.FirstReport.Intensity3);
+            Sound.OpenFile(RootClass.Sounds.Eew.FirstReport.Intensity4);
+            Sound.OpenFile(RootClass.Sounds.Eew.FirstReport.Intensity5);
+            Sound.OpenFile(RootClass.Sounds.Eew.FirstReport.Intensity6);
+            Sound.OpenFile(RootClass.Sounds.Eew.FirstReport.Intensity7);
+            Sound.OpenFile(RootClass.Sounds.Eew.FirstReport.Intensity8);
+            Sound.OpenFile(RootClass.Sounds.Eew.FirstReport.Intensity9);
+            Sound.OpenFile(RootClass.Sounds.Eew.MaxIntChange.Cancel);
+            Sound.OpenFile(RootClass.Sounds.Eew.MaxIntChange.Unknown);
+            Sound.OpenFile(RootClass.Sounds.Eew.MaxIntChange.Intensity1);
+            Sound.OpenFile(RootClass.Sounds.Eew.MaxIntChange.Intensity2);
+            Sound.OpenFile(RootClass.Sounds.Eew.MaxIntChange.Intensity3);
+            Sound.OpenFile(RootClass.Sounds.Eew.MaxIntChange.Intensity4);
+            Sound.OpenFile(RootClass.Sounds.Eew.MaxIntChange.Intensity5);
+            Sound.OpenFile(RootClass.Sounds.Eew.MaxIntChange.Intensity6);
+            Sound.OpenFile(RootClass.Sounds.Eew.MaxIntChange.Intensity7);
+            Sound.OpenFile(RootClass.Sounds.Eew.MaxIntChange.Intensity8);
+            Sound.OpenFile(RootClass.Sounds.Eew.MaxIntChange.Intensity9);
+            Sound.OpenFile(RootClass.Sounds.EqInfo.Intensity1);
+            Sound.OpenFile(RootClass.Sounds.EqInfo.Intensity2);
+            Sound.OpenFile(RootClass.Sounds.EqInfo.Intensity3);
+            Sound.OpenFile(RootClass.Sounds.EqInfo.Intensity4);
+            Sound.OpenFile(RootClass.Sounds.EqInfo.Intensity5);
+            Sound.OpenFile(RootClass.Sounds.EqInfo.Intensity6);
+            Sound.OpenFile(RootClass.Sounds.EqInfo.Intensity7);
+            Sound.OpenFile(RootClass.Sounds.EqInfo.Intensity8);
+            Sound.OpenFile(RootClass.Sounds.EqInfo.Intensity9);
+            Sound.OpenFile(RootClass.Sounds.EqInfo.Distant);
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -53,7 +54,7 @@ namespace Temonis.Resources
             /// <summary>
             /// 地図の種類
             /// </summary>
-            public static readonly string[] MapType =
+            public static ReadOnlyCollection<string> MapType { get; } = new ReadOnlyCollection<string>(new[]
             {
                 "jma",
                 "acmap",
@@ -65,12 +66,12 @@ namespace Temonis.Resources
                 "rsp1000",
                 "rsp2000",
                 "rsp4000"
-            };
+            });
 
             /// <summary>
             /// リアルタイム震度の色
             /// </summary>
-            public static readonly Dictionary<Color, float> ColorMap = new Dictionary<Color, float>
+            public static ReadOnlyDictionary<Color, float> ColorMap { get; } = new ReadOnlyDictionary<Color, float>(new Dictionary<Color, float>
             {
                 [Color.FromArgb(0, 0, 205)] = -3.0f,
                 [Color.FromArgb(0, 7, 209)] = -2.9f,
@@ -172,7 +173,7 @@ namespace Temonis.Resources
                 [Color.FromArgb(192, 0, 0)] = 6.7f,
                 [Color.FromArgb(185, 0, 0)] = 6.8f,
                 [Color.FromArgb(177, 0, 0)] = 6.9f
-            };
+            });
 
             /// <summary>
             /// 観測点リスト
@@ -211,7 +212,7 @@ namespace Temonis.Resources
 
         public class EqInfo
         {
-            public static readonly Dictionary<string, Color> ColorMap = new Dictionary<string, Color>
+            public static ReadOnlyDictionary<string, Color> ColorMap { get; } = new ReadOnlyDictionary<string, Color>(new Dictionary<string, Color>
             {
                 ["震度1"] = Color.FromArgb(0, 140, 194),
                 ["震度2"] = Color.FromArgb(31, 228, 96),
@@ -222,9 +223,9 @@ namespace Temonis.Resources
                 ["震度6弱"] = Red,
                 ["震度6強"] = Color.FromArgb(165, 0, 33),
                 ["震度7"] = Purple
-            };
+            });
 
-            public static readonly Dictionary<string, string> CityAbbreviation = new Dictionary<string, string>
+            public static ReadOnlyDictionary<string, string> CityAbbreviation { get; } = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>
             {
                 ["渡島北斗市"] = "北斗市",
                 ["渡島森町"] = "森町",
@@ -331,7 +332,7 @@ namespace Temonis.Resources
                 ["宮崎美郷町"] = "美郷町",
                 ["鹿児島出水市"] = "出水市",
                 ["鹿児島十島村"] = "十島村"
-            };
+            });
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Windows.Forms;
 using static Temonis.MainWindow;
 using static Temonis.NativeMethods;
@@ -8,11 +7,10 @@ namespace Temonis
 {
     internal class Sound
     {
-        private static readonly Dictionary<int, string> PlayMap = new Dictionary<int, string>();
-
-        public Sound()
+        public static void OpenFile(string filePath)
         {
-            new Window().AssignHandle(Instance.Handle);
+            if (string.IsNullOrEmpty(filePath)) return;
+            mciSendString($"open \"{filePath}\" alias {filePath}", null, 0, Instance.Handle);
         }
 
         public async Task PlayKyoshinAsync()
@@ -53,6 +51,9 @@ namespace Temonis
         {
             switch (Eew.Info[key])
             {
+                case "不明":
+                    await PlayAsync(Configuration.RootClass.Sounds.Eew.FirstReport.Unknown);
+                    break;
                 case "1":
                     await PlayAsync(Configuration.RootClass.Sounds.Eew.FirstReport.Intensity1);
                     break;
@@ -80,9 +81,6 @@ namespace Temonis
                 case "7":
                     await PlayAsync(Configuration.RootClass.Sounds.Eew.FirstReport.Intensity9);
                     break;
-                case "不明":
-                    await PlayAsync(Configuration.RootClass.Sounds.Eew.FirstReport.Unknown);
-                    break;
             }
         }
 
@@ -90,6 +88,9 @@ namespace Temonis
         {
             switch (Eew.Info[key])
             {
+                case "不明":
+                    await PlayAsync(Configuration.RootClass.Sounds.Eew.MaxIntChange.Unknown);
+                    break;
                 case "1":
                     await PlayAsync(Configuration.RootClass.Sounds.Eew.MaxIntChange.Intensity1);
                     break;
@@ -117,9 +118,6 @@ namespace Temonis
                 case "7":
                     await PlayAsync(Configuration.RootClass.Sounds.Eew.MaxIntChange.Intensity9);
                     break;
-                case "不明":
-                    await PlayAsync(Configuration.RootClass.Sounds.Eew.MaxIntChange.Unknown);
-                    break;
                 default:
                     await PlayAsync(Configuration.RootClass.Sounds.Eew.MaxIntChange.Cancel);
                     break;
@@ -130,32 +128,32 @@ namespace Temonis
         {
             switch (EqInfo.MaxInt)
             {
-                case "7":
-                    await PlayAsync(Configuration.RootClass.Sounds.EqInfo.Intensity9);
-                    break;
-                case "6強":
-                    await PlayAsync(Configuration.RootClass.Sounds.EqInfo.Intensity8);
-                    break;
-                case "6弱":
-                    await PlayAsync(Configuration.RootClass.Sounds.EqInfo.Intensity7);
-                    break;
-                case "5強":
-                    await PlayAsync(Configuration.RootClass.Sounds.EqInfo.Intensity6);
-                    break;
-                case "5弱":
-                    await PlayAsync(Configuration.RootClass.Sounds.EqInfo.Intensity5);
-                    break;
-                case "4":
-                    await PlayAsync(Configuration.RootClass.Sounds.EqInfo.Intensity4);
-                    break;
-                case "3":
-                    await PlayAsync(Configuration.RootClass.Sounds.EqInfo.Intensity3);
+                case "1":
+                    await PlayAsync(Configuration.RootClass.Sounds.EqInfo.Intensity1);
                     break;
                 case "2":
                     await PlayAsync(Configuration.RootClass.Sounds.EqInfo.Intensity2);
                     break;
-                case "1":
-                    await PlayAsync(Configuration.RootClass.Sounds.EqInfo.Intensity1);
+                case "3":
+                    await PlayAsync(Configuration.RootClass.Sounds.EqInfo.Intensity3);
+                    break;
+                case "4":
+                    await PlayAsync(Configuration.RootClass.Sounds.EqInfo.Intensity4);
+                    break;
+                case "5弱":
+                    await PlayAsync(Configuration.RootClass.Sounds.EqInfo.Intensity5);
+                    break;
+                case "5強":
+                    await PlayAsync(Configuration.RootClass.Sounds.EqInfo.Intensity6);
+                    break;
+                case "6弱":
+                    await PlayAsync(Configuration.RootClass.Sounds.EqInfo.Intensity7);
+                    break;
+                case "6強":
+                    await PlayAsync(Configuration.RootClass.Sounds.EqInfo.Intensity8);
+                    break;
+                case "7":
+                    await PlayAsync(Configuration.RootClass.Sounds.EqInfo.Intensity9);
                     break;
                 default:
                     await PlayAsync(Configuration.RootClass.Sounds.EqInfo.Distant);
@@ -165,30 +163,13 @@ namespace Temonis
         
         private static async Task PlayAsync(string filePath)
         {
-            if (string.IsNullOrEmpty(filePath)) return;
-            if (PlayMap.ContainsValue(filePath)) return;
             await Task.Run(() =>
             {
                 Instance.Invoke((MethodInvoker)(() =>
                 {
-                    if (mciSendString($"open \"{filePath}\" alias {filePath}", null, 0, Instance.Handle) != 0) return;
-                    mciSendString($"play {filePath} notify", null, 0, Instance.Handle);
-                    PlayMap.Add((int)mciGetDeviceID(filePath), filePath);
+                    mciSendString($"play {filePath} from 0", null, 0, Instance.Handle);
                 }));
             });
-        }
-
-        protected class Window : NativeWindow
-        {
-            protected override void WndProc(ref Message m)
-            {
-                if (m.Msg == 953 && (int)m.WParam == 1)
-                {
-                    mciSendString($"close {PlayMap[(int)m.LParam]}", null, 0, Instance.Handle);
-                    PlayMap.Remove((int)m.LParam);
-                }
-                base.WndProc(ref m);
-            }
         }
     }
 }

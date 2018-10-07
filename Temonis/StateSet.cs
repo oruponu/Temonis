@@ -178,7 +178,8 @@ namespace Temonis
             }
 
             Instance.Refresh();
-            Instance.Activate();
+            Instance.TopMost = true;
+            Instance.TopMost = false;
         }
     }
 }
