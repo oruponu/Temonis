@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -178,7 +179,14 @@ namespace Temonis.Resources
             /// <summary>
             /// 観測点リスト
             /// </summary>
-            public static readonly string[][] Stations = Encoding.UTF8.GetString(DecompressResource(Properties.Resources.Stations, 48141)).TrimEnd('\0').Split('\n').Select(x => x.Split(',')).ToArray();
+            public static readonly Station[] Stations = Encoding.UTF8.GetString(DecompressResource(Properties.Resources.Stations, 48141)).TrimEnd('\0').Split('\n').Select(x => new Station
+            {
+                IsEnabled = Convert.ToBoolean(int.Parse(x.Split(',')[0])),
+                Name = x.Split(',')[1],
+                PrefName = x.Split(',')[2],
+                X = int.Parse(x.Split(',')[3]),
+                Y = int.Parse(x.Split(',')[4])
+            }).ToArray();
 
             /// <summary>
             /// 強震モニタ
@@ -208,6 +216,34 @@ namespace Temonis.Resources
                     NewColor = Red
                 }
             };
+
+            public class Station
+            {
+                /// <summary>
+                /// 観測点が有効であるか
+                /// </summary>
+                public bool IsEnabled { get; set; }
+
+                /// <summary>
+                /// 観測点名
+                /// </summary>
+                public string Name { get; set; }
+
+                /// <summary>
+                /// 都道府県名
+                /// </summary>
+                public string PrefName { get; set; }
+
+                /// <summary>
+                /// X座標
+                /// </summary>
+                public int X { get; set; }
+
+                /// <summary>
+                /// Y座標
+                /// </summary>
+                public int Y { get; set; }
+            }
         }
 
         public class EqInfo

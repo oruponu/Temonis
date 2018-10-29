@@ -165,10 +165,10 @@ namespace Temonis
                 Prefs = new List<Intensity.Pref>(47),
                 Stations = new List<Intensity.Station>(Stations.Length)
             };
-            foreach (var items in Stations)
+            foreach (var item in Stations)
             {
-                var realtimeInt = GetInstIntensity(int.Parse(items[3]), int.Parse(items[4]));
-                if (items[0] == "0" || realtimeInt <= -3.0f) continue;
+                var realtimeInt = GetInstIntensity(item.X, item.Y);
+                if (!item.IsEnabled || realtimeInt <= -3.0f) continue;
 
                 if (intensity.MaxInt < realtimeInt)
                 {
@@ -177,10 +177,10 @@ namespace Temonis
 
                 var station = new Intensity.Station
                 {
-                    Name = items[1],
-                    PrefName = items[2],
+                    Name = item.Name,
+                    PrefName = item.PrefName,
                     Int = realtimeInt,
-                    Point = new Point(int.Parse(items[3]), int.Parse(items[4]))
+                    Point = new Point(item.X, item.Y)
                 };
                 intensity.Stations.Add(station);
 
@@ -188,11 +188,11 @@ namespace Temonis
                 if (realtimeInt < 0.5f) continue;
                 if (!station.PrefName.Contains('県') && !station.PrefName.Contains('府') &&
                     !station.PrefName.Contains('道') && !station.PrefName.Contains('都')) continue;
-                if (!intensity.Prefs.Select(x => x.Name).Contains(items[2]))
+                if (!intensity.Prefs.Select(x => x.Name).Contains(item.PrefName))
                 {
                     var pref = new Intensity.Pref
                     {
-                        Name = items[2],
+                        Name = item.PrefName,
                         MaxInt = realtimeInt,
                         Number = 1
                     };
@@ -200,7 +200,7 @@ namespace Temonis
                 }
                 else
                 {
-                    var index = intensity.Prefs.FindIndex(x => x.Name == items[2]);
+                    var index = intensity.Prefs.FindIndex(x => x.Name == item.PrefName);
                     if (intensity.Prefs[index].MaxInt < realtimeInt)
                     {
                         intensity.Prefs[index].MaxInt = realtimeInt;
@@ -380,6 +380,7 @@ namespace Temonis
             {
                 case "茨城県":
                 case "栃木県":
+                case "埼玉県":
                 case "千葉県":
                 case "東京都":
                 case "神奈川県":
