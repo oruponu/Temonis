@@ -47,7 +47,7 @@ namespace Temonis.Properties {
         }
         
         /// <summary>
-        ///   厳密に型指定されたこのリソース クラスを使用して、すべての検索リソースに対し、
+        ///   すべてについて、現在のスレッドの CurrentUICulture プロパティをオーバーライドします
         ///   現在のスレッドの CurrentUICulture プロパティをオーバーライドします。
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
@@ -61,22 +61,11 @@ namespace Temonis.Properties {
         }
         
         /// <summary>
-        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        ///   System.IO.MemoryStream に類似した型 System.IO.UnmanagedMemoryStream のローカライズされたリソースを検索します。
         /// </summary>
-        internal static System.Drawing.Bitmap BaseMap {
+        internal static System.IO.UnmanagedMemoryStream Dummy {
             get {
-                object obj = ResourceManager.GetObject("BaseMap", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
-        /// </summary>
-        internal static System.Drawing.Bitmap BaseMapBorder {
-            get {
-                object obj = ResourceManager.GetObject("BaseMapBorder", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ResourceManager.GetStream("Dummy", resourceCulture);
             }
         }
         
@@ -86,16 +75,6 @@ namespace Temonis.Properties {
         internal static string EewUri {
             get {
                 return ResourceManager.GetString("EewUri", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
-        /// </summary>
-        internal static System.Drawing.Bitmap Epicenter {
-            get {
-                object obj = ResourceManager.GetObject("Epicenter", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

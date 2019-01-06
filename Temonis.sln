@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+VisualStudioVersion = 15.0.28010.2050
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Temonis", "Temonis\Temonis.csproj", "{44C75651-50A5-4BEA-97AF-E596E26B6397}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Temonis", "Temonis\Temonis.csproj", "{4296F78E-D1A2-4D16-BD54-B7BD8B3277FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,12 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{44C75651-50A5-4BEA-97AF-E596E26B6397}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{44C75651-50A5-4BEA-97AF-E596E26B6397}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{44C75651-50A5-4BEA-97AF-E596E26B6397}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{44C75651-50A5-4BEA-97AF-E596E26B6397}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4296F78E-D1A2-4D16-BD54-B7BD8B3277FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4296F78E-D1A2-4D16-BD54-B7BD8B3277FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4296F78E-D1A2-4D16-BD54-B7BD8B3277FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4296F78E-D1A2-4D16-BD54-B7BD8B3277FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E9303A24-CA20-4B49-88EA-DF5F383C68CD}
 	EndGlobalSection
 EndGlobal

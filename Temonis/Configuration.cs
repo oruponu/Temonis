@@ -1,16 +1,16 @@
 ﻿using System.IO;
-using System.Windows.Forms;
+using System.Windows;
 using System.Xml.Serialization;
 
 namespace Temonis
 {
-    public class Configuration
+    public static class Configuration
     {
         private const string FileName = "Temonis.xml";
 
         internal static Root RootClass { get; private set; }
 
-        internal static void LoadSettings()
+        internal static void Load()
         {
             var serializer = new XmlSerializer(typeof(Root));
             if (File.Exists(FileName))
@@ -18,240 +18,193 @@ namespace Temonis
                 try
                 {
                     using (var stream = File.OpenRead(FileName))
-                    {
                         RootClass = (Root)serializer.Deserialize(stream);
-                    }
                 }
                 catch
                 {
-                    MessageBox.Show("設定ファイルを開けませんでした。\n音声は再生されません。", "Temonis", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show("設定ファイルを開けませんでした。\n音声は再生されません。", "Temonis", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 }
             }
             else
             {
-                MessageBox.Show("設定ファイルが見つかりませんでした。\n音声は再生されません。", "Temonis", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show("設定ファイルが見つかりませんでした。\n音声は再生されません。", "Temonis", MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
-
-            Sound.OpenFile(RootClass.Sounds.Kyoshin.Intensity1);
-            Sound.OpenFile(RootClass.Sounds.Kyoshin.Intensity2);
-            Sound.OpenFile(RootClass.Sounds.Kyoshin.Intensity3);
-            Sound.OpenFile(RootClass.Sounds.Kyoshin.Intensity4);
-            Sound.OpenFile(RootClass.Sounds.Kyoshin.Intensity5);
-            Sound.OpenFile(RootClass.Sounds.Kyoshin.Intensity6);
-            Sound.OpenFile(RootClass.Sounds.Kyoshin.Intensity7);
-            Sound.OpenFile(RootClass.Sounds.Kyoshin.Intensity8);
-            Sound.OpenFile(RootClass.Sounds.Kyoshin.Intensity9);
-            Sound.OpenFile(RootClass.Sounds.Eew.FirstReport.Unknown);
-            Sound.OpenFile(RootClass.Sounds.Eew.FirstReport.Intensity1);
-            Sound.OpenFile(RootClass.Sounds.Eew.FirstReport.Intensity2);
-            Sound.OpenFile(RootClass.Sounds.Eew.FirstReport.Intensity3);
-            Sound.OpenFile(RootClass.Sounds.Eew.FirstReport.Intensity4);
-            Sound.OpenFile(RootClass.Sounds.Eew.FirstReport.Intensity5);
-            Sound.OpenFile(RootClass.Sounds.Eew.FirstReport.Intensity6);
-            Sound.OpenFile(RootClass.Sounds.Eew.FirstReport.Intensity7);
-            Sound.OpenFile(RootClass.Sounds.Eew.FirstReport.Intensity8);
-            Sound.OpenFile(RootClass.Sounds.Eew.FirstReport.Intensity9);
-            Sound.OpenFile(RootClass.Sounds.Eew.MaxIntChange.Cancel);
-            Sound.OpenFile(RootClass.Sounds.Eew.MaxIntChange.Unknown);
-            Sound.OpenFile(RootClass.Sounds.Eew.MaxIntChange.Intensity1);
-            Sound.OpenFile(RootClass.Sounds.Eew.MaxIntChange.Intensity2);
-            Sound.OpenFile(RootClass.Sounds.Eew.MaxIntChange.Intensity3);
-            Sound.OpenFile(RootClass.Sounds.Eew.MaxIntChange.Intensity4);
-            Sound.OpenFile(RootClass.Sounds.Eew.MaxIntChange.Intensity5);
-            Sound.OpenFile(RootClass.Sounds.Eew.MaxIntChange.Intensity6);
-            Sound.OpenFile(RootClass.Sounds.Eew.MaxIntChange.Intensity7);
-            Sound.OpenFile(RootClass.Sounds.Eew.MaxIntChange.Intensity8);
-            Sound.OpenFile(RootClass.Sounds.Eew.MaxIntChange.Intensity9);
-            Sound.OpenFile(RootClass.Sounds.EqInfo.Intensity1);
-            Sound.OpenFile(RootClass.Sounds.EqInfo.Intensity2);
-            Sound.OpenFile(RootClass.Sounds.EqInfo.Intensity3);
-            Sound.OpenFile(RootClass.Sounds.EqInfo.Intensity4);
-            Sound.OpenFile(RootClass.Sounds.EqInfo.Intensity5);
-            Sound.OpenFile(RootClass.Sounds.EqInfo.Intensity6);
-            Sound.OpenFile(RootClass.Sounds.EqInfo.Intensity7);
-            Sound.OpenFile(RootClass.Sounds.EqInfo.Intensity8);
-            Sound.OpenFile(RootClass.Sounds.EqInfo.Intensity9);
-            Sound.OpenFile(RootClass.Sounds.EqInfo.Distant);
         }
 
-        /// <summary>
-        /// XMLクラス
-        /// </summary>
-        [XmlRoot("configuration")]
+        [XmlRoot("Configuration")]
         public class Root
         {
-            [XmlElement("behavior")]
+            [XmlElement]
             public BehaviorClass Behavior { get; set; }
 
-            [XmlElement("sounds")]
+            [XmlElement]
             public SoundsClass Sounds { get; set; }
 
-            [XmlRoot("behavior")]
+            [XmlRoot]
             public class BehaviorClass
             {
-                [XmlElement("forceActive")]
+                [XmlElement]
                 public bool ForceActive { get; set; }
             }
 
-            [XmlRoot("sounds")]
+            [XmlRoot]
             public class SoundsClass
             {
-                [XmlElement("kyoshin")]
+                [XmlElement]
                 public Kyoshin Kyoshin { get; set; }
 
-                [XmlElement("eew")]
+                [XmlElement("EEW")]
                 public Eew Eew { get; set; }
 
-                [XmlElement("eqInfo")]
+                [XmlElement]
                 public EqInfo EqInfo { get; set; }
             }
 
-            [XmlRoot("kyoshinSound")]
+            [XmlRoot]
             public class Kyoshin
             {
-                [XmlElement("intensity1")]
+                [XmlElement]
                 public string Intensity1 { get; set; }
 
-                [XmlElement("intensity2")]
+                [XmlElement]
                 public string Intensity2 { get; set; }
 
-                [XmlElement("intensity3")]
+                [XmlElement]
                 public string Intensity3 { get; set; }
 
-                [XmlElement("intensity4")]
+                [XmlElement]
                 public string Intensity4 { get; set; }
 
-                [XmlElement("intensity5")]
+                [XmlElement]
                 public string Intensity5 { get; set; }
 
-                [XmlElement("intensity6")]
+                [XmlElement]
                 public string Intensity6 { get; set; }
 
-                [XmlElement("intensity7")]
+                [XmlElement]
                 public string Intensity7 { get; set; }
 
-                [XmlElement("intensity8")]
+                [XmlElement]
                 public string Intensity8 { get; set; }
 
-                [XmlElement("intensity9")]
+                [XmlElement]
                 public string Intensity9 { get; set; }
             }
 
-            [XmlRoot("eewSound")]
+            [XmlRoot]
             public class Eew
             {
-                [XmlElement("firstReport")]
+                [XmlElement]
                 public FirstReport FirstReport { get; set; }
 
-                [XmlElement("maxIntChange")]
+                [XmlElement]
                 public MaxIntChange MaxIntChange { get; set; }
             }
 
-            [XmlRoot("firstReport")]
+            [XmlRoot]
             public class FirstReport
             {
-                [XmlElement("unknown")]
-                public string Unknown { get; set; }
-
-                [XmlElement("intensity1")]
+                [XmlElement]
                 public string Intensity1 { get; set; }
 
-                [XmlElement("intensity2")]
+                [XmlElement]
                 public string Intensity2 { get; set; }
 
-                [XmlElement("intensity3")]
+                [XmlElement]
                 public string Intensity3 { get; set; }
 
-                [XmlElement("intensity4")]
+                [XmlElement]
                 public string Intensity4 { get; set; }
 
-                [XmlElement("intensity5")]
+                [XmlElement]
                 public string Intensity5 { get; set; }
 
-                [XmlElement("intensity6")]
+                [XmlElement]
                 public string Intensity6 { get; set; }
 
-                [XmlElement("intensity7")]
+                [XmlElement]
                 public string Intensity7 { get; set; }
 
-                [XmlElement("intensity8")]
+                [XmlElement]
                 public string Intensity8 { get; set; }
 
-                [XmlElement("intensity9")]
+                [XmlElement]
                 public string Intensity9 { get; set; }
+
+                [XmlElement]
+                public string Unknown { get; set; }
             }
 
-            [XmlRoot("maxIntChange")]
+            [XmlRoot]
             public class MaxIntChange
             {
-                [XmlElement("cancel")]
+                [XmlElement]
                 public string Cancel { get; set; }
 
-                [XmlElement("unknown")]
-                public string Unknown { get; set; }
-
-                [XmlElement("intensity1")]
+                [XmlElement]
                 public string Intensity1 { get; set; }
 
-                [XmlElement("intensity2")]
+                [XmlElement]
                 public string Intensity2 { get; set; }
 
-                [XmlElement("intensity3")]
+                [XmlElement]
                 public string Intensity3 { get; set; }
 
-                [XmlElement("intensity4")]
+                [XmlElement]
                 public string Intensity4 { get; set; }
 
-                [XmlElement("intensity5")]
+                [XmlElement]
                 public string Intensity5 { get; set; }
 
-                [XmlElement("intensity6")]
+                [XmlElement]
                 public string Intensity6 { get; set; }
 
-                [XmlElement("intensity7")]
+                [XmlElement]
                 public string Intensity7 { get; set; }
 
-                [XmlElement("intensity8")]
+                [XmlElement]
                 public string Intensity8 { get; set; }
 
-                [XmlElement("intensity9")]
+                [XmlElement]
                 public string Intensity9 { get; set; }
+
+                [XmlElement]
+                public string Unknown { get; set; }
             }
 
-            [XmlRoot("eqInfoSound")]
+            [XmlRoot]
             public class EqInfo
             {
-                [XmlElement("intensity1")]
+                [XmlElement]
+                public string Distant { get; set; }
+
+                [XmlElement]
                 public string Intensity1 { get; set; }
 
-                [XmlElement("intensity2")]
+                [XmlElement]
                 public string Intensity2 { get; set; }
 
-                [XmlElement("intensity3")]
+                [XmlElement]
                 public string Intensity3 { get; set; }
 
-                [XmlElement("intensity4")]
+                [XmlElement]
                 public string Intensity4 { get; set; }
 
-                [XmlElement("intensity5")]
+                [XmlElement]
                 public string Intensity5 { get; set; }
 
-                [XmlElement("intensity6")]
+                [XmlElement]
                 public string Intensity6 { get; set; }
 
-                [XmlElement("intensity7")]
+                [XmlElement]
                 public string Intensity7 { get; set; }
 
-                [XmlElement("intensity8")]
+                [XmlElement]
                 public string Intensity8 { get; set; }
 
-                [XmlElement("intensity9")]
+                [XmlElement]
                 public string Intensity9 { get; set; }
-
-                [XmlElement("distant")]
-                public string Distant { get; set; }
             }
-
         }
     }
 }

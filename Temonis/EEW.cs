@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Net.Http;
 using System.Runtime.Serialization;
@@ -9,9 +10,10 @@ using static Temonis.MainWindow;
 
 namespace Temonis
 {
-    internal class Eew
+    public static class Eew
     {
-        public static Dictionary<string, string> Info { get; private set; } = new Dictionary<string, string>();
+        private static Dictionary<string, string> _info = new Dictionary<string, string>();
+        private static Dictionary<string, string> _prevInfo = new Dictionary<string, string>();
 
         public static bool IsTriggerOn { get; private set; }
 
@@ -19,77 +21,94 @@ namespace Temonis
         /// 緊急地震速報を取得します。
         /// </summary>
         /// <returns></returns>
-        public async Task UpdateAsync()
+        public static async Task UpdateAsync()
         {
             var json = default(Root);
             try
             {
-                using (var stream = await MainWindow.HttpClient.GetStreamAsync($"{Properties.Resources.EewUri}{LatestTime:yyyyMMddHHmmss}.json"))
-                {
-                    var serializer = new DataContractJsonSerializer(typeof(Root));
-                    json = (Root)serializer.ReadObject(stream);
-                }
+                using (var stream = await MainWindow.HttpClient.GetStreamAsync(Properties.Resources.EewUri + LatestTime.ToString("yyyyMMddHHmmss") + ".json"))
+                    json = (Root)new DataContractJsonSerializer(typeof(Root)).ReadObject(stream);
             }
             catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException || ex is SerializationException)
             {
                 InternalLog(ex);
             }
 
-            if (json == default(Root)) return;
+            if (json == default(Root))
+                return;
 
             if (json.Result.Message != "データがありません")
             {
                 if ((bool)json.IsCancel)
                 {
                     IsTriggerOn = false;
-                    Instance.Label_EewMessage.Text = "緊急地震速報は取り消されました。";
-                    Instance.Label_EewDateTimeHeader.Visible = false;
-                    Instance.Label_EewEpicenterHeader.Visible = false;
-                    Instance.Label_EewDepthHeader.Visible = false;
-                    Instance.Label_EewMagnitudeHeader.Visible = false;
-                    Instance.Label_EewIntensityHeader.Visible = false;
-                    Instance.Label_EewDateTime.Text = "";
-                    Instance.Label_EewEpicenter.Text = "";
-                    Instance.Label_EewDepth.Text = "";
-                    Instance.Label_EewMagnitude.Text = "";
-                    Instance.Label_EewIntensity.Text = "";
-                    Info[json.ReportId] = "0";
+                    MainWindow.DataContext.Eew.Message = "緊急地震速報は取り消されました。";
+                    MainWindow.DataContext.Eew.Visible = false;
+                    _info[json.ReportId] = "0";
                 }
                 else if (EqInfo.Id == json.ReportId && !Kyoshin.IsTriggerOn && (bool)json.IsFinal)
                 {
                     IsTriggerOn = false;
-                    Info[json.ReportId] = "-1";
+                    _info[json.ReportId] = "-1";
                 }
-                else if (!Info.ContainsKey(json.ReportId) || Info.ContainsKey(json.ReportId) && Info[json.ReportId] != "-1")
+                else if (!_info.ContainsKey(json.ReportId) || _info.ContainsKey(json.ReportId) && _info[json.ReportId] != "-1")
                 {
                     IsTriggerOn = true;
-                    var serial = "第" + json.ReportNum + "報";
-                    if ((bool)json.IsFinal) serial += " 最終";
-                    Instance.Label_EewMessage.Text = $"緊急地震速報（{json.Alertflg}）{serial}";
-                    Instance.Label_EewDateTimeHeader.Visible = true;
-                    Instance.Label_EewEpicenterHeader.Visible = true;
-                    Instance.Label_EewDepthHeader.Visible = true;
-                    Instance.Label_EewMagnitudeHeader.Visible = true;
-                    Instance.Label_EewIntensityHeader.Visible = true;
-                    Instance.Label_EewDateTime.Text = DateTime.ParseExact(json.OriginTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture).ToString("yyyy年MM月dd日 HH時mm分ss秒");
-                    Instance.Label_EewEpicenter.Text = json.RegionName;
-                    Instance.Label_EewDepth.Text = json.Depth;
-                    Instance.Label_EewMagnitude.Text = json.Magunitude;
-                    Instance.Label_EewIntensity.Text = json.Calcintensity;
-                    if (!Info.ContainsKey(json.ReportId))
-                    {
-                        Info.Add(json.ReportId, json.Calcintensity);
-                    }
-                    else if (Info[json.ReportId] != json.Calcintensity)
-                    {
-                        Info[json.ReportId] = json.Calcintensity;
-                    }
+                    var serial = '第' + json.ReportNum + '報';
+                    if ((bool)json.IsFinal)
+                        serial += " 最終";
+                    MainWindow.DataContext.Eew.Message = $"緊急地震速報（{json.Alertflg}）{serial}";
+                    MainWindow.DataContext.Eew.Visible = true;
+                    MainWindow.DataContext.Eew.DateTime = DateTime.ParseExact(json.OriginTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture).ToString("yyyy年MM月dd日 HH時mm分ss秒");
+                    MainWindow.DataContext.Eew.Epicenter = json.RegionName;
+                    MainWindow.DataContext.Eew.Depth = json.Depth;
+                    MainWindow.DataContext.Eew.Magnitude = json.Magunitude;
+                    MainWindow.DataContext.Eew.Intensity = json.Calcintensity;
+
+                    if (!_info.ContainsKey(json.ReportId))
+                        _info.Add(json.ReportId, json.Calcintensity);
+                    else if (_info[json.ReportId] != json.Calcintensity)
+                        _info[json.ReportId] = json.Calcintensity;
                 }
             }
             else
             {
                 IsTriggerOn = false;
-                Info = new Dictionary<string, string>();
+                _info = new Dictionary<string, string>();
+            }
+
+            UpdateState();
+        }
+
+        private static void UpdateState()
+        {
+            if (IsTriggerOn)
+            {
+                if (MainWindow.DataContext.Eew.Message.Contains("警報"))
+                    MainWindow.DataContext.Eew.Level = Level.Red;
+                else if (MainWindow.DataContext.Eew.Message.Contains("予報"))
+                    MainWindow.DataContext.Eew.Level = Level.Yellow;
+
+                foreach (var info in _info)
+                {
+                    if (!_prevInfo.ContainsKey(info.Key))
+                    {
+                        _prevInfo.Add(info.Key, info.Value);
+                        Sound.PlayFirstReportAsync(info.Value);
+                        SetActive();
+                    }
+                    else if (_prevInfo[info.Key] != info.Value)
+                    {
+                        _prevInfo[info.Key] = info.Value;
+                        Sound.PlayMaxIntChangeAsync(info.Value);
+                        SetActive();
+                    }
+                }
+            }
+            else
+            {
+                MainWindow.DataContext.Eew.Level = Level.White;
+                _prevInfo = new Dictionary<string, string>();
             }
         }
 
@@ -177,6 +196,108 @@ namespace Temonis
 
                 [DataMember(Name = "hash")]
                 public string Hash { get; set; }
+            }
+        }
+
+        public class DataContext : INotifyPropertyChanged
+        {
+            private static readonly PropertyChangedEventArgs LevelPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(Level));
+            private static readonly PropertyChangedEventArgs MessagePropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(Message));
+            private static readonly PropertyChangedEventArgs VisiblePropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(Visible));
+            private static readonly PropertyChangedEventArgs DateTimePropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(DateTime));
+            private static readonly PropertyChangedEventArgs EpicenterPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(Epicenter));
+            private static readonly PropertyChangedEventArgs DepthPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(Depth));
+            private static readonly PropertyChangedEventArgs MagnitudePropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(Magnitude));
+            private static readonly PropertyChangedEventArgs IntensityPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(Intensity));
+            private Level _level;
+            private string _message = "緊急地震速報は発表されていません。";
+            private bool _visible;
+            private string _dateTime;
+            private string _epicenter;
+            private string _depth;
+            private string _magnitude;
+            private string _intensity;
+
+            public event PropertyChangedEventHandler PropertyChanged;
+
+            public Level Level
+            {
+                get => _level;
+                set
+                {
+                    _level = value;
+                    PropertyChanged?.Invoke(this, LevelPropertyChangedEventArgs);
+                }
+            }
+
+            public string Message
+            {
+                get => _message;
+                set
+                {
+                    _message = value;
+                    PropertyChanged?.Invoke(this, MessagePropertyChangedEventArgs);
+                }
+            }
+
+            public bool Visible
+            {
+                get => _visible;
+                set
+                {
+                    _visible = value;
+                    PropertyChanged?.Invoke(this, VisiblePropertyChangedEventArgs);
+                }
+            }
+
+            public string DateTime
+            {
+                get => _dateTime;
+                set
+                {
+                    _dateTime = value;
+                    PropertyChanged?.Invoke(this, DateTimePropertyChangedEventArgs);
+                }
+            }
+
+            public string Epicenter
+            {
+                get => _epicenter;
+                set
+                {
+                    _epicenter = value;
+                    PropertyChanged?.Invoke(this, EpicenterPropertyChangedEventArgs);
+                }
+            }
+
+            public string Depth
+            {
+                get => _depth;
+                set
+                {
+                    _depth = value;
+                    PropertyChanged?.Invoke(this, DepthPropertyChangedEventArgs);
+                }
+            }
+
+            public string Magnitude
+            {
+                get => _magnitude;
+                set
+                {
+                    _magnitude = value;
+                    PropertyChanged?.Invoke(this, MagnitudePropertyChangedEventArgs);
+                }
+            }
+
+            public string Intensity
+            {
+                get => _intensity;
+                set
+                {
+                    _intensity = value;
+                    PropertyChanged?.Invoke(this, IntensityPropertyChangedEventArgs);
+                }
             }
         }
     }

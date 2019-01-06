@@ -1,0 +1,186 @@
+﻿<Window x:Class="Temonis.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Temonis" Height="579" Width="976" ResizeMode="CanMinimize">
+    <Window.Resources>
+        <ResourceDictionary Source="Style.xaml"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="420"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0" Margin="28 16 8 16">
+            <Rectangle Grid.Column="0" Stroke="{Binding Kyoshin.Level, Converter={StaticResource LevelColorConverter}}"/>
+            <TextBlock Grid.Column="0" Style="{StaticResource Header}" Text="強震モニタ"/>
+            <StackPanel Grid.Column="0">
+                <StackPanel Margin="22 10 24 4" Orientation="Horizontal">
+                    <TextBlock FontSize="18" Text="{Binding LatestTimeString}"/>
+                    <TextBlock FontSize="11" Foreground="{StaticResource Yellow}" Margin="10 0 0 3" Text="{Binding Kyoshin.SliderValue, Converter={StaticResource SliderConverter}}" VerticalAlignment="Bottom"/>
+                </StackPanel>
+                <Grid>
+                    <Border BorderBrush="{StaticResource Gray}" BorderThickness="1" Height="{StaticResource ImageHeight}" Width="{StaticResource ImageWidth}">
+                        <Image Height="{StaticResource ImageHeight}" Source="{Binding Kyoshin.ImageSource}" Stretch="None" Width="{StaticResource ImageWidth}"/>
+                    </Border>
+                    <StackPanel Margin="24 4 24 4">
+                        <TextBlock Text="地表震度"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Margin="23 0 0 0" Text="{Binding Kyoshin.MaxIntString}"/>
+                            <TextBlock FontSize="11" Text="{Binding Kyoshin.MaxIntDetail}" VerticalAlignment="Bottom"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <TextBlock FontSize="11" Margin="0 0 24 8" HorizontalAlignment="Right" Text="{Binding Kyoshin.Prefecture}" VerticalAlignment="Bottom"/>
+                </Grid>
+                <StackPanel Margin="16 16 16 0" Orientation="Horizontal">
+                    <ComboBox SelectedIndex="{Binding Kyoshin.ComboBoxSelectedIndex}" Width="120">
+                        <ComboBoxItem Content="リアルタイム震度"/>
+                        <ComboBoxItem Content="最大加速度"/>
+                        <ComboBoxItem Content="最大速度"/>
+                        <ComboBoxItem Content="最大変位"/>
+                        <ComboBoxItem Content="0.125Hz速度応答"/>
+                        <ComboBoxItem Content="0.25Hz速度応答"/>
+                        <ComboBoxItem Content="0.5Hz速度応答"/>
+                        <ComboBoxItem Content="1.0Hz速度応答"/>
+                        <ComboBoxItem Content="2.0Hz速度応答"/>
+                        <ComboBoxItem Content="4.0Hz速度応答"/>
+                    </ComboBox>
+                    <RadioButton Content="地表" IsChecked="{Binding Kyoshin.RadioButton, Converter={StaticResource RadioButtonConverter}, ConverterParameter=Surface}" Margin="16 0 0 0" VerticalAlignment="Center"/>
+                    <RadioButton Content="地中" IsChecked="{Binding Kyoshin.RadioButton, Converter={StaticResource RadioButtonConverter}, ConverterParameter=Borehole}" Margin="8 0 0 0" VerticalAlignment="Center"/>
+                </StackPanel>
+                <Slider IsSnapToTickEnabled="True" LargeChange="60" Margin="16 8 16 0" Maximum="0" Minimum="-10800" SmallChange="1" TickFrequency="1" Value="{Binding Kyoshin.SliderValue}"/>
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Column="1" Margin="8 16 28 16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="150"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Margin="0 0 0 8">
+                <Rectangle Grid.Column="0" Stroke="{Binding Eew.Level, Converter={StaticResource LevelColorConverter}}"/>
+                <TextBlock Grid.Column="0" Style="{StaticResource Header}" Text="緊急地震速報"/>
+                <Grid Margin="22 10 20 10" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="20"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="111"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Eew.Message}"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="発生時刻" Visibility="{Binding Eew.Visible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Eew.DateTime}"/>
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="震源地" Visibility="{Binding Eew.Visible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Eew.Epicenter}"/>
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="震源の深さ" Visibility="{Binding Eew.Visible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Eew.Depth}"/>
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="マグニチュード" Visibility="{Binding Eew.Visible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Eew.Magnitude}"/>
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="最大予測震度" Visibility="{Binding Eew.Visible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding Eew.Intensity}"/>
+                </Grid>
+            </Grid>
+            <Grid Grid.Row="1" Margin="0 8 0 0">
+                <Rectangle Grid.Column="0" Stroke="{Binding EqInfo.Level, Converter={StaticResource LevelColorConverter}}"/>
+                <TextBlock Grid.Column="0" Style="{StaticResource Header}" Text="地震情報"/>
+                <Grid Margin="22 10 20 10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="111"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="発生時刻"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding EqInfo.DateTime}"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="震源地"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding EqInfo.Epicenter}"/>
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="震源の深さ"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding EqInfo.Depth}"/>
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="マグニチュード"/>
+                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding EqInfo.Magnitude}"/>
+                    <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding EqInfo.Comment}" TextWrapping="Wrap"/>
+                    <DataGrid AutoGenerateColumns="False" ClipboardCopyMode="None" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" GridLinesVisibility="None" HeadersVisibility="None" HorizontalScrollBarVisibility="Hidden" IsReadOnly="True" IsTabStop="False" ItemsSource="{Binding EqInfo.IntensityList, Mode=OneWay}" Margin="-6 12 -4 7" PreviewMouseWheel="DataGrid_PreviewMouseWheel" VerticalScrollBarVisibility="Visible">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Width="55">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Line StrokeThickness="2" Y2="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGridCell}}, Path=ActualHeight}">
+                                                <Line.Style>
+                                                    <Style TargetType="Line">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding MaxInt, Mode=OneTime}" Value="震度1">
+                                                                <Setter Property="Stroke" Value="#008CC2"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding MaxInt, Mode=OneTime}" Value="震度2">
+                                                                <Setter Property="Stroke" Value="#1FE460"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding MaxInt, Mode=OneTime}" Value="震度3">
+                                                                <Setter Property="Stroke" Value="{StaticResource Yellow}"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding MaxInt, Mode=OneTime}" Value="震度4">
+                                                                <Setter Property="Stroke" Value="#FCD000"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding MaxInt, Mode=OneTime}" Value="震度5弱">
+                                                                <Setter Property="Stroke" Value="#FFAA00"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding MaxInt, Mode=OneTime}" Value="震度5強">
+                                                                <Setter Property="Stroke" Value="#FF6900"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding MaxInt, Mode=OneTime}" Value="震度6弱">
+                                                                <Setter Property="Stroke" Value="{StaticResource Red}"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding MaxInt, Mode=OneTime}" Value="震度6強">
+                                                                <Setter Property="Stroke" Value="#A50021"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding MaxInt, Mode=OneTime}" Value="震度7">
+                                                                <Setter Property="Stroke" Value="{StaticResource Purple}"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Line.Style>
+                                            </Line>
+                                            <TextBlock Margin="2 0 0 0" Text="{Binding MaxInt}" VerticalAlignment="Center">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding MaxIntVisible, Mode=OneTime}" Value="False">
+                                                                <Setter Property="Foreground" Value="{StaticResource Black}"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Binding="{Binding PrefName}" Width="59">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding PrefNameVisible, Mode=OneTime}" Value="False">
+                                                <Setter Property="Foreground" Value="{StaticResource Black}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding CityName}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
