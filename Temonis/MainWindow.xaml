@@ -29,7 +29,7 @@
                             <TextBlock FontSize="11" Text="{Binding Kyoshin.MaxIntDetail}" VerticalAlignment="Bottom"/>
                         </StackPanel>
                     </StackPanel>
-                    <TextBlock FontSize="11" Margin="0 0 24 8" HorizontalAlignment="Right" Text="{Binding Kyoshin.Prefecture}" VerticalAlignment="Bottom"/>
+                    <TextBlock FontSize="11" Margin="0 0 24 8" HorizontalAlignment="Right" Text="{Binding Kyoshin.Prefecture}" TextAlignment="Right" VerticalAlignment="Bottom"/>
                 </Grid>
                 <StackPanel Margin="16 16 16 0" Orientation="Horizontal">
                     <ComboBox SelectedIndex="{Binding Kyoshin.ComboBoxSelectedIndex}" Width="120">
