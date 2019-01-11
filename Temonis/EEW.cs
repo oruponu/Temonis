@@ -51,7 +51,7 @@ namespace Temonis
                     IsTriggerOn = false;
                     _info[json.ReportId] = "-1";
                 }
-                else if (!_info.ContainsKey(json.ReportId) || _info.TryGetValue(json.ReportId, out var intensity) && intensity != "-1")
+                else if (!_info.TryGetValue(json.ReportId, out var value) || value != null && value != "-1")
                 {
                     IsTriggerOn = true;
                     var serial = '第' + json.ReportNum + '報';
@@ -65,15 +65,10 @@ namespace Temonis
                     MainWindow.DataContext.Eew.Magnitude = json.Magunitude;
                     MainWindow.DataContext.Eew.Intensity = json.Calcintensity;
 
-                    if (_info.TryGetValue(json.ReportId, out var value))
-                    {
-                        if (value != json.Calcintensity)
-                            _info[json.ReportId] = json.Calcintensity;
-                    }
-                    else
-                    {
+                    if (value == null)
                         _info.Add(json.ReportId, json.Calcintensity);
-                    }
+                    else if (value != json.Calcintensity)
+                        _info[json.ReportId] = json.Calcintensity;
                 }
             }
             else
@@ -96,18 +91,16 @@ namespace Temonis
 
                 foreach (var info in _info)
                 {
-                    if (_prevInfo.TryGetValue(info.Key, out var value))
-                    {
-                        if (value == info.Value)
-                            continue;
-                        _prevInfo[info.Key] = info.Value;
-                        Sound.PlayMaxIntChangeAsync(info.Value);
-                        SetActive();
-                    }
-                    else
+                    if (!_prevInfo.TryGetValue(info.Key, out var value))
                     {
                         _prevInfo.Add(info.Key, info.Value);
                         Sound.PlayFirstReportAsync(info.Value);
+                        SetActive();
+                    }
+                    else if (value != info.Value)
+                    {
+                        _prevInfo[info.Key] = info.Value;
+                        Sound.PlayMaxIntChangeAsync(info.Value);
                         SetActive();
                     }
                 }
