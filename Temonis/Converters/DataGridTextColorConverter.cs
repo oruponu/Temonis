@@ -11,7 +11,6 @@ namespace Temonis.Converters
         {
             if ((bool)value)
                 return (SolidColorBrush)MainWindow.Instance.FindResource("White");
-
             return (SolidColorBrush)MainWindow.Instance.FindResource("Black");
         }
 

@@ -305,7 +305,7 @@ namespace Temonis
             var rect = new Rect(.0, .0, ImageWidth, ImageHeight);
             context.DrawImage(ReplaceColorPalette(image, in PsWaveReplaceColor), rect);
         }
-        
+
         /// <summary>
         /// 指定された色のカラーパレットを置換します。
         /// </summary>
@@ -332,7 +332,7 @@ namespace Temonis
             var stride = bitmap.BackBufferStride;
             return BitmapSource.Create(image.PixelWidth, image.PixelHeight, image.DpiX, image.DpiY, PixelFormats.Indexed8, palette, bitmap.BackBuffer, height * stride, stride);
         }
-        
+
         /// <summary>
         /// 画像から最大地表震度を取得します。
         /// </summary>

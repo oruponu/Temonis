@@ -12,7 +12,6 @@ namespace Temonis.Converters
         {
             if ((bool)value)
                 return Enum.Parse(targetType, parameter.ToString());
-
             return Binding.DoNothing;
         }
     }
