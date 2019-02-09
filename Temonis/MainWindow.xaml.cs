@@ -42,8 +42,8 @@ namespace Temonis
         {
             InitializeComponent();
 
-            ((FrameworkElement)this).DataContext = DataContext;
             Instance = this;
+            ((FrameworkElement)this).DataContext = DataContext;
             Configuration.Load();
 
             _timer.Interval = TimeSpan.FromMilliseconds(1000.0);
