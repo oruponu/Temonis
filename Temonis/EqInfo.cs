@@ -110,7 +110,6 @@ namespace Temonis
             ["高知香南市"] = "香南市",
             ["高知津野町"] = "津野町",
             ["福岡古賀市"] = "古賀市",
-            ["福岡那珂川町"] = "那珂川町",
             ["福岡川崎町"] = "川崎町",
             ["福岡広川町"] = "広川町",
             ["佐賀鹿島市"] = "鹿島市",
@@ -162,7 +161,7 @@ namespace Temonis
             // 震源地
             var epicenter = Regex.Match(info, @"<.+>震源地(</.+>)+\n(<.+>)+<.+?>(.+?)</.+>").Groups[3].Value;
             epicenter += Regex.Match(info, @"<.+>震源地(</.+>)+\n(<.+>)+<.+?>(.+?)</.+>(.+?)(</.+>){2}").Groups[4].Value;
-            MainWindow.DataContext.EqInfo.Epicenter = epicenter;
+            MainWindow.DataContext.EqInfo.Epicenter = epicenter.Replace('/', '／');
 
             // 震源の緯度
             var latitude = .0;

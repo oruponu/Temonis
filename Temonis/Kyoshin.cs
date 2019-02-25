@@ -169,7 +169,7 @@ namespace Temonis
         private static readonly Intensity Observation = new Intensity
         {
             Prefs = new List<Intensity.Pref>(47),
-            Stations = new List<Intensity.Station>(Stations.Count())
+            Stations = new List<Intensity.Station>(Stations.Count)
         };
         private static bool _isTriggerWait;
         private static int _offTriggerTime;
