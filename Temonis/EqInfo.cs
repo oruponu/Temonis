@@ -156,6 +156,8 @@ namespace Temonis
 
             // 発生時刻
             var dateTime = Regex.Match(info, @"<.+>発生時刻(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value.Replace("ごろ", "");
+            if (dateTime == "---")
+                return;
             MainWindow.DataContext.EqInfo.DateTime = DateTime.TryParse(dateTime, new CultureInfo("ja-JP"), DateTimeStyles.AssumeLocal, out var arrivalTime) ? arrivalTime.ToString("yyyy年MM月dd日 HH時mm分") : "---";
 
             // 震源地
