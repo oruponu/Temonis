@@ -470,7 +470,7 @@ namespace Temonis
             context.DrawEllipse(null, pen, firstIntStation.Point, 12.0, 12.0);
 
             // 最大震度を検知した地点をラベルに設定
-            MainWindow.DataContext.Kyoshin.MaxIntString = $"{ToIntensityString(Observation.MaxInt)}（{firstIntStation.PrefName} {firstIntStation.Name}）";
+            MainWindow.DataContext.Kyoshin.MaxIntString = $"{(Configuration.RootClass.Appearance.UseJmaSeismicIntensityScale ? ToIntensityString(Observation.MaxInt) : Observation.MaxInt.ToString("F1"))}（{firstIntStation.PrefName} {firstIntStation.Name}）";
 
             // 最大震度（気象庁震度階級）を検知した地点数
             var maxIntNum = Observation.Stations.Where(station => station.Int >= .5).Count(station => ToIntensityInt(station.Int) == _maxInt);
@@ -672,12 +672,19 @@ namespace Temonis
 
         private static void UpdateLevel()
         {
-            if (MainWindow.DataContext.Kyoshin.MaxIntString.Contains('弱') || MainWindow.DataContext.Kyoshin.MaxIntString.Contains('強') || MainWindow.DataContext.Kyoshin.MaxIntString.Contains("7（"))
-                MainWindow.DataContext.Kyoshin.Level = Level.Red;
-            else if (MainWindow.DataContext.Kyoshin.MaxIntString.Contains("3（") || MainWindow.DataContext.Kyoshin.MaxIntString.Contains("4（"))
-                MainWindow.DataContext.Kyoshin.Level = Level.Yellow;
+            if (IsTriggerOn && !_isTriggerWait)
+            {
+                if (_maxInt >= 5)
+                    MainWindow.DataContext.Kyoshin.Level = Level.Red;
+                else if (_maxInt >= 3)
+                    MainWindow.DataContext.Kyoshin.Level = Level.Yellow;
+                else
+                    MainWindow.DataContext.Kyoshin.Level = Level.White;
+            }
             else
+            {
                 MainWindow.DataContext.Kyoshin.Level = Level.White;
+            }
         }
 
         public class Station

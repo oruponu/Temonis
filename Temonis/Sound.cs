@@ -45,9 +45,6 @@ namespace Temonis
         {
             switch (maxInt)
             {
-                case "不明":
-                    Play(Configuration.RootClass.Sounds.Eew.FirstReport.Unknown);
-                    break;
                 case "1":
                     Play(Configuration.RootClass.Sounds.Eew.FirstReport.Intensity1);
                     break;
@@ -74,6 +71,9 @@ namespace Temonis
                     break;
                 case "7":
                     Play(Configuration.RootClass.Sounds.Eew.FirstReport.Intensity9);
+                    break;
+                default:
+                    Play(Configuration.RootClass.Sounds.Eew.FirstReport.Unknown);
                     break;
             }
         }

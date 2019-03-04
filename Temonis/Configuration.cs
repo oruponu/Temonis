@@ -35,10 +35,20 @@ namespace Temonis
         public class Root
         {
             [XmlElement]
+            public AppearanceClass Appearance { get; set; }
+
+            [XmlElement]
             public BehaviorClass Behavior { get; set; }
 
             [XmlElement]
             public SoundsClass Sounds { get; set; }
+
+            [XmlRoot]
+            public class AppearanceClass
+            {
+                [XmlElement("UseJMASeismicIntensityScale")]
+                public bool UseJmaSeismicIntensityScale { get; set; }
+            }
 
             [XmlRoot]
             public class BehaviorClass
