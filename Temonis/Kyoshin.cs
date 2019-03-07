@@ -473,7 +473,7 @@ namespace Temonis
             MainWindow.DataContext.Kyoshin.MaxIntString = $"{(Configuration.RootClass.Appearance.UseJmaSeismicIntensityScale ? ToIntensityString(Observation.MaxInt) : Observation.MaxInt.ToString("F1"))}（{firstIntStation.PrefName} {firstIntStation.Name}）";
 
             // 最大震度（気象庁震度階級）を検知した地点数
-            var maxIntNum = Observation.Stations.Where(station => station.Int >= .5).Count(station => ToIntensityInt(station.Int) == _maxInt);
+            var maxIntNum = Observation.Stations.Where(station => station.Int >= .5).Count(station => Configuration.RootClass.Appearance.UseJmaSeismicIntensityScale ? ToIntensityInt(station.Int) == _maxInt : station.Int == Observation.MaxInt);
             MainWindow.DataContext.Kyoshin.MaxIntDetail = maxIntNum > 1 ? $"他 {(maxIntNum - 1).ToString()} 地点" : "";
 
             // 地表リアルアイム震度0.5以上を検知した都道府県をラベルに設定
@@ -747,7 +747,7 @@ namespace Temonis
                 /// <summary>
                 /// リアルタイム震度1以上の観測点数
                 /// </summary>
-                public int Number { get;set; }
+                public int Number { get; set; }
             }
 
             public class Station

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 
 namespace Temonis
 {
@@ -7,5 +8,13 @@ namespace Temonis
     /// </summary>
     public partial class App : Application
     {
+        [STAThread]
+        public static void Main()
+        {
+            Configuration.Load();
+            var app = new App();
+            app.InitializeComponent();
+            app.Run();
+        }
     }
 }

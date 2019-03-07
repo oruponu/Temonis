@@ -6,6 +6,8 @@
   <Behavior>
     <ForceActive>true</ForceActive>
   </Behavior>
+  <Experiments>
+  </Experiments>
   <Sounds>
     <Kyoshin>
       <Intensity1>Sounds\Kyoshin\1.mp3</Intensity1>

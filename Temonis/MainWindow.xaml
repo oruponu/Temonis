@@ -23,10 +23,12 @@
                         <Image Height="{StaticResource ImageHeight}" Source="{Binding Kyoshin.ImageSource}" Stretch="None" Width="{StaticResource ImageWidth}"/>
                     </Border>
                     <StackPanel Margin="24 4 24 4">
-                        <TextBlock Text="地表震度"/>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Margin="23 0 0 0" Text="{Binding Kyoshin.MaxIntString}"/>
-                            <TextBlock FontSize="11" Text="{Binding Kyoshin.MaxIntDetail}" VerticalAlignment="Bottom"/>
+                            <TextBlock Background="{StaticResource Black}" Text="地表震度"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Background="{StaticResource Black}" Margin="23 0 0 0" Text="{Binding Kyoshin.MaxIntString}"/>
+                            <TextBlock Background="{StaticResource Black}" FontSize="11" Text="{Binding Kyoshin.MaxIntDetail}" VerticalAlignment="Bottom"/>
                         </StackPanel>
                     </StackPanel>
                     <TextBlock FontSize="11" Margin="0 0 24 8" HorizontalAlignment="Right" Text="{Binding Kyoshin.Prefecture}" TextAlignment="Right" VerticalAlignment="Bottom"/>
@@ -58,7 +60,7 @@
             <Grid Grid.Row="0" Margin="0 0 0 8">
                 <Rectangle Grid.Column="0" Stroke="{Binding Eew.Level, Converter={StaticResource LevelColorConverter}}"/>
                 <TextBlock Grid.Column="0" Style="{StaticResource Header}" Text="緊急地震速報"/>
-                <Grid Margin="22 10 20 10" >
+                <Grid Margin="22 10 20 10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="20"/>
                         <RowDefinition Height="20"/>
