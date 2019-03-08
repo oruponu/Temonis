@@ -46,7 +46,7 @@ namespace Temonis
             ((FrameworkElement)this).DataContext = DataContext;
             Configuration.Load();
 
-            _timer.Interval = TimeSpan.FromMilliseconds(1000.0);
+            _timer.Interval = TimeSpan.FromSeconds(1.0);
             _timer.Tick += Timer;
             _timer.Start();
             Timer(null, EventArgs.Empty);
