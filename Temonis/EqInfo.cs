@@ -140,11 +140,14 @@ namespace Temonis
             var html = "";
             try
             {
-                html = await HttpClient.GetStringAsync(Properties.Resources.EqInfoUri);
+                var response = await HttpClient.GetAsync(Properties.Resources.EqInfoUri);
+                if (!response.IsSuccessStatusCode)
+                    return;
+                html = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
             catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
             {
-                InternalLog(ex);
+                WriteLog(ex);
             }
 
             if (string.IsNullOrEmpty(html))

@@ -40,11 +40,8 @@ namespace Temonis
 
         public MainWindow()
         {
-            InitializeComponent();
-
             Instance = this;
             ((FrameworkElement)this).DataContext = DataContext;
-            Configuration.Load();
 
             _timer.Interval = TimeSpan.FromSeconds(1.0);
             _timer.Tick += Timer;
@@ -104,12 +101,15 @@ namespace Temonis
             var json = default(Root);
             try
             {
-                using (var stream = await HttpClient.GetStreamAsync(Properties.Resources.LatestTimeUri).ConfigureAwait(false))
+                var response = await HttpClient.GetAsync(Properties.Resources.LatestTimeUri).ConfigureAwait(false);
+                if (!response.IsSuccessStatusCode)
+                    return dateTime;
+                using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                     json = (Root)new DataContractJsonSerializer(typeof(Root)).ReadObject(stream);
             }
             catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException || ex is SerializationException)
             {
-                InternalLog(ex);
+                WriteLog(ex);
             }
 
             return json == default(Root) ? dateTime : DateTime.Parse(json.LatestTime);
@@ -173,7 +173,7 @@ namespace Temonis
         }
 
         [Conditional("DEBUG")]
-        public static void InternalLog(string str)
+        public static void WriteLog(string str)
         {
             var value = $"{DateTime.Now}\n";
             value += $"[Log]\n{str}\n\n";
@@ -182,7 +182,7 @@ namespace Temonis
         }
 
         [Conditional("DEBUG")]
-        public static void InternalLog(Exception ex)
+        public static void WriteLog(Exception ex)
         {
             var value = $"{DateTime.Now}\n";
             value += $"[Message]\n{ex.Message}\n";

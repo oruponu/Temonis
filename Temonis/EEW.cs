@@ -26,12 +26,15 @@ namespace Temonis
             var json = default(Root);
             try
             {
-                using (var stream = await MainWindow.HttpClient.GetStreamAsync(Properties.Resources.EewUri + LatestTime.ToString("yyyyMMddHHmmss") + ".json"))
+                var response = await MainWindow.HttpClient.GetAsync(Properties.Resources.EewUri + LatestTime.ToString("yyyyMMddHHmmss") + ".json");
+                if (!response.IsSuccessStatusCode)
+                    return;
+                using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                     json = (Root)new DataContractJsonSerializer(typeof(Root)).ReadObject(stream);
             }
             catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException || ex is SerializationException)
             {
-                InternalLog(ex);
+                WriteLog(ex);
             }
 
             if (json == default(Root))

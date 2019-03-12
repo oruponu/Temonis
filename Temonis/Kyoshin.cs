@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -171,6 +170,7 @@ namespace Temonis
             Prefs = new List<Intensity.Pref>(47),
             Stations = new List<Intensity.Station>(Stations.Count)
         };
+        private static bool _isSucceeded;
         private static bool _isTriggerWait;
         private static int _offTriggerTime;
         private static int _maxInt;
@@ -183,7 +183,7 @@ namespace Temonis
 
         public static async Task<bool> UpdateAsync()
         {
-            var isSucceeded = false;
+            _isSucceeded = false;
             var time = LatestTime.ToString("yyyyMMdd/yyyyMMddHHmmss");
             var visual = new DrawingVisual();
             using (var context = visual.RenderOpen())
@@ -196,29 +196,31 @@ namespace Temonis
                 try
                 {
                     await DrawRealTimeImageAsync(context, time);
-                    isSucceeded = true;
                 }
-                catch (Exception ex) when (ex is HttpRequestException || ex is IOException || ex is TaskCanceledException || ex is ArgumentException)
+                catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
                 {
-                    InternalLog(ex);
+                    WriteLog(ex);
                 }
 
                 try
                 {
                     var source = await DownloadImageAsync($"{Properties.Resources.KyoshinUri}RealTimeImg/jma_s/{time}.jma_s.gif");
-                    source.Freeze();
-                    var converted = new FormatConvertedBitmap(source, PixelFormats.Bgr32, null, .0);
-                    converted.Freeze();
-                    _readTimeBitmap = new WriteableBitmap(converted);
-                    _readTimeBitmap.Lock();
-                    GetRealtimeIntensity(context);
-                    _readTimeBitmap.Unlock();
-                    _readTimeBitmap.Freeze();
-                    isSucceeded = true;
+                    if (source != null)
+                    {
+                        source.Freeze();
+                        var converted = new FormatConvertedBitmap(source, PixelFormats.Bgr32, null, .0);
+                        converted.Freeze();
+                        _readTimeBitmap = new WriteableBitmap(converted);
+                        _readTimeBitmap.Lock();
+                        GetRealtimeIntensity(context);
+                        _readTimeBitmap.Unlock();
+                        _readTimeBitmap.Freeze();
+                        _isSucceeded = true;
+                    }
                 }
-                catch (Exception ex) when (ex is HttpRequestException || ex is IOException || ex is TaskCanceledException || ex is ArgumentException)
+                catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
                 {
-                    InternalLog(ex);
+                    WriteLog(ex);
                 }
 
                 if (Eew.IsTriggerOn)
@@ -226,11 +228,10 @@ namespace Temonis
                     try
                     {
                         await DrawPsWaveImageAsync(context, time);
-                        isSucceeded = true;
                     }
-                    catch (Exception ex) when (ex is HttpRequestException || ex is IOException || ex is TaskCanceledException || ex is ArgumentException)
+                    catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
                     {
-                        InternalLog(ex);
+                        WriteLog(ex);
                     }
                 }
                 else if (EqInfo.EpicenterX != default || EqInfo.EpicenterY != default)
@@ -252,7 +253,7 @@ namespace Temonis
 
             UpdateState();
 
-            return isSucceeded;
+            return _isSucceeded;
         }
 
         /// <summary>
@@ -262,10 +263,12 @@ namespace Temonis
         /// <returns></returns>
         private static async Task<BitmapSource> DownloadImageAsync(string requestUri)
         {
-            var bytes = await MainWindow.HttpClient.GetByteArrayAsync(requestUri).ConfigureAwait(false);
+            var response = await MainWindow.HttpClient.GetAsync(requestUri).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return null;
             var image = new BitmapImage();
             image.BeginInit();
-            using (var stream = new MemoryStream(bytes))
+            using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
             {
                 image.StreamSource = stream;
                 image.CacheOption = BitmapCacheOption.OnLoad;
@@ -287,9 +290,12 @@ namespace Temonis
             var mapType = MapType[MainWindow.DataContext.Kyoshin.ComboBoxSelectedIndex];
             var mapSb = MainWindow.DataContext.Kyoshin.RadioButton == DataContext.RadioButtonEnum.Surface ? "s" : "b";
             var image = await DownloadImageAsync($"{Properties.Resources.KyoshinUri}RealTimeImg/{mapType}_{mapSb}/{time}.{mapType}_{mapSb}.gif");
+            if (image == null)
+                return;
             image.Freeze();
             var rect = new Rect(.0, .0, ImageWidth, ImageHeight);
             context.DrawImage(ReplaceColorPalette(image, in RealTimeReplaceColor), rect);
+            _isSucceeded = true;
         }
 
         /// <summary>
@@ -301,9 +307,12 @@ namespace Temonis
         private static async Task DrawPsWaveImageAsync(DrawingContext context, string time)
         {
             var image = await DownloadImageAsync($"{Properties.Resources.KyoshinUri}PSWaveImg/eew/{time}.eew.gif");
+            if (image == null)
+                return;
             image.Freeze();
             var rect = new Rect(.0, .0, ImageWidth, ImageHeight);
             context.DrawImage(ReplaceColorPalette(image, in PsWaveReplaceColor), rect);
+            _isSucceeded = true;
         }
 
         /// <summary>
