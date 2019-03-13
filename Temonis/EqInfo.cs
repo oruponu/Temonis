@@ -83,7 +83,6 @@ namespace Temonis
             ["三重紀北町"] = "紀北町",
             ["三重御浜町"] = "御浜町",
             ["滋賀日野町"] = "日野町",
-            ["大阪堺市"] = "堺市",
             ["大阪和泉市"] = "和泉市",
             ["大阪岬町"] = "岬町",
             ["大阪太子町"] = "太子町",
@@ -311,8 +310,8 @@ namespace Temonis
             pref = pref.TrimEnd('都').TrimEnd('府').TrimEnd('県');
             if (!city.StartsWith(pref) && pref != "北海道")
                 return city;
-            if (city.EndsWith("区") && !city.EndsWith("２３区") && !city.Contains("堺市"))
-                return pref == "東京" ? city.Replace("東京", "") : city;
+            if (city.EndsWith("区") && !city.EndsWith("２３区"))
+                return pref == "東京" ? city.Replace("東京", "") : city.Contains("堺市") ? city.Replace("大阪", "") : city;
             return CityAbbreviation.TryGetValue(city, out var value) ? value : city;
         }
 

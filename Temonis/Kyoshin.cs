@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -197,7 +198,7 @@ namespace Temonis
                 {
                     await DrawRealTimeImageAsync(context, time);
                 }
-                catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
+                catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException || ex is IOException)
                 {
                     WriteLog(ex);
                 }
@@ -218,7 +219,7 @@ namespace Temonis
                         _isSucceeded = true;
                     }
                 }
-                catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
+                catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException || ex is IOException || ex is ArgumentOutOfRangeException)
                 {
                     WriteLog(ex);
                 }
@@ -229,7 +230,7 @@ namespace Temonis
                     {
                         await DrawPsWaveImageAsync(context, time);
                     }
-                    catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
+                    catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException || ex is IOException)
                     {
                         WriteLog(ex);
                     }
