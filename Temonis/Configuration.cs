@@ -31,188 +31,188 @@ namespace Temonis
             }
         }
 
-        [XmlRoot("Configuration")]
+        [XmlRoot("configuration")]
         public class Root
         {
-            [XmlElement]
+            [XmlElement("appearance")]
             public AppearanceClass Appearance { get; set; }
 
-            [XmlElement]
+            [XmlElement("behavior")]
             public BehaviorClass Behavior { get; set; }
 
-            [XmlElement]
+            [XmlElement("sounds")]
             public SoundsClass Sounds { get; set; }
 
             [XmlRoot]
             public class AppearanceClass
             {
-                [XmlElement("UseJMASeismicIntensityScale")]
+                [XmlElement("useJMASeismicIntensityScale")]
                 public bool UseJmaSeismicIntensityScale { get; set; }
             }
 
             [XmlRoot]
             public class BehaviorClass
             {
-                [XmlElement]
+                [XmlElement("forceActive")]
                 public bool ForceActive { get; set; }
             }
 
             [XmlRoot]
             public class SoundsClass
             {
-                [XmlElement]
+                [XmlElement("kyoshin")]
                 public Kyoshin Kyoshin { get; set; }
 
-                [XmlElement("EEW")]
+                [XmlElement("eew")]
                 public Eew Eew { get; set; }
 
-                [XmlElement]
+                [XmlElement("eqInfo")]
                 public EqInfo EqInfo { get; set; }
             }
 
             [XmlRoot]
             public class Kyoshin
             {
-                [XmlElement]
+                [XmlElement("intensity1")]
                 public string Intensity1 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity2")]
                 public string Intensity2 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity3")]
                 public string Intensity3 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity4")]
                 public string Intensity4 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity5")]
                 public string Intensity5 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity6")]
                 public string Intensity6 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity7")]
                 public string Intensity7 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity8")]
                 public string Intensity8 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity9")]
                 public string Intensity9 { get; set; }
             }
 
             [XmlRoot]
             public class Eew
             {
-                [XmlElement]
+                [XmlElement("firstReport")]
                 public FirstReport FirstReport { get; set; }
 
-                [XmlElement]
+                [XmlElement("maxIntChange")]
                 public MaxIntChange MaxIntChange { get; set; }
             }
 
             [XmlRoot]
             public class FirstReport
             {
-                [XmlElement]
+                [XmlElement("intensity1")]
                 public string Intensity1 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity2")]
                 public string Intensity2 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity3")]
                 public string Intensity3 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity4")]
                 public string Intensity4 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity5")]
                 public string Intensity5 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity6")]
                 public string Intensity6 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity7")]
                 public string Intensity7 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity8")]
                 public string Intensity8 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity9")]
                 public string Intensity9 { get; set; }
 
-                [XmlElement]
+                [XmlElement("unknown")]
                 public string Unknown { get; set; }
             }
 
             [XmlRoot]
             public class MaxIntChange
             {
-                [XmlElement]
+                [XmlElement("cancel")]
                 public string Cancel { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity1")]
                 public string Intensity1 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity2")]
                 public string Intensity2 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity3")]
                 public string Intensity3 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity4")]
                 public string Intensity4 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity5")]
                 public string Intensity5 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity6")]
                 public string Intensity6 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity7")]
                 public string Intensity7 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity8")]
                 public string Intensity8 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity9")]
                 public string Intensity9 { get; set; }
 
-                [XmlElement]
+                [XmlElement("unknown")]
                 public string Unknown { get; set; }
             }
 
             [XmlRoot]
             public class EqInfo
             {
-                [XmlElement]
+                [XmlElement("distant")]
                 public string Distant { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity1")]
                 public string Intensity1 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity2")]
                 public string Intensity2 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity3")]
                 public string Intensity3 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity4")]
                 public string Intensity4 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity5")]
                 public string Intensity5 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity6")]
                 public string Intensity6 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity7")]
                 public string Intensity7 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity8")]
                 public string Intensity8 { get; set; }
 
-                [XmlElement]
+                [XmlElement("intensity9")]
                 public string Intensity9 { get; set; }
             }
         }

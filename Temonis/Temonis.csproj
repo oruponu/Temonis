@@ -258,5 +258,10 @@
   <ItemGroup>
     <Resource Include="Resources\Dummy.wav" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Sounds\EqInfo\Distant.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
