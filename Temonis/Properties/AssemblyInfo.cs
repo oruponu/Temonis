@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Temonis")]
-[assembly: AssemblyCopyright("Copyright © 2016-2019 Oruponu")]
+[assembly: AssemblyCopyright("© 2016-2019 Oruponu")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
