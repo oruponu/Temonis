@@ -12,8 +12,8 @@ namespace Temonis
 {
     public static class Eew
     {
-        private static Dictionary<string, string> _info = new Dictionary<string, string>();
-        private static Dictionary<string, string> _prevInfo = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> Info = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> PrevInfo = new Dictionary<string, string>();
 
         public static bool IsTriggerOn { get; private set; }
 
@@ -44,17 +44,14 @@ namespace Temonis
             {
                 if ((bool)json.IsCancel)
                 {
-                    IsTriggerOn = false;
                     MainWindow.DataContext.Eew.Message = "緊急地震速報は取り消されました。";
-                    MainWindow.DataContext.Eew.Visible = false;
-                    _info[json.ReportId] = "0";
                 }
                 else if (EqInfo.Id == json.ReportId && !Kyoshin.IsTriggerOn && (bool)json.IsFinal)
                 {
                     IsTriggerOn = false;
-                    _info[json.ReportId] = "-1";
+                    Info[json.ReportId] = "-1";
                 }
-                else if (!_info.TryGetValue(json.ReportId, out var value) || value != null && value != "-1")
+                else if (!Info.TryGetValue(json.ReportId, out var value) || value != null && value != "-1")
                 {
                     IsTriggerOn = true;
                     var serial = '第' + json.ReportNum + '報';
@@ -62,22 +59,22 @@ namespace Temonis
                         serial += " 最終";
                     MainWindow.DataContext.Eew.Message = $"緊急地震速報（{json.Alertflg}）{serial}";
                     MainWindow.DataContext.Eew.Visible = true;
-                    MainWindow.DataContext.Eew.DateTime = DateTime.ParseExact(json.OriginTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture).ToString("yyyy年MM月dd日 HH時mm分ss秒");
+                    MainWindow.DataContext.Eew.DateTime = DateTime.ParseExact(json.OriginTime, "yyyyMMddHHmmss", new CultureInfo("ja-JP")).ToString("yyyy年MM月dd日 HH時mm分ss秒");
                     MainWindow.DataContext.Eew.Epicenter = json.RegionName;
                     MainWindow.DataContext.Eew.Depth = json.Depth;
                     MainWindow.DataContext.Eew.Magnitude = json.Magunitude;
                     MainWindow.DataContext.Eew.Intensity = json.Calcintensity;
 
                     if (value == null)
-                        _info.Add(json.ReportId, json.Calcintensity);
+                        Info.Add(json.ReportId, json.Calcintensity);
                     else if (value != json.Calcintensity)
-                        _info[json.ReportId] = json.Calcintensity;
+                        Info[json.ReportId] = json.Calcintensity;
                 }
             }
             else
             {
                 IsTriggerOn = false;
-                _info = new Dictionary<string, string>();
+                Info.Clear();
             }
 
             UpdateState();
@@ -88,22 +85,35 @@ namespace Temonis
             if (IsTriggerOn)
             {
                 if (MainWindow.DataContext.Eew.Message.Contains("警報"))
-                    MainWindow.DataContext.Eew.Level = Level.Red;
-                else if (MainWindow.DataContext.Eew.Message.Contains("予報"))
-                    MainWindow.DataContext.Eew.Level = Level.Yellow;
-
-                foreach (var info in _info)
                 {
-                    if (!_prevInfo.TryGetValue(info.Key, out var value))
+                    MainWindow.DataContext.Eew.Level = Level.Red;
+                }
+                else if (MainWindow.DataContext.Eew.Message.Contains("予報"))
+                {
+                    MainWindow.DataContext.Eew.Level = Level.Yellow;
+                }
+                else // キャンセル報
+                {
+                    IsTriggerOn = false;
+                    MainWindow.DataContext.Eew.Level = Level.White;
+                    PrevInfo.Clear();
+                    Sound.PlayMaxIntChange("0");
+                    SetActive();
+                    return;
+                }
+
+                foreach (var info in Info)
+                {
+                    if (!PrevInfo.TryGetValue(info.Key, out var value))
                     {
-                        _prevInfo.Add(info.Key, info.Value);
-                        Sound.PlayFirstReportAsync(info.Value);
+                        PrevInfo.Add(info.Key, info.Value);
+                        Sound.PlayFirstReport(info.Value);
                         SetActive();
                     }
                     else if (value != info.Value)
                     {
-                        _prevInfo[info.Key] = info.Value;
-                        Sound.PlayMaxIntChangeAsync(info.Value);
+                        PrevInfo[info.Key] = info.Value;
+                        Sound.PlayMaxIntChange(info.Value);
                         SetActive();
                     }
                 }
@@ -111,7 +121,7 @@ namespace Temonis
             else
             {
                 MainWindow.DataContext.Eew.Level = Level.White;
-                _prevInfo = new Dictionary<string, string>();
+                PrevInfo.Clear();
             }
         }
 

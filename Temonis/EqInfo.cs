@@ -363,7 +363,7 @@ namespace Temonis
                 MainWindow.DataContext.EqInfo.Level = Level.White;
 
             if (!string.IsNullOrEmpty(_prevId))
-                Sound.PlayEqInfoAsync(maxInt);
+                Sound.PlayEqInfo(maxInt);
 
             SetActive();
 

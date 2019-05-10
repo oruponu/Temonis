@@ -41,7 +41,7 @@ namespace Temonis
             }
         }
 
-        public static void PlayFirstReportAsync(string maxInt)
+        public static void PlayFirstReport(string maxInt)
         {
             switch (maxInt)
             {
@@ -78,7 +78,7 @@ namespace Temonis
             }
         }
 
-        public static void PlayMaxIntChangeAsync(string maxInt)
+        public static void PlayMaxIntChange(string maxInt)
         {
             switch (maxInt)
             {
@@ -118,7 +118,7 @@ namespace Temonis
             }
         }
 
-        public static void PlayEqInfoAsync(string maxInt)
+        public static void PlayEqInfo(string maxInt)
         {
             switch (maxInt)
             {
