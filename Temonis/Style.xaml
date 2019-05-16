@@ -1,6 +1,5 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:c="clr-namespace:Temonis.Converters"
                     xmlns:local="clr-namespace:Temonis"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
     <SolidColorBrush x:Key="Black" Color="#1A1A24"/>
@@ -384,8 +383,4 @@
         </Style.Triggers>
     </Style>
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-    <c:DataGridTextColorConverter x:Key="DataGridTextColorConverter"/>
-    <c:LevelColorConverter x:Key="LevelColorConverter"/>
-    <c:RadioButtonConverter x:Key="RadioButtonConverter"/>
-    <c:SliderConverter x:Key="SliderConverter"/>
 </ResourceDictionary>

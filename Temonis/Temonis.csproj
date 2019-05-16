@@ -61,7 +61,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="Configuration.cs" />
-    <Compile Include="Converters\DataGridTextColorConverter.cs" />
     <Compile Include="Converters\LevelColorConverter.cs" />
     <Compile Include="Converters\SliderConverter.cs" />
     <Compile Include="DataContext.cs" />
