@@ -1,22 +1,13 @@
-﻿using System.ComponentModel;
-
-namespace Temonis
+﻿namespace Temonis
 {
-    public class DataContext : INotifyPropertyChanged
+    public class DataContext : BindableBase
     {
-        private static readonly PropertyChangedEventArgs LatestTimeStringPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(LatestTimeString));
         private string _latestTimeString = "接続しています...";
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public string LatestTimeString
         {
             get => _latestTimeString;
-            set
-            {
-                _latestTimeString = value;
-                PropertyChanged?.Invoke(this, LatestTimeStringPropertyChangedEventArgs);
-            }
+            set => SetProperty(ref _latestTimeString, value);
         }
 
         public Kyoshin.DataContext Kyoshin { get; set; } = new Kyoshin.DataContext();

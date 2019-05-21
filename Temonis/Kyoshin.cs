@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -784,16 +783,8 @@ namespace Temonis
             }
         }
 
-        public class DataContext : INotifyPropertyChanged
+        public class DataContext : BindableBase
         {
-            private static readonly PropertyChangedEventArgs LevelPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(Level));
-            private static readonly PropertyChangedEventArgs ImageSourcePropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(ImageSource));
-            private static readonly PropertyChangedEventArgs MaxIntStringPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(MaxIntString));
-            private static readonly PropertyChangedEventArgs MaxIntDetailPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(MaxIntDetail));
-            private static readonly PropertyChangedEventArgs PrefecturePropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(Prefecture));
-            private static readonly PropertyChangedEventArgs ComboBoxSelectedIndexPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(ComboBoxSelectedIndex));
-            private static readonly PropertyChangedEventArgs RadioButtonPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(RadioButton));
-            private static readonly PropertyChangedEventArgs SliderValuePropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(SliderValue));
             private Level _level;
             private ImageSource _imageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/BaseMap.png", UriKind.Absolute));
             private string _maxIntString;
@@ -803,66 +794,40 @@ namespace Temonis
             private RadioButtonEnum _radioButton;
             private double _sliderValue;
 
-            public event PropertyChangedEventHandler PropertyChanged;
-
             public Level Level
             {
                 get => _level;
-                set
-                {
-                    _level = value;
-                    PropertyChanged?.Invoke(this, LevelPropertyChangedEventArgs);
-                }
+                set => SetProperty(ref _level, value);
             }
 
             public ImageSource ImageSource
             {
                 get => _imageSource;
-                set
-                {
-                    _imageSource = value;
-                    PropertyChanged?.Invoke(this, ImageSourcePropertyChangedEventArgs);
-                }
+                set => SetProperty(ref _imageSource, value);
             }
 
             public string MaxIntString
             {
                 get => _maxIntString;
-                set
-                {
-                    _maxIntString = value;
-                    PropertyChanged?.Invoke(this, MaxIntStringPropertyChangedEventArgs);
-                }
+                set => SetProperty(ref _maxIntString, value);
             }
 
             public string MaxIntDetail
             {
                 get => _maxIntDetail;
-                set
-                {
-                    _maxIntDetail = value;
-                    PropertyChanged?.Invoke(this, MaxIntDetailPropertyChangedEventArgs);
-                }
+                set => SetProperty(ref _maxIntDetail, value);
             }
 
             public string Prefecture
             {
                 get => _prefecture;
-                set
-                {
-                    _prefecture = value;
-                    PropertyChanged?.Invoke(this, PrefecturePropertyChangedEventArgs);
-                }
+                set => SetProperty(ref _prefecture, value);
             }
 
             public int ComboBoxSelectedIndex
             {
                 get => _comboBoxSelectedIndex;
-                set
-                {
-                    _comboBoxSelectedIndex = value;
-                    PropertyChanged?.Invoke(this, ComboBoxSelectedIndexPropertyChangedEventArgs);
-                }
+                set => SetProperty(ref _comboBoxSelectedIndex, value);
             }
 
             public enum RadioButtonEnum
@@ -874,21 +839,13 @@ namespace Temonis
             public RadioButtonEnum RadioButton
             {
                 get => _radioButton;
-                set
-                {
-                    _radioButton = value;
-                    PropertyChanged?.Invoke(this, RadioButtonPropertyChangedEventArgs);
-                }
+                set => SetProperty(ref _radioButton, value);
             }
 
             public double SliderValue
             {
                 get => _sliderValue;
-                set
-                {
-                    _sliderValue = value;
-                    PropertyChanged?.Invoke(this, SliderValuePropertyChangedEventArgs);
-                }
+                set => SetProperty(ref _sliderValue, value);
             }
         }
     }

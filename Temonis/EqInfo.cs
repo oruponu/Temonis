@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
@@ -370,81 +369,47 @@ namespace Temonis
             _prevId = Id;
         }
 
-        public class Intensity : INotifyPropertyChanged
+        public class Intensity : BindableBase
         {
-            private static readonly PropertyChangedEventArgs MaxIntPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(MaxInt));
-            private static readonly PropertyChangedEventArgs MaxIntVisiblePropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(MaxIntVisible));
-            private static readonly PropertyChangedEventArgs PrefNamePropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(PrefName));
-            private static readonly PropertyChangedEventArgs PrefNameVisiblePropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(PrefNameVisible));
-            private static readonly PropertyChangedEventArgs CityNamePropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(CityName));
             private string _maxInt;
             private bool _maxIntVisible;
             private string _prefName;
             private bool _prefNameVisible;
             private string _cityName;
 
-            public event PropertyChangedEventHandler PropertyChanged;
-
             public string MaxInt
             {
                 get => _maxInt;
-                set
-                {
-                    _maxInt = value;
-                    PropertyChanged?.Invoke(this, MaxIntPropertyChangedEventArgs);
-                }
+                set => SetProperty(ref _maxInt, value);
             }
 
             public bool MaxIntVisible
             {
                 get => _maxIntVisible;
-                set
-                {
-                    _maxIntVisible = value;
-                    PropertyChanged?.Invoke(this, MaxIntVisiblePropertyChangedEventArgs);
-                }
+                set => SetProperty(ref _maxIntVisible, value);
             }
 
             public string PrefName
             {
                 get => _prefName;
-                set
-                {
-                    _prefName = value;
-                    PropertyChanged?.Invoke(this, PrefNamePropertyChangedEventArgs);
-                }
+                set => SetProperty(ref _prefName, value);
             }
 
             public bool PrefNameVisible
             {
                 get => _prefNameVisible;
-                set
-                {
-                    _prefNameVisible = value;
-                    PropertyChanged?.Invoke(this, PrefNameVisiblePropertyChangedEventArgs);
-                }
+                set => SetProperty(ref _prefNameVisible, value);
             }
 
             public string CityName
             {
                 get => _cityName;
-                set
-                {
-                    _cityName = value;
-                    PropertyChanged?.Invoke(this, CityNamePropertyChangedEventArgs);
-                }
+                set => SetProperty(ref _cityName, value);
             }
         }
 
-        public class DataContext : INotifyPropertyChanged
+        public class DataContext : BindableBase
         {
-            private static readonly PropertyChangedEventArgs LevelPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(Level));
-            private static readonly PropertyChangedEventArgs DateTimePropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(DateTime));
-            private static readonly PropertyChangedEventArgs EpicenterPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(Epicenter));
-            private static readonly PropertyChangedEventArgs DepthPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(Depth));
-            private static readonly PropertyChangedEventArgs MagnitudePropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(Magnitude));
-            private static readonly PropertyChangedEventArgs CommentPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(Comment));
-            private static readonly PropertyChangedEventArgs IntensityPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(IntensityList));
             private Level _level;
             private string _dateTime;
             private string _epicenter;
@@ -453,76 +418,46 @@ namespace Temonis
             private string _comment;
             private List<Intensity> _intensityList;
 
-            public event PropertyChangedEventHandler PropertyChanged;
-
             public Level Level
             {
                 get => _level;
-                set
-                {
-                    _level = value;
-                    PropertyChanged?.Invoke(this, LevelPropertyChangedEventArgs);
-                }
+                set => SetProperty(ref _level, value);
             }
 
             public string DateTime
             {
                 get => _dateTime;
-                set
-                {
-                    _dateTime = value;
-                    PropertyChanged?.Invoke(this, DateTimePropertyChangedEventArgs);
-                }
+                set => SetProperty(ref _dateTime, value);
             }
 
             public string Epicenter
             {
                 get => _epicenter;
-                set
-                {
-                    _epicenter = value;
-                    PropertyChanged?.Invoke(this, EpicenterPropertyChangedEventArgs);
-                }
+                set => SetProperty(ref _epicenter, value);
             }
 
             public string Depth
             {
                 get => _depth;
-                set
-                {
-                    _depth = value;
-                    PropertyChanged?.Invoke(this, DepthPropertyChangedEventArgs);
-                }
+                set => SetProperty(ref _depth, value);
             }
 
             public string Magnitude
             {
                 get => _magnitude;
-                set
-                {
-                    _magnitude = value;
-                    PropertyChanged?.Invoke(this, MagnitudePropertyChangedEventArgs);
-                }
+                set => SetProperty(ref _magnitude, value);
             }
 
             public string Comment
             {
                 get => _comment;
-                set
-                {
-                    _comment = value;
-                    PropertyChanged?.Invoke(this, CommentPropertyChangedEventArgs);
-                }
+                set => SetProperty(ref _comment, value);
             }
 
             public List<Intensity> IntensityList
             {
                 get => _intensityList;
-                set
-                {
-                    _intensityList = value;
-                    PropertyChanged?.Invoke(this, IntensityPropertyChangedEventArgs);
-                }
+                set => SetProperty(ref _intensityList, value);
             }
         }
     }

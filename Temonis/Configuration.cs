@@ -12,9 +12,9 @@ namespace Temonis
 
         internal static void Load()
         {
-            var serializer = new XmlSerializer(typeof(Root));
             if (File.Exists(FileName))
             {
+                var serializer = new XmlSerializer(typeof(Root));
                 try
                 {
                     using (var stream = File.OpenRead(FileName))
