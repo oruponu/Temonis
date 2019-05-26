@@ -33,10 +33,10 @@ namespace Temonis
         public static DateTime LatestTime
         {
             get => _latestTime.AddSeconds(DataContext.Kyoshin.SliderValue);
-            set => _latestTime = value;
+            private set => _latestTime = value;
         }
 
-        public new static DataContext DataContext { get; set; } = new DataContext();
+        public new static DataContext DataContext { get; } = new DataContext();
 
         public MainWindow()
         {

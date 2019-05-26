@@ -176,7 +176,7 @@ namespace Temonis
         private static int _maxInt;
         private static bool _prevTriggerOn;
         private static bool _prevTriggerWait;
-        private static int _prevMaxInt;
+        private static int _triggerMaxInt;
         private static WriteableBitmap _readTimeBitmap;
 
         public static bool IsTriggerOn { get; private set; }
@@ -653,30 +653,35 @@ namespace Temonis
             return seismicInt < 6.5 ? "6強" : "7";
         }
 
-        public static void UpdateState()
+        private static void UpdateState()
         {
-            if (IsTriggerOn && !_isTriggerWait && !Eew.IsTriggerOn)
+            if (IsTriggerOn)
             {
-                if (_maxInt >= 2 && (_prevTriggerWait != _isTriggerWait || _prevMaxInt < _maxInt) ||
-                    _maxInt >= 1 && (!_prevTriggerOn || _prevMaxInt < _maxInt))
+                if (_triggerMaxInt < _maxInt)
                 {
                     UpdateLevel();
-                    Sound.PlayKyoshin(_maxInt);
-                    SetActive();
+                    _triggerMaxInt = _maxInt;
+                    if (!_isTriggerWait && !Eew.IsTriggerOn)
+                    {
+                        Sound.PlayKyoshin(_maxInt);
+                        SetActive();
+                    }
                 }
-                else if (_prevMaxInt > _maxInt)
+                else if (_isTriggerWait != _prevTriggerWait)
                 {
                     UpdateLevel();
                 }
             }
-            else if (_prevMaxInt != _maxInt || _prevTriggerWait != _isTriggerWait)
+            else if (_prevTriggerOn && !IsTriggerOn)
             {
+                _triggerMaxInt = _maxInt;
+            }
+
+            if (_triggerMaxInt > _maxInt)
                 UpdateLevel();
-            }
 
             _prevTriggerOn = IsTriggerOn;
             _prevTriggerWait = _isTriggerWait;
-            _prevMaxInt = _maxInt;
         }
 
         private static void UpdateLevel()
@@ -696,7 +701,7 @@ namespace Temonis
             }
         }
 
-        public class Station
+        private class Station
         {
             /// <summary>
             /// 観測点が有効であるか

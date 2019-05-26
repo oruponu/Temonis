@@ -123,11 +123,11 @@ namespace Temonis
         private static string _prevInfo;
         private static string _prevId;
 
-        public static string Id { get; set; }
+        public static string Id { get; private set; }
 
-        public static double EpicenterX { get; set; }
+        public static double EpicenterX { get; private set; }
 
-        public static double EpicenterY { get; set; }
+        public static double EpicenterY { get; private set; }
 
         /// <summary>
         /// 地震情報を取得
