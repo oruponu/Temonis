@@ -20,14 +20,14 @@ namespace Temonis
         /// <summary>
         /// 観測点リスト
         /// </summary>
-        private static readonly IReadOnlyList<Station> Stations = Encoding.UTF8.GetString(DecompressResource(Properties.Resources.Stations, 48141)).TrimEnd('\0').Split('\n').Select(line => new Station
+        private static readonly IReadOnlyList<Station> Stations = Encoding.UTF8.GetString(DecompressResource(Properties.Resources.Stations, 48141)).Split('\n').Select(line => new Station
         {
             IsEnabled = Convert.ToBoolean(int.Parse(line.Split(',')[0])),
-            Name = line.Split(',')[1],
-            PrefName = line.Split(',')[2],
+            Name = string.Intern(line.Split(',')[1]),
+            PrefName = string.Intern(line.Split(',')[2]),
             X = int.Parse(line.Split(',')[3]),
             Y = int.Parse(line.Split(',')[4])
-        }).ToList();
+        }).ToArray();
 
         /// <summary>
         /// 地図の種類
@@ -175,7 +175,6 @@ namespace Temonis
         private static int _offTriggerTime;
         private static int _maxInt;
         private static bool _prevTriggerOn;
-        private static bool _prevTriggerWait;
         private static int _triggerMaxInt;
         private static WriteableBitmap _readTimeBitmap;
 
@@ -238,7 +237,7 @@ namespace Temonis
                 {
                     var image = new BitmapImage(new Uri("pack://application:,,,/Resources/Epicenter.png", UriKind.Absolute));
                     image.Freeze();
-                    context.DrawImage(image, new Rect((int)(EqInfo.EpicenterX - image.Width / 2.0), (int)(EqInfo.EpicenterY - image.Height / 2.0), image.Width, image.Height));
+                    context.DrawImage(image, new Rect((int)(EqInfo.EpicenterX - image.Width * .5), (int)(EqInfo.EpicenterY - image.Height * .5), image.Width, image.Height));
                 }
 
                 imageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/BaseMapBorder.png", UriKind.Absolute));
@@ -268,14 +267,15 @@ namespace Temonis
                 return null;
             var image = new BitmapImage();
             image.BeginInit();
+            image.CacheOption = BitmapCacheOption.OnLoad;
+            image.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
             using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
             {
                 image.StreamSource = stream;
-                image.CacheOption = BitmapCacheOption.OnLoad;
                 image.EndInit();
-                image.Freeze();
             }
 
+            image.Freeze();
             return image;
         }
 
@@ -361,24 +361,22 @@ namespace Temonis
 
                 var station = new Intensity.Station
                 {
-                    Name = Stations[i].Name,
-                    PrefName = Stations[i].PrefName,
+                    Index = i,
                     Int = realtimeInt,
-                    Point = new Point(Stations[i].X, Stations[i].Y)
                 };
                 Observation.Stations.Add(station);
 
                 // 都道府県リストを作成
                 if (realtimeInt < .5)
                     continue;
-                if (!station.PrefName.Contains('県') && !station.PrefName.Contains('府') &&
-                    !station.PrefName.Contains('道') && !station.PrefName.Contains('都'))
+                if (!Stations[station.Index].PrefName.Contains('県') && !Stations[station.Index].PrefName.Contains('府') &&
+                    !Stations[station.Index].PrefName.Contains('道') && !Stations[station.Index].PrefName.Contains('都'))
                     continue;
-                if (!Observation.Prefs.Select(pref => pref.Name).Contains(Stations[i].PrefName))
+                if (!Observation.Prefs.Select(pref => pref.Name).Contains(Stations[station.Index].PrefName))
                 {
                     var pref = new Intensity.Pref
                     {
-                        Name = Stations[i].PrefName,
+                        Name = Stations[station.Index].PrefName,
                         MaxInt = realtimeInt,
                         Number = 1
                     };
@@ -386,7 +384,7 @@ namespace Temonis
                 }
                 else
                 {
-                    var index = Observation.Prefs.FindIndex(pref => pref.Name == Stations[i].PrefName);
+                    var index = Observation.Prefs.FindIndex(pref => pref.Name == Stations[station.Index].PrefName);
                     if (Observation.Prefs[index].MaxInt < realtimeInt)
                         Observation.Prefs[index].MaxInt = realtimeInt;
                     Observation.Prefs[index].Number++;
@@ -399,28 +397,28 @@ namespace Temonis
             var thirdIntStation = Observation.Stations.ElementAt(2);
 
             // トリガチェック
-            var nearest = Observation.Stations.OrderBy(station => Math.Sqrt((station.Point.X - firstIntStation.Point.X) * (station.Point.X - firstIntStation.Point.X) + (station.Point.Y - firstIntStation.Point.Y) * (station.Point.Y - firstIntStation.Point.Y))).ElementAt(1);
-            var range = Math.Sqrt((nearest.Point.X - firstIntStation.Point.X) * (nearest.Point.X - firstIntStation.Point.X) + (nearest.Point.Y - firstIntStation.Point.Y) * (nearest.Point.Y - firstIntStation.Point.Y)) * 1.1;
-            var minRange = SetComputeRange(firstIntStation.PrefName);
+            var nearest = Observation.Stations.OrderBy(station => Math.Sqrt((Stations[station.Index].X - Stations[firstIntStation.Index].X) * (Stations[station.Index].X - Stations[firstIntStation.Index].X) + (Stations[station.Index].Y - Stations[firstIntStation.Index].Y) * (Stations[station.Index].Y - Stations[firstIntStation.Index].Y))).ElementAt(1);
+            var range = Math.Sqrt((Stations[nearest.Index].X - Stations[firstIntStation.Index].X) * (Stations[nearest.Index].X - Stations[firstIntStation.Index].X) + (Stations[nearest.Index].Y - Stations[firstIntStation.Index].Y) * (Stations[nearest.Index].Y - Stations[firstIntStation.Index].Y)) * 1.1;
+            var minRange = SetComputeRange(Stations[firstIntStation.Index].PrefName);
             if (range < minRange)
                 range = minRange;
-            var stations = Observation.Stations.Where(station => Math.Sqrt((station.Point.X - firstIntStation.Point.X) * (station.Point.X - firstIntStation.Point.X) + (station.Point.Y - firstIntStation.Point.Y) * (station.Point.Y - firstIntStation.Point.Y)) <= range).ToArray();
+            var stations = Observation.Stations.Where(station => Math.Sqrt((Stations[station.Index].X - Stations[firstIntStation.Index].X) * (Stations[station.Index].X - Stations[firstIntStation.Index].X) + (Stations[station.Index].Y - Stations[firstIntStation.Index].Y) * (Stations[station.Index].Y - Stations[firstIntStation.Index].Y)) <= range).ToArray();
             var firstScore = ComputeScore(stations);
-            nearest = Observation.Stations.OrderBy(station => Math.Sqrt((station.Point.X - secondIntStation.Point.X) * (station.Point.X - secondIntStation.Point.X) + (station.Point.Y - secondIntStation.Point.Y) * (station.Point.Y - secondIntStation.Point.Y))).ElementAt(1);
-            range = Math.Sqrt((nearest.Point.X - secondIntStation.Point.X) * (nearest.Point.X - secondIntStation.Point.X) + (nearest.Point.Y - secondIntStation.Point.Y) * (nearest.Point.Y - secondIntStation.Point.Y)) * 1.1;
-            minRange = SetComputeRange(secondIntStation.PrefName);
+            nearest = Observation.Stations.OrderBy(station => Math.Sqrt((Stations[station.Index].X - Stations[secondIntStation.Index].X) * (Stations[station.Index].X - Stations[secondIntStation.Index].X) + (Stations[station.Index].Y - Stations[secondIntStation.Index].Y) * (Stations[station.Index].Y - Stations[secondIntStation.Index].Y))).ElementAt(1);
+            range = Math.Sqrt((Stations[nearest.Index].X - Stations[secondIntStation.Index].X) * (Stations[nearest.Index].X - Stations[secondIntStation.Index].X) + (Stations[nearest.Index].Y - Stations[secondIntStation.Index].Y) * (Stations[nearest.Index].Y - Stations[secondIntStation.Index].Y)) * 1.1;
+            minRange = SetComputeRange(Stations[secondIntStation.Index].PrefName);
             if (range < minRange)
                 range = minRange;
-            stations = Observation.Stations.Skip(1).Where(station => Math.Sqrt((station.Point.X - secondIntStation.Point.X) * (station.Point.X - secondIntStation.Point.X) + (station.Point.Y - secondIntStation.Point.Y) * (station.Point.Y - secondIntStation.Point.Y)) <= range).ToArray();
+            stations = Observation.Stations.Skip(1).Where(station => Math.Sqrt((Stations[station.Index].X - Stations[secondIntStation.Index].X) * (Stations[station.Index].X - Stations[secondIntStation.Index].X) + (Stations[station.Index].Y - Stations[secondIntStation.Index].Y) * (Stations[station.Index].Y - Stations[secondIntStation.Index].Y)) <= range).ToArray();
             var secondScore = 0;
             if (secondIntStation.Int >= .5)
                 secondScore = ComputeScore(stations);
-            nearest = Observation.Stations.OrderBy(station => Math.Sqrt((station.Point.X - thirdIntStation.Point.X) * (station.Point.X - thirdIntStation.Point.X) + (station.Point.Y - thirdIntStation.Point.Y) * (station.Point.Y - thirdIntStation.Point.Y))).ElementAt(1);
-            range = Math.Sqrt((nearest.Point.X - thirdIntStation.Point.X) * (nearest.Point.X - thirdIntStation.Point.X) + (nearest.Point.Y - thirdIntStation.Point.Y) * (nearest.Point.Y - thirdIntStation.Point.Y)) * 1.1;
-            minRange = SetComputeRange(thirdIntStation.PrefName);
+            nearest = Observation.Stations.OrderBy(station => Math.Sqrt((Stations[station.Index].X - Stations[thirdIntStation.Index].X) * (Stations[station.Index].X - Stations[thirdIntStation.Index].X) + (Stations[station.Index].Y - Stations[thirdIntStation.Index].Y) * (Stations[station.Index].Y - Stations[thirdIntStation.Index].Y))).ElementAt(1);
+            range = Math.Sqrt((Stations[nearest.Index].X - Stations[thirdIntStation.Index].X) * (Stations[nearest.Index].X - Stations[thirdIntStation.Index].X) + (Stations[nearest.Index].Y - Stations[thirdIntStation.Index].Y) * (Stations[nearest.Index].Y - Stations[thirdIntStation.Index].Y)) * 1.1;
+            minRange = SetComputeRange(Stations[thirdIntStation.Index].PrefName);
             if (range < minRange)
                 range = minRange;
-            stations = Observation.Stations.Skip(2).Where(station => Math.Sqrt((station.Point.X - thirdIntStation.Point.X) * (station.Point.X - thirdIntStation.Point.X) + (station.Point.Y - thirdIntStation.Point.Y) * (station.Point.Y - thirdIntStation.Point.Y)) <= range).ToArray();
+            stations = Observation.Stations.Skip(2).Where(station => Math.Sqrt((Stations[station.Index].X - Stations[thirdIntStation.Index].X) * (Stations[station.Index].X - Stations[thirdIntStation.Index].X) + (Stations[station.Index].Y - Stations[thirdIntStation.Index].Y) * (Stations[station.Index].Y - Stations[thirdIntStation.Index].Y)) <= range).ToArray();
             var thirdScore = 0;
             if (thirdIntStation.Int >= .5)
                 thirdScore = ComputeScore(stations);
@@ -473,13 +471,13 @@ namespace Temonis
             Observation.Prefs = Observation.Prefs.Where(pref => pref.Number > 2).OrderByDescending(pref => pref.MaxInt).ThenBy(pref => pref.Number).ToList();
 
             // 最大震度を検知した地点に円を描画
-            var color = GetColor((int)firstIntStation.Point.X, (int)firstIntStation.Point.Y);
+            var color = GetColor(Stations[firstIntStation.Index].X, Stations[firstIntStation.Index].Y);
             var brush = new SolidColorBrush(color);
             var pen = new Pen(brush, 1.0);
-            context.DrawEllipse(null, pen, firstIntStation.Point, 12.0, 12.0);
+            context.DrawEllipse(null, pen, new Point(Stations[firstIntStation.Index].X, Stations[firstIntStation.Index].Y), 12.0, 12.0);
 
             // 最大震度を検知した地点をラベルに設定
-            MainWindow.DataContext.Kyoshin.MaxIntString = $"{(Configuration.RootClass.Appearance.UseJmaSeismicIntensityScale ? ToIntensityString(Observation.MaxInt) : Observation.MaxInt.ToString("F1"))}（{firstIntStation.PrefName} {firstIntStation.Name}）";
+            MainWindow.DataContext.Kyoshin.MaxIntString = $"{(Configuration.RootClass.Appearance.UseJmaSeismicIntensityScale ? ToIntensityString(Observation.MaxInt) : Observation.MaxInt.ToString("F1"))}（{Stations[firstIntStation.Index].PrefName} {Stations[firstIntStation.Index].Name}）";
 
             // 最大震度（気象庁震度階級）を検知した地点数
             var maxIntNum = Observation.Stations.Where(station => station.Int >= .5).Count(station => Configuration.RootClass.Appearance.UseJmaSeismicIntensityScale ? ToIntensityInt(station.Int) == _maxInt : station.Int == Observation.MaxInt);
@@ -517,8 +515,8 @@ namespace Temonis
                 }
                 else
                 {
-                    if (firstPref.PrefName.EndsWith("県") || firstPref.PrefName.EndsWith("府") || firstPref.PrefName.EndsWith("道") || firstPref.PrefName.EndsWith("都"))
-                        MainWindow.DataContext.Kyoshin.Prefecture = firstPref.PrefName;
+                    if (Stations[firstPref.Index].PrefName.EndsWith("県") || Stations[firstPref.Index].PrefName.EndsWith("府") || Stations[firstPref.Index].PrefName.EndsWith("道") || Stations[firstPref.Index].PrefName.EndsWith("都"))
+                        MainWindow.DataContext.Kyoshin.Prefecture = Stations[firstPref.Index].PrefName;
                     else
                         MainWindow.DataContext.Kyoshin.Prefecture = "";
                 }
@@ -655,11 +653,12 @@ namespace Temonis
 
         private static void UpdateState()
         {
+            UpdateLevel();
+
             if (IsTriggerOn)
             {
                 if (_triggerMaxInt < _maxInt)
                 {
-                    UpdateLevel();
                     _triggerMaxInt = _maxInt;
                     if (!_isTriggerWait && !Eew.IsTriggerOn)
                     {
@@ -667,21 +666,13 @@ namespace Temonis
                         SetActive();
                     }
                 }
-                else if (_isTriggerWait != _prevTriggerWait)
-                {
-                    UpdateLevel();
-                }
             }
             else if (_prevTriggerOn && !IsTriggerOn)
             {
                 _triggerMaxInt = _maxInt;
             }
 
-            if (_triggerMaxInt > _maxInt)
-                UpdateLevel();
-
             _prevTriggerOn = IsTriggerOn;
-            _prevTriggerWait = _isTriggerWait;
         }
 
         private static void UpdateLevel()
@@ -698,93 +689,6 @@ namespace Temonis
             else
             {
                 MainWindow.DataContext.Kyoshin.Level = Level.White;
-            }
-        }
-
-        private class Station
-        {
-            /// <summary>
-            /// 観測点が有効であるか
-            /// </summary>
-            public bool IsEnabled { get; set; }
-
-            /// <summary>
-            /// 観測点名
-            /// </summary>
-            public string Name { get; set; }
-
-            /// <summary>
-            /// 都道府県名
-            /// </summary>
-            public string PrefName { get; set; }
-
-            /// <summary>
-            /// X座標
-            /// </summary>
-            public int X { get; set; }
-
-            /// <summary>
-            /// Y座標
-            /// </summary>
-            public int Y { get; set; }
-        }
-
-        public class Intensity
-        {
-            /// <summary>
-            /// 最大リアルタイム震度
-            /// </summary>
-            public double MaxInt { get; set; }
-
-            /// <summary>
-            /// 都道府県
-            /// </summary>
-            public List<Pref> Prefs { get; set; }
-
-            /// <summary>
-            /// 観測点
-            /// </summary>
-            public List<Station> Stations { get; set; }
-
-            public class Pref
-            {
-                /// <summary>
-                /// 都道府県名
-                /// </summary>
-                public string Name { get; set; }
-
-                /// <summary>
-                /// 最大リアルタイム震度
-                /// </summary>
-                public double MaxInt { get; set; }
-
-                /// <summary>
-                /// リアルタイム震度1以上の観測点数
-                /// </summary>
-                public int Number { get; set; }
-            }
-
-            public class Station
-            {
-                /// <summary>
-                /// 観測点名
-                /// </summary>
-                public string Name { get; set; }
-
-                /// <summary>
-                /// 都道府県名
-                /// </summary>
-                public string PrefName { get; set; }
-
-                /// <summary>
-                /// リアルタイム震度
-                /// </summary>
-                public double Int { get; set; }
-
-                /// <summary>
-                /// 座標
-                /// </summary>
-                public Point Point { get; set; }
             }
         }
 
@@ -852,6 +756,83 @@ namespace Temonis
                 get => _sliderValue;
                 set => SetProperty(ref _sliderValue, value);
             }
+        }
+
+        public class Intensity
+        {
+            /// <summary>
+            /// 最大リアルタイム震度
+            /// </summary>
+            public double MaxInt { get; set; }
+
+            /// <summary>
+            /// 都道府県
+            /// </summary>
+            public List<Pref> Prefs { get; set; }
+
+            /// <summary>
+            /// 観測点
+            /// </summary>
+            public List<Station> Stations { get; set; }
+
+            public class Pref
+            {
+                /// <summary>
+                /// 都道府県名
+                /// </summary>
+                public string Name { get; set; }
+
+                /// <summary>
+                /// 最大リアルタイム震度
+                /// </summary>
+                public double MaxInt { get; set; }
+
+                /// <summary>
+                /// リアルタイム震度1以上の観測点数
+                /// </summary>
+                public int Number { get; set; }
+            }
+
+            public class Station
+            {
+                /// <summary>
+                /// 観測点インデックス
+                /// </summary>
+                public int Index { get; set; }
+
+                /// <summary>
+                /// リアルタイム震度
+                /// </summary>
+                public double Int { get; set; }
+            }
+        }
+
+        private class Station
+        {
+            /// <summary>
+            /// 観測点が有効であるか
+            /// </summary>
+            public bool IsEnabled { get; set; }
+
+            /// <summary>
+            /// 観測点名
+            /// </summary>
+            public string Name { get; set; }
+
+            /// <summary>
+            /// 都道府県名
+            /// </summary>
+            public string PrefName { get; set; }
+
+            /// <summary>
+            /// X座標
+            /// </summary>
+            public int X { get; set; }
+
+            /// <summary>
+            /// Y座標
+            /// </summary>
+            public int Y { get; set; }
         }
     }
 }

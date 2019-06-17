@@ -124,6 +124,66 @@ namespace Temonis
             }
         }
 
+        public class DataContext : BindableBase
+        {
+            private Level _level;
+            private string _message = "緊急地震速報は発表されていません。";
+            private bool _visible;
+            private string _dateTime;
+            private string _epicenter;
+            private string _depth;
+            private string _magnitude;
+            private string _intensity;
+
+            public Level Level
+            {
+                get => _level;
+                set => SetProperty(ref _level, value);
+            }
+
+            public string Message
+            {
+                get => _message;
+                set => SetProperty(ref _message, value);
+            }
+
+            public bool Visible
+            {
+                get => _visible;
+                set => SetProperty(ref _visible, value);
+            }
+
+            public string DateTime
+            {
+                get => _dateTime;
+                set => SetProperty(ref _dateTime, value);
+            }
+
+            public string Epicenter
+            {
+                get => _epicenter;
+                set => SetProperty(ref _epicenter, value);
+            }
+
+            public string Depth
+            {
+                get => _depth;
+                set => SetProperty(ref _depth, value);
+            }
+
+            public string Magnitude
+            {
+                get => _magnitude;
+                set => SetProperty(ref _magnitude, value);
+            }
+
+            public string Intensity
+            {
+                get => _intensity;
+                set => SetProperty(ref _intensity, value);
+            }
+        }
+
         /// <summary>
         /// JSONクラス
         /// </summary>
@@ -208,66 +268,6 @@ namespace Temonis
 
                 [DataMember(Name = "hash")]
                 public string Hash { get; set; }
-            }
-        }
-
-        public class DataContext : BindableBase
-        {
-            private Level _level;
-            private string _message = "緊急地震速報は発表されていません。";
-            private bool _visible;
-            private string _dateTime;
-            private string _epicenter;
-            private string _depth;
-            private string _magnitude;
-            private string _intensity;
-
-            public Level Level
-            {
-                get => _level;
-                set => SetProperty(ref _level, value);
-            }
-
-            public string Message
-            {
-                get => _message;
-                set => SetProperty(ref _message, value);
-            }
-
-            public bool Visible
-            {
-                get => _visible;
-                set => SetProperty(ref _visible, value);
-            }
-
-            public string DateTime
-            {
-                get => _dateTime;
-                set => SetProperty(ref _dateTime, value);
-            }
-
-            public string Epicenter
-            {
-                get => _epicenter;
-                set => SetProperty(ref _epicenter, value);
-            }
-
-            public string Depth
-            {
-                get => _depth;
-                set => SetProperty(ref _depth, value);
-            }
-
-            public string Magnitude
-            {
-                get => _magnitude;
-                set => SetProperty(ref _magnitude, value);
-            }
-
-            public string Intensity
-            {
-                get => _intensity;
-                set => SetProperty(ref _intensity, value);
             }
         }
     }

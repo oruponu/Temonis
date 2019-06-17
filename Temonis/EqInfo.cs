@@ -6,6 +6,9 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 using static Temonis.MainWindow;
 
 namespace Temonis
@@ -151,24 +154,24 @@ namespace Temonis
             if (string.IsNullOrEmpty(html))
                 return;
 
-            var info = Regex.Match(html, "<div id=\"eqinfdtl\" class=\"tracked_mods\">.+?</div>", RegexOptions.Singleline).Value;
+            var info = new Regex("<div id=\"eqinfdtl\" class=\"tracked_mods\">.+?</div>", RegexOptions.Compiled | RegexOptions.Singleline).Match(html).Value;
             if (!IsUpdated(info))
                 return;
 
             // 発生時刻
-            var dateTime = Regex.Match(info, @"<.+>発生時刻(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value.Replace("ごろ", "");
+            var dateTime = new Regex(@"<.+>発生時刻(</.+>)+\n(<.+>)+(.+?)</.+>", RegexOptions.Compiled).Match(info).Groups[3].Value.Replace("ごろ", "");
             if (dateTime == "---")
                 return;
             MainWindow.DataContext.EqInfo.DateTime = DateTime.TryParse(dateTime, new CultureInfo("ja-JP"), DateTimeStyles.AssumeLocal, out var arrivalTime) ? arrivalTime.ToString("yyyy年MM月dd日 HH時mm分") : "---";
 
             // 震源地
-            var epicenter = Regex.Match(info, @"<.+>震源地(</.+>)+\n(<.+>)+<.+?>(.+?)</.+>").Groups[3].Value;
-            epicenter += Regex.Match(info, @"<.+>震源地(</.+>)+\n(<.+>)+<.+?>(.+?)</.+>(.+?)(</.+>){2}").Groups[4].Value;
+            var epicenter = new Regex(@"<.+>震源地(</.+>)+\n(<.+>)+<.+?>(.+?)</.+>", RegexOptions.Compiled).Match(info).Groups[3].Value;
+            epicenter += new Regex(@"<.+>震源地(</.+>)+\n(<.+>)+<.+?>(.+?)</.+>(.+?)(</.+>){2}", RegexOptions.Compiled).Match(info).Groups[4].Value;
             MainWindow.DataContext.EqInfo.Epicenter = epicenter.Replace('/', '／');
 
             // 震源の緯度
             var latitude = .0;
-            var latLon = Regex.Match(info, @"<.+>緯度/経度(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value.Split('/');
+            var latLon = new Regex(@"<.+>緯度/経度(</.+>)+\n(<.+>)+(.+?)</.+>", RegexOptions.Compiled).Match(info).Groups[3].Value.Split('/');
             if (latLon[0] != "---")
             {
                 latLon[0] = latLon[0].TrimEnd('度');
@@ -190,26 +193,26 @@ namespace Temonis
             }
 
             // 震源の深さ
-            MainWindow.DataContext.EqInfo.Depth = Regex.Match(info, @"<.+>深さ(</.+>)+\n\n(<.+>)+(.+?)</.+>").Groups[3].Value;
+            MainWindow.DataContext.EqInfo.Depth = new Regex(@"<.+>深さ(</.+>)+\n\n(<.+>)+(.+?)</.+>", RegexOptions.Compiled).Match(info).Groups[3].Value;
 
             // マグニチュード
-            MainWindow.DataContext.EqInfo.Magnitude = Regex.Match(info, @"<.+>マグニチュード(</.+>)+\n(<.+>)+(.+?)</.+>").Groups[3].Value;
+            MainWindow.DataContext.EqInfo.Magnitude = new Regex(@"<.+>マグニチュード(</.+>)+\n(<.+>)+(.+?)</.+>", RegexOptions.Compiled).Match(info).Groups[3].Value;
 
             // 付加文
-            var comment = Regex.Match(info, @"<.+>情報(</.+>)+\n(<.+?>)+(.+?)</?.+>").Groups[3].Value;
+            var comment = new Regex(@"<.+>情報(</.+>)+\n(<.+?>)+(.+?)</?.+>", RegexOptions.Compiled).Match(info).Groups[3].Value;
             if (comment.Count(text => text == '。') == 2)  // 付加文の情報が2つの場合は2行に分割
                 comment = comment.Replace("。", "。\n").TrimEnd('\n');
 
             MainWindow.DataContext.EqInfo.Comment = comment;
 
             // 各地の震度
-            var intensity = Regex.Match(info, @"<.+class=""yjw_table"">(.+?)</\w+>\n</div>", RegexOptions.Singleline).Groups[1].Value.Replace("\n", "");
-            intensity = Regex.Replace(intensity, @"<\w+ \S+><\w+ \S+ \w+>(<\w+>)+", "[");
-            intensity = Regex.Replace(intensity, @"(</\w+>)+<\w+ \S+><\w+>", "]");
-            intensity = Regex.Replace(intensity, @"<\w+ \S+><\w+ \S+ \S+ \S+><\w+>震度", "");
-            intensity = Regex.Replace(intensity, @"(</\w+>)+<\w+ \S+ \S+><.+?>", ":");
-            intensity = Regex.Replace(intensity, @"　<\w+>(</\w+>){3}", "");
-            intensity = Regex.Replace(intensity, @"(</\w+>)+", ",");
+            var intensity = new Regex(@"<.+class=""yjw_table"">(.+?)</\w+>\n</div>", RegexOptions.Compiled | RegexOptions.Singleline).Match(info).Groups[1].Value.Replace("\n", "");
+            intensity = new Regex(@"<\w+ \S+><\w+ \S+ \w+>(<\w+>)+", RegexOptions.Compiled).Replace(intensity, "[");
+            intensity = new Regex(@"(</\w+>)+<\w+ \S+><\w+>", RegexOptions.Compiled).Replace(intensity, "]");
+            intensity = new Regex(@"<\w+ \S+><\w+ \S+ \S+ \S+><\w+>震度", RegexOptions.Compiled).Replace(intensity, "");
+            intensity = new Regex(@"(</\w+>)+<\w+ \S+ \S+><.+?>", RegexOptions.Compiled).Replace(intensity, ":");
+            intensity = new Regex(@"　<\w+>(</\w+>){3}", RegexOptions.Compiled).Replace(intensity, "");
+            intensity = new Regex(@"(</\w+>)+", RegexOptions.Compiled).Replace(intensity, ",");
             intensity = intensity.TrimEnd(',');
 
             var maxInt = "";
@@ -224,7 +227,7 @@ namespace Temonis
             }
 
             // 地震ID
-            Id = Regex.Match(html, "<a href=\"/weather/jp/earthquake/(.+).html\">").Groups[1].Value;
+            Id = new Regex("<a href=\"/weather/jp/earthquake/(.+).html\">", RegexOptions.Compiled).Match(html).Groups[1].Value;
 
             SetEpicenterPoint(latitude, longitude);
 
@@ -369,45 +372,6 @@ namespace Temonis
             _prevId = Id;
         }
 
-        public class Intensity : BindableBase
-        {
-            private string _maxInt;
-            private bool _maxIntVisible;
-            private string _prefName;
-            private bool _prefNameVisible;
-            private string _cityName;
-
-            public string MaxInt
-            {
-                get => _maxInt;
-                set => SetProperty(ref _maxInt, value);
-            }
-
-            public bool MaxIntVisible
-            {
-                get => _maxIntVisible;
-                set => SetProperty(ref _maxIntVisible, value);
-            }
-
-            public string PrefName
-            {
-                get => _prefName;
-                set => SetProperty(ref _prefName, value);
-            }
-
-            public bool PrefNameVisible
-            {
-                get => _prefNameVisible;
-                set => SetProperty(ref _prefNameVisible, value);
-            }
-
-            public string CityName
-            {
-                get => _cityName;
-                set => SetProperty(ref _cityName, value);
-            }
-        }
-
         public class DataContext : BindableBase
         {
             private Level _level;
@@ -458,6 +422,45 @@ namespace Temonis
             {
                 get => _intensityList;
                 set => SetProperty(ref _intensityList, value);
+            }
+        }
+
+        public class Intensity : BindableBase
+        {
+            private string _maxInt;
+            private bool _maxIntVisible;
+            private string _prefName;
+            private bool _prefNameVisible;
+            private string _cityName;
+
+            public string MaxInt
+            {
+                get => _maxInt;
+                set => SetProperty(ref _maxInt, value);
+            }
+
+            public bool MaxIntVisible
+            {
+                get => _maxIntVisible;
+                set => SetProperty(ref _maxIntVisible, value);
+            }
+
+            public string PrefName
+            {
+                get => _prefName;
+                set => SetProperty(ref _prefName, value);
+            }
+
+            public bool PrefNameVisible
+            {
+                get => _prefNameVisible;
+                set => SetProperty(ref _prefNameVisible, value);
+            }
+
+            public string CityName
+            {
+                get => _cityName;
+                set => SetProperty(ref _cityName, value);
             }
         }
     }
