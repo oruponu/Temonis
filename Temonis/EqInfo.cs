@@ -6,9 +6,6 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
 using static Temonis.MainWindow;
 
 namespace Temonis

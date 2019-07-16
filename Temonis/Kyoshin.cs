@@ -362,7 +362,7 @@ namespace Temonis
                 var station = new Intensity.Station
                 {
                     Index = i,
-                    Int = realtimeInt,
+                    Int = realtimeInt
                 };
                 Observation.Stations.Add(station);
 
