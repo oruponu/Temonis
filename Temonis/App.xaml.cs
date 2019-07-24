@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using static Temonis.MainWindow;
 
 namespace Temonis
 {
@@ -27,7 +31,20 @@ namespace Temonis
                 Environment.Exit(-1);
             };
 
-            Configuration.Load();
+            var latestVersion = GetLatestVersionAsync().GetAwaiter().GetResult();
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+            if (latestVersion != null && latestVersion > version)
+            {
+                var result = MessageBox.Show($"新しいバージョン {latestVersion} がリリースされました。\nダウンロードページを開きますか？", "Temonis", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                if (result == MessageBoxResult.Yes)
+                {
+                    Process.Start(Temonis.Properties.Resources.TemonisUri);
+                    Environment.Exit(-1);
+                }
+            }
+
+            Settings.Load();
+
             var app = new App();
             app.InitializeComponent();
             app.Run();
@@ -46,6 +63,29 @@ namespace Temonis
             value += $"[StackTrace]\n{ex.StackTrace}\n\n";
             using (var stream = new StreamWriter("FatalError.txt", true))
                 stream.WriteLine(value);
+        }
+
+        private static async Task<Version> GetLatestVersionAsync()
+        {
+            string[] split = null;
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    var response = await client.GetAsync($"{Temonis.Properties.Resources.TemonisUri}version");
+                    if (!response.IsSuccessStatusCode)
+                        return null;
+                    split = (await response.Content.ReadAsStringAsync()).Split('.');
+                }
+            }
+            catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
+            {
+                WriteLog(ex);
+            }
+
+            if (split != null && split.Length == 4 && int.TryParse(split[0], out var major) && int.TryParse(split[1], out var minor) && int.TryParse(split[2], out var build) && int.TryParse(split[3], out var revision))
+                return new Version(major, minor, build, revision);
+            return null;
         }
     }
 }

@@ -61,7 +61,7 @@
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="BindableBase.cs" />
-    <Compile Include="Configuration.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="Converters\LevelColorConverter.cs" />
     <Compile Include="Converters\SliderConverter.cs" />
     <Compile Include="DataContext.cs" />
@@ -104,11 +104,13 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Resources\Settings.json" />
     <None Include="Resources\Stations.utd" />
   </ItemGroup>
   <ItemGroup>
@@ -132,6 +134,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Sounds\EEW\FirstReport\1.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -247,11 +252,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Sounds\Kyoshin\7.mp3">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Temonis.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

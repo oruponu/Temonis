@@ -99,10 +99,29 @@ namespace Temonis.Properties {
         /// <summary>
         ///   型 System.Byte[] のローカライズされたリソースを検索します。
         /// </summary>
+        internal static byte[] Settings {
+            get {
+                object obj = ResourceManager.GetObject("Settings", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Byte[] のローカライズされたリソースを検索します。
+        /// </summary>
         internal static byte[] Stations {
             get {
                 object obj = ResourceManager.GetObject("Stations", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   https://temonis.azurewebsites.net/ に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string TemonisUri {
+            get {
+                return ResourceManager.GetString("TemonisUri", resourceCulture);
             }
         }
     }

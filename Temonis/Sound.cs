@@ -12,31 +12,31 @@ namespace Temonis
             switch (maxInt)
             {
                 case 1:
-                    Play(Configuration.RootClass.Sounds.Kyoshin.Intensity1);
+                    Play(Settings.RootClass.Sounds.Kyoshin.Intensity1);
                     break;
                 case 2:
-                    Play(Configuration.RootClass.Sounds.Kyoshin.Intensity2);
+                    Play(Settings.RootClass.Sounds.Kyoshin.Intensity2);
                     break;
                 case 3:
-                    Play(Configuration.RootClass.Sounds.Kyoshin.Intensity3);
+                    Play(Settings.RootClass.Sounds.Kyoshin.Intensity3);
                     break;
                 case 4:
-                    Play(Configuration.RootClass.Sounds.Kyoshin.Intensity4);
+                    Play(Settings.RootClass.Sounds.Kyoshin.Intensity4);
                     break;
                 case 5:
-                    Play(Configuration.RootClass.Sounds.Kyoshin.Intensity5);
+                    Play(Settings.RootClass.Sounds.Kyoshin.Intensity5);
                     break;
                 case 6:
-                    Play(Configuration.RootClass.Sounds.Kyoshin.Intensity6);
+                    Play(Settings.RootClass.Sounds.Kyoshin.Intensity6);
                     break;
                 case 7:
-                    Play(Configuration.RootClass.Sounds.Kyoshin.Intensity7);
+                    Play(Settings.RootClass.Sounds.Kyoshin.Intensity7);
                     break;
                 case 8:
-                    Play(Configuration.RootClass.Sounds.Kyoshin.Intensity8);
+                    Play(Settings.RootClass.Sounds.Kyoshin.Intensity8);
                     break;
                 case 9:
-                    Play(Configuration.RootClass.Sounds.Kyoshin.Intensity9);
+                    Play(Settings.RootClass.Sounds.Kyoshin.Intensity9);
                     break;
             }
         }
@@ -46,34 +46,34 @@ namespace Temonis
             switch (maxInt)
             {
                 case "1":
-                    Play(Configuration.RootClass.Sounds.Eew.FirstReport.Intensity1);
+                    Play(Settings.RootClass.Sounds.Eew.FirstReport.Intensity1);
                     break;
                 case "2":
-                    Play(Configuration.RootClass.Sounds.Eew.FirstReport.Intensity2);
+                    Play(Settings.RootClass.Sounds.Eew.FirstReport.Intensity2);
                     break;
                 case "3":
-                    Play(Configuration.RootClass.Sounds.Eew.FirstReport.Intensity3);
+                    Play(Settings.RootClass.Sounds.Eew.FirstReport.Intensity3);
                     break;
                 case "4":
-                    Play(Configuration.RootClass.Sounds.Eew.FirstReport.Intensity4);
+                    Play(Settings.RootClass.Sounds.Eew.FirstReport.Intensity4);
                     break;
                 case "5弱":
-                    Play(Configuration.RootClass.Sounds.Eew.FirstReport.Intensity5);
+                    Play(Settings.RootClass.Sounds.Eew.FirstReport.Intensity5);
                     break;
                 case "5強":
-                    Play(Configuration.RootClass.Sounds.Eew.FirstReport.Intensity6);
+                    Play(Settings.RootClass.Sounds.Eew.FirstReport.Intensity6);
                     break;
                 case "6弱":
-                    Play(Configuration.RootClass.Sounds.Eew.FirstReport.Intensity7);
+                    Play(Settings.RootClass.Sounds.Eew.FirstReport.Intensity7);
                     break;
                 case "6強":
-                    Play(Configuration.RootClass.Sounds.Eew.FirstReport.Intensity8);
+                    Play(Settings.RootClass.Sounds.Eew.FirstReport.Intensity8);
                     break;
                 case "7":
-                    Play(Configuration.RootClass.Sounds.Eew.FirstReport.Intensity9);
+                    Play(Settings.RootClass.Sounds.Eew.FirstReport.Intensity9);
                     break;
                 default:
-                    Play(Configuration.RootClass.Sounds.Eew.FirstReport.Unknown);
+                    Play(Settings.RootClass.Sounds.Eew.FirstReport.Unknown);
                     break;
             }
         }
@@ -83,37 +83,37 @@ namespace Temonis
             switch (maxInt)
             {
                 case "不明":
-                    Play(Configuration.RootClass.Sounds.Eew.MaxIntChange.Unknown);
+                    Play(Settings.RootClass.Sounds.Eew.MaxIntChange.Unknown);
                     break;
                 case "1":
-                    Play(Configuration.RootClass.Sounds.Eew.MaxIntChange.Intensity1);
+                    Play(Settings.RootClass.Sounds.Eew.MaxIntChange.Intensity1);
                     break;
                 case "2":
-                    Play(Configuration.RootClass.Sounds.Eew.MaxIntChange.Intensity2);
+                    Play(Settings.RootClass.Sounds.Eew.MaxIntChange.Intensity2);
                     break;
                 case "3":
-                    Play(Configuration.RootClass.Sounds.Eew.MaxIntChange.Intensity3);
+                    Play(Settings.RootClass.Sounds.Eew.MaxIntChange.Intensity3);
                     break;
                 case "4":
-                    Play(Configuration.RootClass.Sounds.Eew.MaxIntChange.Intensity4);
+                    Play(Settings.RootClass.Sounds.Eew.MaxIntChange.Intensity4);
                     break;
                 case "5弱":
-                    Play(Configuration.RootClass.Sounds.Eew.MaxIntChange.Intensity5);
+                    Play(Settings.RootClass.Sounds.Eew.MaxIntChange.Intensity5);
                     break;
                 case "5強":
-                    Play(Configuration.RootClass.Sounds.Eew.MaxIntChange.Intensity6);
+                    Play(Settings.RootClass.Sounds.Eew.MaxIntChange.Intensity6);
                     break;
                 case "6弱":
-                    Play(Configuration.RootClass.Sounds.Eew.MaxIntChange.Intensity7);
+                    Play(Settings.RootClass.Sounds.Eew.MaxIntChange.Intensity7);
                     break;
                 case "6強":
-                    Play(Configuration.RootClass.Sounds.Eew.MaxIntChange.Intensity8);
+                    Play(Settings.RootClass.Sounds.Eew.MaxIntChange.Intensity8);
                     break;
                 case "7":
-                    Play(Configuration.RootClass.Sounds.Eew.MaxIntChange.Intensity9);
+                    Play(Settings.RootClass.Sounds.Eew.MaxIntChange.Intensity9);
                     break;
                 default:
-                    Play(Configuration.RootClass.Sounds.Eew.MaxIntChange.Cancel);
+                    Play(Settings.RootClass.Sounds.Eew.MaxIntChange.Cancel);
                     break;
             }
         }
@@ -123,34 +123,34 @@ namespace Temonis
             switch (maxInt)
             {
                 case "1":
-                    Play(Configuration.RootClass.Sounds.EqInfo.Intensity1);
+                    Play(Settings.RootClass.Sounds.EqInfo.Intensity1);
                     break;
                 case "2":
-                    Play(Configuration.RootClass.Sounds.EqInfo.Intensity2);
+                    Play(Settings.RootClass.Sounds.EqInfo.Intensity2);
                     break;
                 case "3":
-                    Play(Configuration.RootClass.Sounds.EqInfo.Intensity3);
+                    Play(Settings.RootClass.Sounds.EqInfo.Intensity3);
                     break;
                 case "4":
-                    Play(Configuration.RootClass.Sounds.EqInfo.Intensity4);
+                    Play(Settings.RootClass.Sounds.EqInfo.Intensity4);
                     break;
                 case "5弱":
-                    Play(Configuration.RootClass.Sounds.EqInfo.Intensity5);
+                    Play(Settings.RootClass.Sounds.EqInfo.Intensity5);
                     break;
                 case "5強":
-                    Play(Configuration.RootClass.Sounds.EqInfo.Intensity6);
+                    Play(Settings.RootClass.Sounds.EqInfo.Intensity6);
                     break;
                 case "6弱":
-                    Play(Configuration.RootClass.Sounds.EqInfo.Intensity7);
+                    Play(Settings.RootClass.Sounds.EqInfo.Intensity7);
                     break;
                 case "6強":
-                    Play(Configuration.RootClass.Sounds.EqInfo.Intensity8);
+                    Play(Settings.RootClass.Sounds.EqInfo.Intensity8);
                     break;
                 case "7":
-                    Play(Configuration.RootClass.Sounds.EqInfo.Intensity9);
+                    Play(Settings.RootClass.Sounds.EqInfo.Intensity9);
                     break;
                 default:
-                    Play(Configuration.RootClass.Sounds.EqInfo.Distant);
+                    Play(Settings.RootClass.Sounds.EqInfo.Distant);
                     break;
             }
         }

@@ -477,10 +477,10 @@ namespace Temonis
             context.DrawEllipse(null, pen, new Point(Stations[firstIntStation.Index].X, Stations[firstIntStation.Index].Y), 12.0, 12.0);
 
             // 最大震度を検知した地点をラベルに設定
-            MainWindow.DataContext.Kyoshin.MaxIntString = $"{(Configuration.RootClass.Appearance.UseJmaSeismicIntensityScale ? ToIntensityString(Observation.MaxInt) : Observation.MaxInt.ToString("F1"))}（{Stations[firstIntStation.Index].PrefName} {Stations[firstIntStation.Index].Name}）";
+            MainWindow.DataContext.Kyoshin.MaxIntString = $"{(Settings.RootClass.Appearance.UseJmaSeismicIntensityScale ? ToIntensityString(Observation.MaxInt) : Observation.MaxInt.ToString("F1"))}（{Stations[firstIntStation.Index].PrefName} {Stations[firstIntStation.Index].Name}）";
 
             // 最大震度（気象庁震度階級）を検知した地点数
-            var maxIntNum = Observation.Stations.Where(station => station.Int >= .5).Count(station => Configuration.RootClass.Appearance.UseJmaSeismicIntensityScale ? ToIntensityInt(station.Int) == _maxInt : station.Int == Observation.MaxInt);
+            var maxIntNum = Observation.Stations.Where(station => station.Int >= .5).Count(station => Settings.RootClass.Appearance.UseJmaSeismicIntensityScale ? ToIntensityInt(station.Int) == _maxInt : station.Int == Observation.MaxInt);
             MainWindow.DataContext.Kyoshin.MaxIntDetail = maxIntNum > 1 ? $"他 {(maxIntNum - 1).ToString()} 地点" : "";
 
             // 地表リアルアイム震度0.5以上を検知した都道府県をラベルに設定

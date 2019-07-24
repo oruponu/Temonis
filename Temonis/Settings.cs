@@ -1,218 +1,216 @@
 ﻿using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 using System.Windows;
-using System.Xml.Serialization;
 
 namespace Temonis
 {
-    public static class Configuration
+    public static class Settings
     {
-        private const string FileName = "Temonis.xml";
+        private const string FileName = "Settings.json";
 
         internal static Root RootClass { get; private set; }
 
         internal static void Load()
         {
-            if (File.Exists(FileName))
+            if (!File.Exists(FileName))
             {
-                var serializer = new XmlSerializer(typeof(Root));
-                try
-                {
-                    using (var stream = File.OpenRead(FileName))
-                        RootClass = (Root)serializer.Deserialize(stream);
-                }
-                catch
-                {
-                    MessageBox.Show("設定ファイルを開けませんでした。\n音声は再生されません。", "Temonis", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                }
+                File.WriteAllBytes(FileName, Properties.Resources.Settings);
             }
-            else
+
+            try
             {
-                MessageBox.Show("設定ファイルが見つかりませんでした。\n音声は再生されません。", "Temonis", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                using (var stream = File.OpenRead(FileName))
+                    RootClass = (Root)new DataContractJsonSerializer(typeof(Root)).ReadObject(stream);
+            }
+            catch
+            {
+                MessageBox.Show("設定ファイルを開けませんでした。\n音声は再生されません。", "Temonis", MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
         }
 
-        [XmlRoot("configuration")]
+        [DataContract]
         public class Root
         {
-            [XmlElement("appearance")]
+            [DataMember(Name = "appearance")]
             public AppearanceClass Appearance { get; set; }
 
-            [XmlElement("behavior")]
+            [DataMember(Name = "behavior")]
             public BehaviorClass Behavior { get; set; }
 
-            [XmlElement("sounds")]
+            [DataMember(Name = "sounds")]
             public SoundsClass Sounds { get; set; }
 
-            [XmlRoot]
+            [DataContract]
             public class AppearanceClass
             {
-                [XmlElement("useJMASeismicIntensityScale")]
+                [DataMember(Name = "useJMASeismicIntensityScale")]
                 public bool UseJmaSeismicIntensityScale { get; set; }
             }
 
-            [XmlRoot]
+            [DataContract]
             public class BehaviorClass
             {
-                [XmlElement("forceActive")]
+                [DataMember(Name = "forceActive")]
                 public bool ForceActive { get; set; }
             }
 
-            [XmlRoot]
+            [DataContract]
             public class SoundsClass
             {
-                [XmlElement("kyoshin")]
+                [DataMember(Name = "kyoshin")]
                 public Kyoshin Kyoshin { get; set; }
 
-                [XmlElement("eew")]
+                [DataMember(Name = "eew")]
                 public Eew Eew { get; set; }
 
-                [XmlElement("eqInfo")]
+                [DataMember(Name = "eqInfo")]
                 public EqInfo EqInfo { get; set; }
             }
 
-            [XmlRoot]
+            [DataContract]
             public class Kyoshin
             {
-                [XmlElement("intensity1")]
+                [DataMember(Name = "intensity1")]
                 public string Intensity1 { get; set; }
 
-                [XmlElement("intensity2")]
+                [DataMember(Name = "intensity2")]
                 public string Intensity2 { get; set; }
 
-                [XmlElement("intensity3")]
+                [DataMember(Name = "intensity3")]
                 public string Intensity3 { get; set; }
 
-                [XmlElement("intensity4")]
+                [DataMember(Name = "intensity4")]
                 public string Intensity4 { get; set; }
 
-                [XmlElement("intensity5")]
+                [DataMember(Name = "intensity5")]
                 public string Intensity5 { get; set; }
 
-                [XmlElement("intensity6")]
+                [DataMember(Name = "intensity6")]
                 public string Intensity6 { get; set; }
 
-                [XmlElement("intensity7")]
+                [DataMember(Name = "intensity7")]
                 public string Intensity7 { get; set; }
 
-                [XmlElement("intensity8")]
+                [DataMember(Name = "intensity8")]
                 public string Intensity8 { get; set; }
 
-                [XmlElement("intensity9")]
+                [DataMember(Name = "intensity9")]
                 public string Intensity9 { get; set; }
             }
 
-            [XmlRoot]
+            [DataContract]
             public class Eew
             {
-                [XmlElement("firstReport")]
+                [DataMember(Name = "firstReport")]
                 public FirstReport FirstReport { get; set; }
 
-                [XmlElement("maxIntChange")]
+                [DataMember(Name = "maxIntChange")]
                 public MaxIntChange MaxIntChange { get; set; }
             }
 
-            [XmlRoot]
+            [DataContract]
             public class FirstReport
             {
-                [XmlElement("intensity1")]
+                [DataMember(Name = "intensity1")]
                 public string Intensity1 { get; set; }
 
-                [XmlElement("intensity2")]
+                [DataMember(Name = "intensity2")]
                 public string Intensity2 { get; set; }
 
-                [XmlElement("intensity3")]
+                [DataMember(Name = "intensity3")]
                 public string Intensity3 { get; set; }
 
-                [XmlElement("intensity4")]
+                [DataMember(Name = "intensity4")]
                 public string Intensity4 { get; set; }
 
-                [XmlElement("intensity5")]
+                [DataMember(Name = "intensity5")]
                 public string Intensity5 { get; set; }
 
-                [XmlElement("intensity6")]
+                [DataMember(Name = "intensity6")]
                 public string Intensity6 { get; set; }
 
-                [XmlElement("intensity7")]
+                [DataMember(Name = "intensity7")]
                 public string Intensity7 { get; set; }
 
-                [XmlElement("intensity8")]
+                [DataMember(Name = "intensity8")]
                 public string Intensity8 { get; set; }
 
-                [XmlElement("intensity9")]
+                [DataMember(Name = "intensity9")]
                 public string Intensity9 { get; set; }
 
-                [XmlElement("unknown")]
+                [DataMember(Name = "unknown")]
                 public string Unknown { get; set; }
             }
 
-            [XmlRoot]
+            [DataContract]
             public class MaxIntChange
             {
-                [XmlElement("cancel")]
+                [DataMember(Name = "cancel")]
                 public string Cancel { get; set; }
 
-                [XmlElement("intensity1")]
+                [DataMember(Name = "intensity1")]
                 public string Intensity1 { get; set; }
 
-                [XmlElement("intensity2")]
+                [DataMember(Name = "intensity2")]
                 public string Intensity2 { get; set; }
 
-                [XmlElement("intensity3")]
+                [DataMember(Name = "intensity3")]
                 public string Intensity3 { get; set; }
 
-                [XmlElement("intensity4")]
+                [DataMember(Name = "intensity4")]
                 public string Intensity4 { get; set; }
 
-                [XmlElement("intensity5")]
+                [DataMember(Name = "intensity5")]
                 public string Intensity5 { get; set; }
 
-                [XmlElement("intensity6")]
+                [DataMember(Name = "intensity6")]
                 public string Intensity6 { get; set; }
 
-                [XmlElement("intensity7")]
+                [DataMember(Name = "intensity7")]
                 public string Intensity7 { get; set; }
 
-                [XmlElement("intensity8")]
+                [DataMember(Name = "intensity8")]
                 public string Intensity8 { get; set; }
 
-                [XmlElement("intensity9")]
+                [DataMember(Name = "intensity9")]
                 public string Intensity9 { get; set; }
 
-                [XmlElement("unknown")]
+                [DataMember(Name = "unknown")]
                 public string Unknown { get; set; }
             }
 
-            [XmlRoot]
+            [DataContract]
             public class EqInfo
             {
-                [XmlElement("distant")]
+                [DataMember(Name = "distant")]
                 public string Distant { get; set; }
 
-                [XmlElement("intensity1")]
+                [DataMember(Name = "intensity1")]
                 public string Intensity1 { get; set; }
 
-                [XmlElement("intensity2")]
+                [DataMember(Name = "intensity2")]
                 public string Intensity2 { get; set; }
 
-                [XmlElement("intensity3")]
+                [DataMember(Name = "intensity3")]
                 public string Intensity3 { get; set; }
 
-                [XmlElement("intensity4")]
+                [DataMember(Name = "intensity4")]
                 public string Intensity4 { get; set; }
 
-                [XmlElement("intensity5")]
+                [DataMember(Name = "intensity5")]
                 public string Intensity5 { get; set; }
 
-                [XmlElement("intensity6")]
+                [DataMember(Name = "intensity6")]
                 public string Intensity6 { get; set; }
 
-                [XmlElement("intensity7")]
+                [DataMember(Name = "intensity7")]
                 public string Intensity7 { get; set; }
 
-                [XmlElement("intensity8")]
+                [DataMember(Name = "intensity8")]
                 public string Intensity8 { get; set; }
 
-                [XmlElement("intensity9")]
+                [DataMember(Name = "intensity9")]
                 public string Intensity9 { get; set; }
             }
         }

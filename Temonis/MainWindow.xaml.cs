@@ -137,7 +137,7 @@ namespace Temonis
         /// </summary>
         public static void SetActive()
         {
-            if (!Configuration.RootClass.Behavior.ForceActive)
+            if (!Settings.RootClass.Behavior.ForceActive)
                 return;
             if (Instance.WindowState == WindowState.Minimized)
                 Instance.WindowState = WindowState.Normal;

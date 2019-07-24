@@ -369,6 +369,45 @@ namespace Temonis
             _prevId = Id;
         }
 
+        public class Intensity : BindableBase
+        {
+            private string _maxInt;
+            private bool _maxIntVisible;
+            private string _prefName;
+            private bool _prefNameVisible;
+            private string _cityName;
+
+            public string MaxInt
+            {
+                get => _maxInt;
+                set => SetProperty(ref _maxInt, value);
+            }
+
+            public bool MaxIntVisible
+            {
+                get => _maxIntVisible;
+                set => SetProperty(ref _maxIntVisible, value);
+            }
+
+            public string PrefName
+            {
+                get => _prefName;
+                set => SetProperty(ref _prefName, value);
+            }
+
+            public bool PrefNameVisible
+            {
+                get => _prefNameVisible;
+                set => SetProperty(ref _prefNameVisible, value);
+            }
+
+            public string CityName
+            {
+                get => _cityName;
+                set => SetProperty(ref _cityName, value);
+            }
+        }
+
         public class DataContext : BindableBase
         {
             private Level _level;
@@ -419,45 +458,6 @@ namespace Temonis
             {
                 get => _intensityList;
                 set => SetProperty(ref _intensityList, value);
-            }
-        }
-
-        public class Intensity : BindableBase
-        {
-            private string _maxInt;
-            private bool _maxIntVisible;
-            private string _prefName;
-            private bool _prefNameVisible;
-            private string _cityName;
-
-            public string MaxInt
-            {
-                get => _maxInt;
-                set => SetProperty(ref _maxInt, value);
-            }
-
-            public bool MaxIntVisible
-            {
-                get => _maxIntVisible;
-                set => SetProperty(ref _maxIntVisible, value);
-            }
-
-            public string PrefName
-            {
-                get => _prefName;
-                set => SetProperty(ref _prefName, value);
-            }
-
-            public bool PrefNameVisible
-            {
-                get => _prefNameVisible;
-                set => SetProperty(ref _prefNameVisible, value);
-            }
-
-            public string CityName
-            {
-                get => _cityName;
-                set => SetProperty(ref _cityName, value);
             }
         }
     }
