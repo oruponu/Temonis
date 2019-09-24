@@ -1,27 +1,30 @@
 ﻿using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
+using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Windows;
 
 namespace Temonis
 {
-    public static class Settings
+    internal static class Settings
     {
         private const string FileName = "Settings.json";
 
-        internal static Root RootClass { get; private set; }
+        public static Json JsonClass { get; private set; }
 
-        internal static void Load()
+        public static void Load()
         {
             if (!File.Exists(FileName))
             {
-                File.WriteAllBytes(FileName, Properties.Resources.Settings);
+                using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Temonis.Resources.Settings.json");
+                using var memoryStream = new MemoryStream();
+                stream.CopyTo(memoryStream);
+                File.WriteAllBytes(FileName, memoryStream.ToArray());
             }
 
             try
             {
-                using (var stream = File.OpenRead(FileName))
-                    RootClass = (Root)new DataContractJsonSerializer(typeof(Root)).ReadObject(stream);
+                JsonClass = JsonSerializer.Deserialize<Json>(File.ReadAllBytes(FileName));
             }
             catch
             {
@@ -29,188 +32,179 @@ namespace Temonis
             }
         }
 
-        [DataContract]
-        public class Root
+        public class Json
         {
-            [DataMember(Name = "appearance")]
+            [JsonPropertyName("appearance")]
             public AppearanceClass Appearance { get; set; }
 
-            [DataMember(Name = "behavior")]
+            [JsonPropertyName("behavior")]
             public BehaviorClass Behavior { get; set; }
 
-            [DataMember(Name = "sounds")]
+            [JsonPropertyName("sounds")]
             public SoundsClass Sounds { get; set; }
 
-            [DataContract]
             public class AppearanceClass
             {
-                [DataMember(Name = "useJMASeismicIntensityScale")]
+                [JsonPropertyName("useJMASeismicIntensityScale")]
                 public bool UseJmaSeismicIntensityScale { get; set; }
             }
 
-            [DataContract]
             public class BehaviorClass
             {
-                [DataMember(Name = "forceActive")]
+                [JsonPropertyName("forceActive")]
                 public bool ForceActive { get; set; }
             }
 
-            [DataContract]
             public class SoundsClass
             {
-                [DataMember(Name = "kyoshin")]
+                [JsonPropertyName("kyoshin")]
                 public Kyoshin Kyoshin { get; set; }
 
-                [DataMember(Name = "eew")]
+                [JsonPropertyName("eew")]
                 public Eew Eew { get; set; }
 
-                [DataMember(Name = "eqInfo")]
+                [JsonPropertyName("eqInfo")]
                 public EqInfo EqInfo { get; set; }
             }
 
-            [DataContract]
             public class Kyoshin
             {
-                [DataMember(Name = "intensity1")]
+                [JsonPropertyName("intensity1")]
                 public string Intensity1 { get; set; }
 
-                [DataMember(Name = "intensity2")]
+                [JsonPropertyName("intensity2")]
                 public string Intensity2 { get; set; }
 
-                [DataMember(Name = "intensity3")]
+                [JsonPropertyName("intensity3")]
                 public string Intensity3 { get; set; }
 
-                [DataMember(Name = "intensity4")]
+                [JsonPropertyName("intensity4")]
                 public string Intensity4 { get; set; }
 
-                [DataMember(Name = "intensity5")]
+                [JsonPropertyName("intensity5")]
                 public string Intensity5 { get; set; }
 
-                [DataMember(Name = "intensity6")]
+                [JsonPropertyName("intensity6")]
                 public string Intensity6 { get; set; }
 
-                [DataMember(Name = "intensity7")]
+                [JsonPropertyName("intensity7")]
                 public string Intensity7 { get; set; }
 
-                [DataMember(Name = "intensity8")]
+                [JsonPropertyName("intensity8")]
                 public string Intensity8 { get; set; }
 
-                [DataMember(Name = "intensity9")]
+                [JsonPropertyName("intensity9")]
                 public string Intensity9 { get; set; }
             }
 
-            [DataContract]
             public class Eew
             {
-                [DataMember(Name = "firstReport")]
+                [JsonPropertyName("firstReport")]
                 public FirstReport FirstReport { get; set; }
 
-                [DataMember(Name = "maxIntChange")]
+                [JsonPropertyName("maxIntChange")]
                 public MaxIntChange MaxIntChange { get; set; }
             }
 
-            [DataContract]
             public class FirstReport
             {
-                [DataMember(Name = "intensity1")]
+                [JsonPropertyName("intensity1")]
                 public string Intensity1 { get; set; }
 
-                [DataMember(Name = "intensity2")]
+                [JsonPropertyName("intensity2")]
                 public string Intensity2 { get; set; }
 
-                [DataMember(Name = "intensity3")]
+                [JsonPropertyName("intensity3")]
                 public string Intensity3 { get; set; }
 
-                [DataMember(Name = "intensity4")]
+                [JsonPropertyName("intensity4")]
                 public string Intensity4 { get; set; }
 
-                [DataMember(Name = "intensity5")]
+                [JsonPropertyName("intensity5")]
                 public string Intensity5 { get; set; }
 
-                [DataMember(Name = "intensity6")]
+                [JsonPropertyName("intensity6")]
                 public string Intensity6 { get; set; }
 
-                [DataMember(Name = "intensity7")]
+                [JsonPropertyName("intensity7")]
                 public string Intensity7 { get; set; }
 
-                [DataMember(Name = "intensity8")]
+                [JsonPropertyName("intensity8")]
                 public string Intensity8 { get; set; }
 
-                [DataMember(Name = "intensity9")]
+                [JsonPropertyName("intensity9")]
                 public string Intensity9 { get; set; }
 
-                [DataMember(Name = "unknown")]
+                [JsonPropertyName("unknown")]
                 public string Unknown { get; set; }
             }
 
-            [DataContract]
             public class MaxIntChange
             {
-                [DataMember(Name = "cancel")]
+                [JsonPropertyName("cancel")]
                 public string Cancel { get; set; }
 
-                [DataMember(Name = "intensity1")]
+                [JsonPropertyName("intensity1")]
                 public string Intensity1 { get; set; }
 
-                [DataMember(Name = "intensity2")]
+                [JsonPropertyName("intensity2")]
                 public string Intensity2 { get; set; }
 
-                [DataMember(Name = "intensity3")]
+                [JsonPropertyName("intensity3")]
                 public string Intensity3 { get; set; }
 
-                [DataMember(Name = "intensity4")]
+                [JsonPropertyName("intensity4")]
                 public string Intensity4 { get; set; }
 
-                [DataMember(Name = "intensity5")]
+                [JsonPropertyName("intensity5")]
                 public string Intensity5 { get; set; }
 
-                [DataMember(Name = "intensity6")]
+                [JsonPropertyName("intensity6")]
                 public string Intensity6 { get; set; }
 
-                [DataMember(Name = "intensity7")]
+                [JsonPropertyName("intensity7")]
                 public string Intensity7 { get; set; }
 
-                [DataMember(Name = "intensity8")]
+                [JsonPropertyName("intensity8")]
                 public string Intensity8 { get; set; }
 
-                [DataMember(Name = "intensity9")]
+                [JsonPropertyName("intensity9")]
                 public string Intensity9 { get; set; }
 
-                [DataMember(Name = "unknown")]
+                [JsonPropertyName("unknown")]
                 public string Unknown { get; set; }
             }
 
-            [DataContract]
             public class EqInfo
             {
-                [DataMember(Name = "distant")]
+                [JsonPropertyName("distant")]
                 public string Distant { get; set; }
 
-                [DataMember(Name = "intensity1")]
+                [JsonPropertyName("intensity1")]
                 public string Intensity1 { get; set; }
 
-                [DataMember(Name = "intensity2")]
+                [JsonPropertyName("intensity2")]
                 public string Intensity2 { get; set; }
 
-                [DataMember(Name = "intensity3")]
+                [JsonPropertyName("intensity3")]
                 public string Intensity3 { get; set; }
 
-                [DataMember(Name = "intensity4")]
+                [JsonPropertyName("intensity4")]
                 public string Intensity4 { get; set; }
 
-                [DataMember(Name = "intensity5")]
+                [JsonPropertyName("intensity5")]
                 public string Intensity5 { get; set; }
 
-                [DataMember(Name = "intensity6")]
+                [JsonPropertyName("intensity6")]
                 public string Intensity6 { get; set; }
 
-                [DataMember(Name = "intensity7")]
+                [JsonPropertyName("intensity7")]
                 public string Intensity7 { get; set; }
 
-                [DataMember(Name = "intensity8")]
+                [JsonPropertyName("intensity8")]
                 public string Intensity8 { get; set; }
 
-                [DataMember(Name = "intensity9")]
+                [JsonPropertyName("intensity9")]
                 public string Intensity9 { get; set; }
             }
         }

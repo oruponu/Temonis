@@ -3,8 +3,8 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -98,21 +98,21 @@ namespace Temonis
         /// <returns></returns>
         private static async Task<DateTime> RequestLatestTimeAsync(DateTime dateTime)
         {
-            var json = default(Root);
+            var json = default(Json);
             try
             {
                 var response = await HttpClient.GetAsync(Properties.Resources.LatestTimeUri).ConfigureAwait(false);
                 if (!response.IsSuccessStatusCode)
                     return dateTime;
-                using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-                    json = (Root)new DataContractJsonSerializer(typeof(Root)).ReadObject(stream);
+                await using var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                json = await JsonSerializer.DeserializeAsync<Json>(stream).ConfigureAwait(false);
             }
-            catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException || ex is SerializationException)
+            catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
             {
                 WriteLog(ex);
             }
 
-            return json == default(Root) ? dateTime : DateTime.Parse(json.LatestTime);
+            return json == default(Json) ? dateTime : DateTime.Parse(json.LatestTime);
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace Temonis
         /// </summary>
         public static void SetActive()
         {
-            if (!Settings.RootClass.Behavior.ForceActive)
+            if (!Settings.JsonClass.Behavior.ForceActive)
                 return;
             if (Instance.WindowState == WindowState.Minimized)
                 Instance.WindowState = WindowState.Normal;
@@ -150,14 +150,13 @@ namespace Temonis
         /// <summary>
         /// GZIP圧縮されたリソースファイルを展開します。
         /// </summary>
-        /// <param name="buffer"></param>
+        /// <param name="stream"></param>
         /// <param name="bufferSize"></param>
         /// <returns></returns>
-        public static byte[] DecompressResource(byte[] buffer, int bufferSize)
+        public static byte[] DecompressResource(Stream stream, int bufferSize)
         {
             var bytes = new byte[bufferSize];
-            using (var originalMemoryStream = new MemoryStream(buffer))
-            using (var zipStream = new GZipStream(originalMemoryStream, CompressionMode.Decompress))
+            using (var zipStream = new GZipStream(stream, CompressionMode.Decompress))
             using (var decompressedMemoryStream = new MemoryStream())
             {
                 while (true)
@@ -177,8 +176,8 @@ namespace Temonis
         {
             var value = $"{DateTime.Now}\n";
             value += $"[Log]\n{str}\n\n";
-            using (var stream = new StreamWriter("Log.txt", true))
-                stream.WriteLine(value);
+            using var stream = new StreamWriter("Log.txt", true);
+            stream.WriteLine(value);
         }
 
         [Conditional("DEBUG")]
@@ -187,47 +186,14 @@ namespace Temonis
             var value = $"{DateTime.Now}\n";
             value += $"[Message]\n{ex.Message}\n";
             value += $"[StackTrace]\n{ex.StackTrace}\n\n";
-            using (var stream = new StreamWriter("Exception.txt", true))
-                stream.WriteLine(value);
+            using var stream = new StreamWriter("Exception.txt", true);
+            stream.WriteLine(value);
         }
 
-        /// <summary>
-        /// JSONクラス
-        /// </summary>
-        [DataContract]
-        public class Root
+        private class Json
         {
-            [DataMember(Name = "security")]
-            public SecurityClass Security { get; set; }
-
-            [DataMember(Name = "latest_time")]
+            [JsonPropertyName("latest_time")]
             public string LatestTime { get; set; }
-
-            [DataMember(Name = "request_time")]
-            public string RequestTime { get; set; }
-
-            [DataMember(Name = "result")]
-            public ResultClass Result { get; set; }
-
-            [DataContract]
-            public class SecurityClass
-            {
-                [DataMember(Name = "realm")]
-                public string Realm { get; set; }
-
-                [DataMember(Name = "hash")]
-                public string Hash { get; set; }
-            }
-
-            [DataContract]
-            public class ResultClass
-            {
-                [DataMember(Name = "status")]
-                public string Status { get; set; }
-
-                [DataMember(Name = "message")]
-                public string Message { get; set; }
-            }
         }
     }
 

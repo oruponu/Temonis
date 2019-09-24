@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -17,10 +18,14 @@ namespace Temonis
         public static readonly double ImageWidth = (double)Instance.FindResource("ImageWidth");
         public static readonly double ImageHeight = (double)Instance.FindResource("ImageHeight");
 
+        private static readonly BitmapImage BaseMap = new BitmapImage(new Uri("pack://application:,,,/Resources/BaseMap.png", UriKind.Absolute));
+        private static readonly BitmapImage BaseMapBorder = new BitmapImage(new Uri("pack://application:,,,/Resources/BaseMapBorder.png", UriKind.Absolute));
+        private static readonly BitmapImage Epicenter = new BitmapImage(new Uri("pack://application:,,,/Resources/Epicenter.png", UriKind.Absolute));
+
         /// <summary>
         /// 観測点リスト
         /// </summary>
-        private static readonly IReadOnlyList<Station> Stations = Encoding.UTF8.GetString(DecompressResource(Properties.Resources.Stations, 48141)).Split('\n').Select(line => new Station
+        private static readonly IReadOnlyList<Station> Stations = Encoding.UTF8.GetString(DecompressResource(Assembly.GetExecutingAssembly().GetManifestResourceStream("Temonis.Resources.Stations.utd"), 48141)).Split('\n').Select(line => new Station
         {
             IsEnabled = Convert.ToBoolean(int.Parse(line.Split(',')[0])),
             Name = string.Intern(line.Split(',')[1]),
@@ -187,10 +192,8 @@ namespace Temonis
             var visual = new DrawingVisual();
             using (var context = visual.RenderOpen())
             {
-                var imageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/BaseMap.png", UriKind.Absolute));
-                imageSource.Freeze();
                 var rect = new Rect(.0, .0, ImageWidth, ImageHeight);
-                context.DrawImage(imageSource, rect);
+                context.DrawImage(BaseMap, rect);
 
                 try
                 {
@@ -235,14 +238,10 @@ namespace Temonis
                 }
                 else if (EqInfo.EpicenterX != default || EqInfo.EpicenterY != default)
                 {
-                    var image = new BitmapImage(new Uri("pack://application:,,,/Resources/Epicenter.png", UriKind.Absolute));
-                    image.Freeze();
-                    context.DrawImage(image, new Rect((int)(EqInfo.EpicenterX - image.Width * .5), (int)(EqInfo.EpicenterY - image.Height * .5), image.Width, image.Height));
+                    context.DrawImage(Epicenter, new Rect((int)(EqInfo.EpicenterX - Epicenter.Width * .5), (int)(EqInfo.EpicenterY - Epicenter.Height * .5), Epicenter.Width, Epicenter.Height));
                 }
 
-                imageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/BaseMapBorder.png", UriKind.Absolute));
-                imageSource.Freeze();
-                context.DrawImage(imageSource, rect);
+                context.DrawImage(BaseMapBorder, rect);
             }
 
             var target = new RenderTargetBitmap((int)ImageWidth, (int)ImageHeight, 96, 96, PixelFormats.Pbgra32);
@@ -262,14 +261,14 @@ namespace Temonis
         /// <returns></returns>
         private static async Task<BitmapSource> DownloadImageAsync(string requestUri)
         {
-            var response = await MainWindow.HttpClient.GetAsync(requestUri).ConfigureAwait(false);
+            using var response = await MainWindow.HttpClient.GetAsync(requestUri).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
                 return null;
             var image = new BitmapImage();
             image.BeginInit();
             image.CacheOption = BitmapCacheOption.OnLoad;
             image.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
-            using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+            await using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
             {
                 image.StreamSource = stream;
                 image.EndInit();
@@ -288,7 +287,7 @@ namespace Temonis
         private static async Task DrawRealTimeImageAsync(DrawingContext context, string time)
         {
             var mapType = MapType[MainWindow.DataContext.Kyoshin.ComboBoxSelectedIndex];
-            var mapSb = MainWindow.DataContext.Kyoshin.RadioButton == DataContext.RadioButtonEnum.Surface ? "s" : "b";
+            var mapSb = MainWindow.DataContext.Kyoshin.RadioButton == DataContext.RadioButtonEnum.Surface ? 's' : 'b';
             var image = await DownloadImageAsync($"{Properties.Resources.KyoshinUri}RealTimeImg/{mapType}_{mapSb}/{time}.{mapType}_{mapSb}.gif");
             if (image == null)
                 return;
@@ -477,10 +476,10 @@ namespace Temonis
             context.DrawEllipse(null, pen, new Point(Stations[firstIntStation.Index].X, Stations[firstIntStation.Index].Y), 12.0, 12.0);
 
             // 最大震度を検知した地点をラベルに設定
-            MainWindow.DataContext.Kyoshin.MaxIntString = $"{(Settings.RootClass.Appearance.UseJmaSeismicIntensityScale ? ToIntensityString(Observation.MaxInt) : Observation.MaxInt.ToString("F1"))}（{Stations[firstIntStation.Index].PrefName} {Stations[firstIntStation.Index].Name}）";
+            MainWindow.DataContext.Kyoshin.MaxIntString = $"{(Settings.JsonClass.Appearance.UseJmaSeismicIntensityScale ? ToIntensityString(Observation.MaxInt) : Observation.MaxInt.ToString("F1"))}（{Stations[firstIntStation.Index].PrefName} {Stations[firstIntStation.Index].Name}）";
 
             // 最大震度（気象庁震度階級）を検知した地点数
-            var maxIntNum = Observation.Stations.Where(station => station.Int >= .5).Count(station => Settings.RootClass.Appearance.UseJmaSeismicIntensityScale ? ToIntensityInt(station.Int) == _maxInt : station.Int == Observation.MaxInt);
+            var maxIntNum = Observation.Stations.Where(station => station.Int >= .5).Count(station => Settings.JsonClass.Appearance.UseJmaSeismicIntensityScale ? ToIntensityInt(station.Int) == _maxInt : station.Int == Observation.MaxInt);
             MainWindow.DataContext.Kyoshin.MaxIntDetail = maxIntNum > 1 ? $"他 {(maxIntNum - 1).ToString()} 地点" : "";
 
             // 地表リアルアイム震度0.5以上を検知した都道府県をラベルに設定

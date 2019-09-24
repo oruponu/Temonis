@@ -1,9 +1,9 @@
 {
     "appearance": {
-        "useJMASeismicIntensityScale": "true"
+        "useJMASeismicIntensityScale": true
     },
     "behavior": {
-        "forceActive": "true"
+        "forceActive": true
     },
     "sounds": {
         "kyoshin": {
