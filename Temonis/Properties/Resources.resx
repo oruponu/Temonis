@@ -118,16 +118,16 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="EewUri" xml:space="preserve">
-    <value>http://www.kmoni.bosai.go.jp/new/webservice/hypo/eew/</value>
+    <value>http://www.kmoni.bosai.go.jp/webservice/hypo/eew/</value>
   </data>
   <data name="EqInfoUri" xml:space="preserve">
     <value>https://typhoon.yahoo.co.jp/weather/earthquake/</value>
   </data>
   <data name="KyoshinUri" xml:space="preserve">
-    <value>http://www.kmoni.bosai.go.jp/new/data/map_img/</value>
+    <value>http://www.kmoni.bosai.go.jp/data/map_img/</value>
   </data>
   <data name="LatestTimeUri" xml:space="preserve">
-    <value>http://www.kmoni.bosai.go.jp/new/webservice/server/pros/latest.json</value>
+    <value>http://www.kmoni.bosai.go.jp/webservice/server/pros/latest.json</value>
   </data>
   <data name="TemonisUri" xml:space="preserve">
     <value>https://temonis.azurewebsites.net/</value>

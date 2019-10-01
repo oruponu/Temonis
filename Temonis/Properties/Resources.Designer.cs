@@ -61,7 +61,7 @@ namespace Temonis.Properties {
         }
         
         /// <summary>
-        ///   http://www.kmoni.bosai.go.jp/new/webservice/hypo/eew/ に類似しているローカライズされた文字列を検索します。
+        ///   http://www.kmoni.bosai.go.jp/webservice/hypo/eew/ に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string EewUri {
             get {
@@ -79,7 +79,7 @@ namespace Temonis.Properties {
         }
         
         /// <summary>
-        ///   http://www.kmoni.bosai.go.jp/new/data/map_img/ に類似しているローカライズされた文字列を検索します。
+        ///   http://www.kmoni.bosai.go.jp/data/map_img/ に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string KyoshinUri {
             get {
@@ -88,7 +88,7 @@ namespace Temonis.Properties {
         }
         
         /// <summary>
-        ///   http://www.kmoni.bosai.go.jp/new/webservice/server/pros/latest.json に類似しているローカライズされた文字列を検索します。
+        ///   http://www.kmoni.bosai.go.jp/webservice/server/pros/latest.json に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string LatestTimeUri {
             get {

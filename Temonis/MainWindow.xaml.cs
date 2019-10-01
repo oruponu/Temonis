@@ -157,8 +157,8 @@ namespace Temonis
         {
             var bytes = new byte[bufferSize];
             using (var zipStream = new GZipStream(stream, CompressionMode.Decompress))
-            using (var decompressedMemoryStream = new MemoryStream())
             {
+                using var decompressedMemoryStream = new MemoryStream();
                 while (true)
                 {
                     var size = zipStream.Read(bytes, 0, bytes.Length);
