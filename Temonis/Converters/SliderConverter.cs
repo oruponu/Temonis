@@ -21,7 +21,7 @@ namespace Temonis.Converters
                 text += $"{minute.ToString()}分";
             if (second > 0)
                 text += $"{second.ToString()}秒";
-            if (text != "")
+            if (text.Length != 0)
                 text += "前";
 
             return text;

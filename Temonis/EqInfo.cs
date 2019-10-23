@@ -121,7 +121,7 @@ namespace Temonis
             ["鹿児島十島村"] = "十島村"
         };
         private static string _prevInfo;
-        private static string _prevId;
+        private static string _prevId = "";
 
         public static string Id { get; private set; }
 
@@ -148,7 +148,7 @@ namespace Temonis
                 WriteLog(ex);
             }
 
-            if (string.IsNullOrEmpty(html))
+            if (html.Length == 0)
                 return;
 
             var info = new Regex("<div id=\"eqinfdtl\" class=\"tracked_mods\">.+?</div>", RegexOptions.Compiled | RegexOptions.Singleline).Match(html).Value;
@@ -213,7 +213,7 @@ namespace Temonis
             intensity = intensity.TrimEnd(',');
 
             var maxInt = "";
-            if (intensity != "")
+            if (intensity.Length != 0)
             {
                 SetDataGridContext(intensity);
                 maxInt = intensity.Split(',')[0].Split(':')[0];
@@ -361,7 +361,7 @@ namespace Temonis
             else
                 MainWindow.DataContext.EqInfo.Level = Level.White;
 
-            if (!string.IsNullOrEmpty(_prevId))
+            if (_prevId.Length != 0)
                 Sound.PlayEqInfo(maxInt);
 
             SetActive();
