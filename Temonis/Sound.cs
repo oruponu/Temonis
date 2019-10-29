@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Windows.Media;
 
 namespace Temonis
@@ -165,7 +167,9 @@ namespace Temonis
 
         private static void Play(string uriString)
         {
-            Player.Open(new Uri(uriString, UriKind.Relative));
+            if (!Path.IsPathRooted(uriString))
+                uriString = Path.Combine(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName), uriString);
+            Player.Open(new Uri(uriString, UriKind.Absolute));
             Player.Play();
         }
     }
