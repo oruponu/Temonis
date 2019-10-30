@@ -34,8 +34,13 @@ namespace Temonis
                 var result = MessageBox.Show($"新しいバージョン {latestVersion} がリリースされました。\nダウンロードページを開きますか？", "Temonis", MessageBoxButton.YesNo, MessageBoxImage.Information);
                 if (result == MessageBoxResult.Yes)
                 {
-                    Process.Start(Temonis.Properties.Resources.TemonisUri);
-                    Environment.Exit(-1);
+                    var startInfo = new ProcessStartInfo
+                    {
+                        FileName = Properties.Resources.TemonisUri,
+                        UseShellExecute = true
+                    };
+                    Process.Start(startInfo);
+                    Environment.Exit(0);
                 }
             }
 
