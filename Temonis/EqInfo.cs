@@ -186,7 +186,7 @@ namespace Temonis
                 if (latLon[1].StartsWith("東経"))
                     double.TryParse(latLon[1].Replace("東経", ""), out longitude);
                 else
-                    double.TryParse('-' + latLon[1].Replace("西経", ""), out longitude);
+                    double.TryParse("-" + latLon[1].Replace("西経", ""), out longitude);
             }
 
             // 震源の深さ
@@ -261,7 +261,7 @@ namespace Temonis
                     foreach (var city in split[1].Split('　'))
                     {
                         var cityName = AbbreviateCityName(city, split[0]);
-                        if (cities.Length + ('　' + cityName).Length > 28)
+                        if (cities.Length + ("　" + cityName).Length > 28)
                         {
                             intensity.Add(new Intensity
                             {

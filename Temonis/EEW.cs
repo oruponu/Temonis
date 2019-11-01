@@ -29,7 +29,11 @@ namespace Temonis
                 if (!response.IsSuccessStatusCode)
                     return;
                 await using var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                json = await JsonSerializer.DeserializeAsync<Json>(stream).ConfigureAwait(false);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                };
+                json = await JsonSerializer.DeserializeAsync<Json>(stream, options).ConfigureAwait(false);
             }
             catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
             {
@@ -53,7 +57,7 @@ namespace Temonis
                 else if (!Info.TryGetValue(json.ReportId, out var value) || value != null && value != "-1")
                 {
                     IsTriggerOn = true;
-                    var serial = '第' + json.ReportNum + '報';
+                    var serial = $"第{json.ReportNum}報";
                     if (json.IsFinal.GetBoolean())
                         serial += " 最終";
                     MainWindow.DataContext.Eew.Message = $"緊急地震速報（{json.Alertflg}）{serial}";
@@ -61,7 +65,7 @@ namespace Temonis
                     MainWindow.DataContext.Eew.DateTime = DateTime.ParseExact(json.OriginTime, "yyyyMMddHHmmss", new CultureInfo("ja-JP")).ToString("yyyy年MM月dd日 HH時mm分ss秒");
                     MainWindow.DataContext.Eew.Epicenter = json.RegionName;
                     MainWindow.DataContext.Eew.Depth = json.Depth;
-                    MainWindow.DataContext.Eew.Magnitude = json.Magunitude;
+                    MainWindow.DataContext.Eew.Magnitude = json.Magnitude;
                     MainWindow.DataContext.Eew.Intensity = json.Calcintensity;
 
                     if (value == null)
@@ -186,7 +190,6 @@ namespace Temonis
 
         private class Json
         {
-            [JsonPropertyName("result")]
             public ResultClass Result { get; set; }
 
             [JsonPropertyName("region_name")]
@@ -195,10 +198,8 @@ namespace Temonis
             [JsonPropertyName("is_cancel")]
             public JsonElement IsCancel { get; set; }
 
-            [JsonPropertyName("depth")]
             public string Depth { get; set; }
 
-            [JsonPropertyName("calcintensity")]
             public string Calcintensity { get; set; }
 
             [JsonPropertyName("is_final")]
@@ -208,7 +209,7 @@ namespace Temonis
             public string OriginTime { get; set; }
 
             [JsonPropertyName("magunitude")]
-            public string Magunitude { get; set; }
+            public string Magnitude { get; set; }
 
             [JsonPropertyName("report_num")]
             public string ReportNum { get; set; }
@@ -216,12 +217,10 @@ namespace Temonis
             [JsonPropertyName("report_id")]
             public string ReportId { get; set; }
 
-            [JsonPropertyName("alertflg")]
             public string Alertflg { get; set; }
 
             public class ResultClass
             {
-                [JsonPropertyName("message")]
                 public string Message { get; set; }
             }
         }

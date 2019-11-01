@@ -24,7 +24,11 @@ namespace Temonis
 
             try
             {
-                JsonClass = JsonSerializer.Deserialize<Json>(File.ReadAllBytes(FileName));
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                };
+                JsonClass = JsonSerializer.Deserialize<Json>(File.ReadAllBytes(FileName), options);
             }
             catch
             {
@@ -34,13 +38,10 @@ namespace Temonis
 
         public class Json
         {
-            [JsonPropertyName("appearance")]
             public AppearanceClass Appearance { get; set; }
 
-            [JsonPropertyName("behavior")]
             public BehaviorClass Behavior { get; set; }
 
-            [JsonPropertyName("sounds")]
             public SoundsClass Sounds { get; set; }
 
             public class AppearanceClass
@@ -51,160 +52,114 @@ namespace Temonis
 
             public class BehaviorClass
             {
-                [JsonPropertyName("forceActive")]
                 public bool ForceActive { get; set; }
             }
 
             public class SoundsClass
             {
-                [JsonPropertyName("kyoshin")]
                 public Kyoshin Kyoshin { get; set; }
 
-                [JsonPropertyName("eew")]
                 public Eew Eew { get; set; }
 
-                [JsonPropertyName("eqInfo")]
                 public EqInfo EqInfo { get; set; }
             }
 
             public class Kyoshin
             {
-                [JsonPropertyName("intensity1")]
                 public string Intensity1 { get; set; }
 
-                [JsonPropertyName("intensity2")]
                 public string Intensity2 { get; set; }
 
-                [JsonPropertyName("intensity3")]
                 public string Intensity3 { get; set; }
 
-                [JsonPropertyName("intensity4")]
                 public string Intensity4 { get; set; }
 
-                [JsonPropertyName("intensity5")]
                 public string Intensity5 { get; set; }
 
-                [JsonPropertyName("intensity6")]
                 public string Intensity6 { get; set; }
 
-                [JsonPropertyName("intensity7")]
                 public string Intensity7 { get; set; }
 
-                [JsonPropertyName("intensity8")]
                 public string Intensity8 { get; set; }
 
-                [JsonPropertyName("intensity9")]
                 public string Intensity9 { get; set; }
             }
 
             public class Eew
             {
-                [JsonPropertyName("firstReport")]
                 public FirstReport FirstReport { get; set; }
 
-                [JsonPropertyName("maxIntChange")]
                 public MaxIntChange MaxIntChange { get; set; }
             }
 
             public class FirstReport
             {
-                [JsonPropertyName("intensity1")]
                 public string Intensity1 { get; set; }
 
-                [JsonPropertyName("intensity2")]
                 public string Intensity2 { get; set; }
 
-                [JsonPropertyName("intensity3")]
                 public string Intensity3 { get; set; }
 
-                [JsonPropertyName("intensity4")]
                 public string Intensity4 { get; set; }
 
-                [JsonPropertyName("intensity5")]
                 public string Intensity5 { get; set; }
 
-                [JsonPropertyName("intensity6")]
                 public string Intensity6 { get; set; }
 
-                [JsonPropertyName("intensity7")]
                 public string Intensity7 { get; set; }
 
-                [JsonPropertyName("intensity8")]
                 public string Intensity8 { get; set; }
 
-                [JsonPropertyName("intensity9")]
                 public string Intensity9 { get; set; }
 
-                [JsonPropertyName("unknown")]
                 public string Unknown { get; set; }
             }
 
             public class MaxIntChange
             {
-                [JsonPropertyName("cancel")]
                 public string Cancel { get; set; }
 
-                [JsonPropertyName("intensity1")]
                 public string Intensity1 { get; set; }
 
-                [JsonPropertyName("intensity2")]
                 public string Intensity2 { get; set; }
 
-                [JsonPropertyName("intensity3")]
                 public string Intensity3 { get; set; }
 
-                [JsonPropertyName("intensity4")]
                 public string Intensity4 { get; set; }
 
-                [JsonPropertyName("intensity5")]
                 public string Intensity5 { get; set; }
 
-                [JsonPropertyName("intensity6")]
                 public string Intensity6 { get; set; }
 
-                [JsonPropertyName("intensity7")]
                 public string Intensity7 { get; set; }
 
-                [JsonPropertyName("intensity8")]
                 public string Intensity8 { get; set; }
 
-                [JsonPropertyName("intensity9")]
                 public string Intensity9 { get; set; }
 
-                [JsonPropertyName("unknown")]
                 public string Unknown { get; set; }
             }
 
             public class EqInfo
             {
-                [JsonPropertyName("distant")]
                 public string Distant { get; set; }
 
-                [JsonPropertyName("intensity1")]
                 public string Intensity1 { get; set; }
 
-                [JsonPropertyName("intensity2")]
                 public string Intensity2 { get; set; }
 
-                [JsonPropertyName("intensity3")]
                 public string Intensity3 { get; set; }
 
-                [JsonPropertyName("intensity4")]
                 public string Intensity4 { get; set; }
 
-                [JsonPropertyName("intensity5")]
                 public string Intensity5 { get; set; }
 
-                [JsonPropertyName("intensity6")]
                 public string Intensity6 { get; set; }
 
-                [JsonPropertyName("intensity7")]
                 public string Intensity7 { get; set; }
 
-                [JsonPropertyName("intensity8")]
                 public string Intensity8 { get; set; }
 
-                [JsonPropertyName("intensity9")]
                 public string Intensity9 { get; set; }
             }
         }

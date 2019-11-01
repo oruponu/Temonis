@@ -287,7 +287,7 @@ namespace Temonis
         private static async Task DrawRealTimeImageAsync(DrawingContext context, string time)
         {
             var mapType = MapType[MainWindow.DataContext.Kyoshin.ComboBoxSelectedIndex];
-            var mapSb = MainWindow.DataContext.Kyoshin.RadioButton == DataContext.RadioButtonEnum.Surface ? 's' : 'b';
+            var mapSb = MainWindow.DataContext.Kyoshin.RadioButton == DataContext.RadioButtonEnum.Surface ? "s" : "b";
             var image = await DownloadImageAsync($"{Properties.Resources.KyoshinUri}RealTimeImg/{mapType}_{mapSb}/{time}.{mapType}_{mapSb}.gif");
             if (image == null)
                 return;
@@ -491,7 +491,7 @@ namespace Temonis
                     if (Observation.Prefs.Count >= 11)
                         text += $"　他 {(Observation.Prefs.Count - 9).ToString()} 都道府県";
                     else if (Observation.Prefs.Count >= 10)
-                        text += '　' + Observation.Prefs.Last().Name;
+                        text += "　" + Observation.Prefs.Last().Name;
 
                     var space = text.Length - text.Replace("　", "").Length;
                     var insert = (int)Math.Ceiling(space * .5);
@@ -502,9 +502,9 @@ namespace Temonis
                         for (var i = 0; i < split.Length; i++)
                         {
                             if (insert == i + 1)
-                                builder.Append(split[i] + '\n');
+                                builder.Append(split[i] + "\n");
                             else
-                                builder.Append(split[i] + '　');
+                                builder.Append(split[i] + "　");
                         }
 
                         text = builder.ToString().TrimEnd();

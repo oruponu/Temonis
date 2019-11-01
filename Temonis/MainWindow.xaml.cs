@@ -174,7 +174,7 @@ namespace Temonis
         [Conditional("DEBUG")]
         public static void WriteLog(string str)
         {
-            var value = $"{DateTime.Now}\n";
+            var value = DateTime.Now + "\n";
             value += $"[Log]\n{str}\n\n";
             using var stream = new StreamWriter("Log.txt", true);
             stream.WriteLine(value);
@@ -183,7 +183,7 @@ namespace Temonis
         [Conditional("DEBUG")]
         public static void WriteLog(Exception ex)
         {
-            var value = $"{DateTime.Now}\n";
+            var value = DateTime.Now + "\n";
             value += $"[Message]\n{ex.Message}\n";
             value += $"[StackTrace]\n{ex.StackTrace}\n\n";
             using var stream = new StreamWriter("Exception.txt", true);
