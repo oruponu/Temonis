@@ -54,7 +54,7 @@ namespace Temonis
         public static void WriteFatalErrorLog(Exception ex)
         {
             var value = $"{DateTime.Now}\n";
-            value += $"[Message]\n{ex.GetType().FullName}\n{ex.Message}\n";
+            value += $"[Message]\n{ex.GetType().FullName}: {ex.Message}\n";
             value += $"[StackTrace]\n{ex.StackTrace}\n\n";
             using var stream = new StreamWriter("FatalError.txt", true);
             stream.WriteLine(value);

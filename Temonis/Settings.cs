@@ -52,7 +52,7 @@ namespace Temonis
 
             public class BehaviorClass
             {
-                public bool ForceActive { get; set; }
+                public bool ActivateWindow { get; set; }
             }
 
             public class SoundsClass

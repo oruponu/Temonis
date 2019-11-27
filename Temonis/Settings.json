@@ -3,7 +3,7 @@
         "useJMASeismicIntensityScale": true
     },
     "behavior": {
-        "forceActive": true
+        "activateWindow": true
     },
     "sounds": {
         "kyoshin": {

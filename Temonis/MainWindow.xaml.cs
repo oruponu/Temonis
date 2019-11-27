@@ -137,7 +137,7 @@ namespace Temonis
         /// </summary>
         public static void SetActive()
         {
-            if (!Settings.JsonClass.Behavior.ForceActive)
+            if (!Settings.JsonClass.Behavior.ActivateWindow)
                 return;
             if (Instance.WindowState == WindowState.Minimized)
                 Instance.WindowState = WindowState.Normal;
@@ -184,7 +184,7 @@ namespace Temonis
         public static void WriteLog(Exception ex)
         {
             var value = DateTime.Now + "\n";
-            value += $"[Message]\n{ex.Message}\n";
+            value += $"[Message]\n{ex.GetType().FullName}: {ex.Message}\n";
             value += $"[StackTrace]\n{ex.StackTrace}\n\n";
             using var stream = new StreamWriter("Exception.txt", true);
             stream.WriteLine(value);

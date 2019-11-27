@@ -152,48 +152,32 @@ namespace Temonis
                 return;
 
             var info = new Regex("<div id=\"eqinfdtl\" class=\"tracked_mods\">.+?</div>", RegexOptions.Compiled | RegexOptions.Singleline).Match(html).Value;
-            if (!IsUpdated(info))
-                return;
 
             // 発生時刻
             var dateTime = new Regex(@"<.+>発生時刻(</.+>)+\n(<.+>)+(.+?)</.+>", RegexOptions.Compiled).Match(info).Groups[3].Value.Replace("ごろ", "");
             if (dateTime == "---")
                 return;
-            MainWindow.DataContext.EqInfo.DateTime = DateTime.TryParse(dateTime, new CultureInfo("ja-JP"), DateTimeStyles.AssumeLocal, out var arrivalTime) ? arrivalTime.ToString("yyyy年MM月dd日 HH時mm分") : "---";
+            dateTime = DateTime.TryParse(dateTime, new CultureInfo("ja-JP"), DateTimeStyles.AssumeLocal, out var arrivalTime) ? arrivalTime.ToString("yyyy年MM月dd日 HH時mm分") : "---";
 
             // 震源地
             var epicenter = new Regex(@"<.+>震源地(</.+>)+\n(<.+>)+<.+?>(.+?)</.+>", RegexOptions.Compiled).Match(info).Groups[3].Value;
             epicenter += new Regex(@"<.+>震源地(</.+>)+\n(<.+>)+<.+?>(.+?)</.+>(.+?)(</.+>){2}", RegexOptions.Compiled).Match(info).Groups[4].Value;
-            MainWindow.DataContext.EqInfo.Epicenter = epicenter.Replace('/', '／');
+            epicenter = epicenter.Replace('/', '／');
 
-            // 震源の緯度
-            var latitude = .0;
-            var latLon = new Regex(@"<.+>緯度/経度(</.+>)+\n(<.+>)+(.+?)</.+>", RegexOptions.Compiled).Match(info).Groups[3].Value.Split('/');
-            if (latLon[0] != "---")
-            {
-                latLon[0] = latLon[0].TrimEnd('度');
-                if (latLon[0].StartsWith("北緯"))
-                    double.TryParse(latLon[0].Replace("北緯", ""), out latitude);
-                else
-                    double.TryParse("-" + latLon[0].Replace("南緯", ""), out latitude);
-            }
+            // マグニチュード
+            var magnitude = new Regex(@"<.+>マグニチュード(</.+>)+\n(<.+>)+(.+?)</.+>", RegexOptions.Compiled).Match(info).Groups[3].Value;
 
-            // 震源の経度
-            var longitude = .0;
-            if (latLon.Length > 1 && latLon[1] != "---")
-            {
-                latLon[1] = latLon[1].TrimEnd('度');
-                if (latLon[1].StartsWith("東経"))
-                    double.TryParse(latLon[1].Replace("東経", ""), out longitude);
-                else
-                    double.TryParse("-" + latLon[1].Replace("西経", ""), out longitude);
-            }
+            if (!IsUpdated($"{dateTime},{epicenter},{magnitude}"))
+                return;
+
+
+            MainWindow.DataContext.EqInfo.DateTime = dateTime;
+            MainWindow.DataContext.EqInfo.Epicenter = epicenter;
 
             // 震源の深さ
             MainWindow.DataContext.EqInfo.Depth = new Regex(@"<.+>深さ(</.+>)+\n\n(<.+>)+(.+?)</.+>", RegexOptions.Compiled).Match(info).Groups[3].Value;
 
-            // マグニチュード
-            MainWindow.DataContext.EqInfo.Magnitude = new Regex(@"<.+>マグニチュード(</.+>)+\n(<.+>)+(.+?)</.+>", RegexOptions.Compiled).Match(info).Groups[3].Value;
+            MainWindow.DataContext.EqInfo.Magnitude = magnitude;
 
             // 付加文
             var comment = new Regex(@"<.+>情報(</.+>)+\n(<.+?>)+(.+?)</?.+>", RegexOptions.Compiled).Match(info).Groups[3].Value;
@@ -223,10 +207,33 @@ namespace Temonis
                 MainWindow.DataContext.EqInfo.IntensityList = new List<Intensity>();
             }
 
-            // 地震ID
-            Id = new Regex("<a href=\"/weather/jp/earthquake/(.+).html\">", RegexOptions.Compiled).Match(html).Groups[1].Value;
+            // 震源の緯度
+            var latitude = .0;
+            var latLon = new Regex(@"<.+>緯度/経度(</.+>)+\n(<.+>)+(.+?)</.+>", RegexOptions.Compiled).Match(info).Groups[3].Value.Split('/');
+            if (latLon[0] != "---")
+            {
+                latLon[0] = latLon[0].TrimEnd('度');
+                if (latLon[0].StartsWith("北緯"))
+                    double.TryParse(latLon[0].Replace("北緯", ""), out latitude);
+                else
+                    double.TryParse("-" + latLon[0].Replace("南緯", ""), out latitude);
+            }
+
+            // 震源の経度
+            var longitude = .0;
+            if (latLon.Length > 1 && latLon[1] != "---")
+            {
+                latLon[1] = latLon[1].TrimEnd('度');
+                if (latLon[1].StartsWith("東経"))
+                    double.TryParse(latLon[1].Replace("東経", ""), out longitude);
+                else
+                    double.TryParse("-" + latLon[1].Replace("西経", ""), out longitude);
+            }
 
             SetEpicenterPoint(latitude, longitude);
+
+            // 地震ID
+            Id = new Regex("<a href=\"/weather/jp/earthquake/(.+).html\">", RegexOptions.Compiled).Match(html).Groups[1].Value;
 
             UpdateState(maxInt);
         }
