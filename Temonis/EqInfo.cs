@@ -167,24 +167,13 @@ namespace Temonis
             // マグニチュード
             var magnitude = new Regex(@"<.+>マグニチュード(</.+>)+\n(<.+>)+(.+?)</.+>", RegexOptions.Compiled).Match(info).Groups[3].Value;
 
-            if (!IsUpdated($"{dateTime},{epicenter},{magnitude}"))
-                return;
-
-
-            MainWindow.DataContext.EqInfo.DateTime = dateTime;
-            MainWindow.DataContext.EqInfo.Epicenter = epicenter;
-
             // 震源の深さ
-            MainWindow.DataContext.EqInfo.Depth = new Regex(@"<.+>深さ(</.+>)+\n\n(<.+>)+(.+?)</.+>", RegexOptions.Compiled).Match(info).Groups[3].Value;
-
-            MainWindow.DataContext.EqInfo.Magnitude = magnitude;
+            var depth = new Regex(@"<.+>深さ(</.+>)+\n\n(<.+>)+(.+?)</.+>", RegexOptions.Compiled).Match(info).Groups[3].Value;
 
             // 付加文
             var comment = new Regex(@"<.+>情報(</.+>)+\n(<.+?>)+(.+?)</?.+>", RegexOptions.Compiled).Match(info).Groups[3].Value;
             if (comment.Count(text => text == '。') == 2)  // 付加文の情報が2つの場合は2行に分割
                 comment = comment.Replace("。", "。\n").TrimEnd('\n');
-
-            MainWindow.DataContext.EqInfo.Comment = comment;
 
             // 各地の震度
             var intensity = new Regex(@"<.+class=""yjw_table"">(.+?)</\w+>\n</div>", RegexOptions.Compiled | RegexOptions.Singleline).Match(info).Groups[1].Value.Replace("\n", "");
@@ -195,6 +184,15 @@ namespace Temonis
             intensity = new Regex(@"　<\w+>(</\w+>){3}", RegexOptions.Compiled).Replace(intensity, "");
             intensity = new Regex(@"(</\w+>)+", RegexOptions.Compiled).Replace(intensity, ",");
             intensity = intensity.TrimEnd(',');
+
+            if (!IsUpdated($"{dateTime},{epicenter},{magnitude}\n{intensity}"))
+                return;
+
+            MainWindow.DataContext.EqInfo.DateTime = dateTime;
+            MainWindow.DataContext.EqInfo.Epicenter = epicenter;
+            MainWindow.DataContext.EqInfo.Depth = depth;
+            MainWindow.DataContext.EqInfo.Magnitude = magnitude;
+            MainWindow.DataContext.EqInfo.Comment = comment;
 
             var maxInt = "";
             if (intensity.Length != 0)
