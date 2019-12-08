@@ -16,14 +16,12 @@
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0" Margin="28,16,8,16">
             <Rectangle Grid.Column="0" Stroke="{Binding Kyoshin.Level, Converter={c:LevelColorConverter}}"/>
-            <TextBlock Grid.Column="0"
-                       Style="{StaticResource Header}"
-                       Text="強震モニタ"/>
             <StackPanel Grid.Column="0">
-                <StackPanel Margin="22,10,24,4" Orientation="Horizontal">
-                    <TextBlock FontSize="18" Text="{Binding LatestTimeString}"/>
-                    <TextBlock Margin="10,0,0,3"
+                <StackPanel Margin="16,10,24,4" Orientation="Horizontal">
+                    <TextBlock Text="{Binding LatestTimeString}"/>
+                    <TextBlock Margin="10,0,0,2"
                                VerticalAlignment="Bottom"
+                               Background="{StaticResource Black}"
                                FontSize="11"
                                Foreground="{StaticResource Yellow}"
                                Text="{Binding Kyoshin.SliderValue, Converter={c:SliderConverter}}"/>
@@ -40,10 +38,12 @@
                     </Border>
                     <StackPanel Margin="24,4,24,4">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Background="{StaticResource Black}" Text="地表震度"/>
+                            <TextBlock Background="{StaticResource Black}"
+                                       FontSize="12"
+                                       Text="地表震度"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Margin="23,0,0,0"
+                            <TextBlock Margin="19,0,0,0"
                                        Background="{StaticResource Black}"
                                        Text="{Binding Kyoshin.MaxIntString}"/>
                             <TextBlock VerticalAlignment="Bottom"
@@ -59,30 +59,44 @@
                                Text="{Binding Kyoshin.Prefecture}"
                                TextAlignment="Right"/>
                 </Grid>
-                <StackPanel Margin="16,16,16,0" Orientation="Horizontal">
-                    <ComboBox Width="120" SelectedIndex="{Binding Kyoshin.ComboBoxSelectedIndex}">
-                        <ComboBoxItem Content="リアルタイム震度"/>
-                        <ComboBoxItem Content="最大加速度"/>
-                        <ComboBoxItem Content="最大速度"/>
-                        <ComboBoxItem Content="最大変位"/>
-                        <ComboBoxItem Content="0.125Hz速度応答"/>
-                        <ComboBoxItem Content="0.25Hz速度応答"/>
-                        <ComboBoxItem Content="0.5Hz速度応答"/>
-                        <ComboBoxItem Content="1.0Hz速度応答"/>
-                        <ComboBoxItem Content="2.0Hz速度応答"/>
-                        <ComboBoxItem Content="4.0Hz速度応答"/>
-                    </ComboBox>
-                    <RadioButton Margin="16,0,0,0"
-                                 VerticalAlignment="Center"
-                                 Content="地表"
-                                 IsChecked="{Binding Kyoshin.RadioButton, Converter={c:RadioButtonConverter}, ConverterParameter=Surface}"/>
-                    <RadioButton Margin="8,0,0,0"
-                                 VerticalAlignment="Center"
-                                 Content="地中"
-                                 IsChecked="{Binding Kyoshin.RadioButton, Converter={c:RadioButtonConverter}, ConverterParameter=Borehole}"/>
-                </StackPanel>
+                <Grid>
+                    <StackPanel Margin="16,16,16,0" Orientation="Horizontal">
+                        <ComboBox Width="120"
+                                  IsTabStop="False"
+                                  SelectedIndex="{Binding Kyoshin.ComboBoxSelectedIndex}">
+                            <ComboBoxItem Content="リアルタイム震度" IsTabStop="False"/>
+                            <ComboBoxItem Content="最大加速度" IsTabStop="False"/>
+                            <ComboBoxItem Content="最大速度" IsTabStop="False"/>
+                            <ComboBoxItem Content="最大変位" IsTabStop="False"/>
+                            <ComboBoxItem Content="0.125Hz速度応答" IsTabStop="False"/>
+                            <ComboBoxItem Content="0.25Hz速度応答" IsTabStop="False"/>
+                            <ComboBoxItem Content="0.5Hz速度応答" IsTabStop="False"/>
+                            <ComboBoxItem Content="1.0Hz速度応答" IsTabStop="False"/>
+                            <ComboBoxItem Content="2.0Hz速度応答" IsTabStop="False"/>
+                            <ComboBoxItem Content="4.0Hz速度応答" IsTabStop="False"/>
+                        </ComboBox>
+                        <RadioButton Margin="16,0,0,0"
+                                     VerticalAlignment="Center"
+                                     Content="地表"
+                                     IsChecked="{Binding Kyoshin.RadioButton, Converter={c:RadioButtonConverter}, ConverterParameter=Surface}"
+                                     IsTabStop="False"/>
+                        <RadioButton Margin="8,0,0,0"
+                                     VerticalAlignment="Center"
+                                     Content="地中"
+                                     IsChecked="{Binding Kyoshin.RadioButton, Converter={c:RadioButtonConverter}, ConverterParameter=Borehole}"
+                                     IsTabStop="False"/>
+                    </StackPanel>
+                    <Image Width="100"
+                           Height="20"
+                           Margin="0,16,4,0"
+                           HorizontalAlignment="Right"
+                           Opacity=".75"
+                           RenderOptions.BitmapScalingMode="NearestNeighbor"
+                           Source="./Resources/Nied.png"/>
+                </Grid>
                 <Slider Margin="16,8,16,0"
                         IsSnapToTickEnabled="True"
+                        IsTabStop="False"
                         LargeChange="60"
                         Maximum="0"
                         Minimum="-10800"
@@ -98,9 +112,6 @@
             </Grid.RowDefinitions>
             <Grid Grid.Row="0" Margin="0,0,0,8">
                 <Rectangle Grid.Column="0" Stroke="{Binding Eew.Level, Converter={c:LevelColorConverter}}"/>
-                <TextBlock Grid.Column="0"
-                           Style="{StaticResource Header}"
-                           Text="緊急地震速報"/>
                 <Grid Margin="22,10,20,10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="20"/>
@@ -111,7 +122,7 @@
                         <RowDefinition Height="20"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="111"/>
+                        <ColumnDefinition Width="94"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Row="0"
@@ -120,6 +131,7 @@
                                Text="{Binding Eew.Message}"/>
                     <TextBlock Grid.Row="1"
                                Grid.Column="0"
+                               Style="{StaticResource ItemHeader}"
                                Text="発生時刻"
                                Visibility="{Binding Eew.Visible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     <TextBlock Grid.Row="1"
@@ -127,6 +139,7 @@
                                Text="{Binding Eew.DateTime}"/>
                     <TextBlock Grid.Row="2"
                                Grid.Column="0"
+                               Style="{StaticResource ItemHeader}"
                                Text="震源地"
                                Visibility="{Binding Eew.Visible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     <TextBlock Grid.Row="2"
@@ -134,6 +147,7 @@
                                Text="{Binding Eew.Epicenter}"/>
                     <TextBlock Grid.Row="3"
                                Grid.Column="0"
+                               Style="{StaticResource ItemHeader}"
                                Text="震源の深さ"
                                Visibility="{Binding Eew.Visible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     <TextBlock Grid.Row="3"
@@ -141,6 +155,7 @@
                                Text="{Binding Eew.Depth}"/>
                     <TextBlock Grid.Row="4"
                                Grid.Column="0"
+                               Style="{StaticResource ItemHeader}"
                                Text="マグニチュード"
                                Visibility="{Binding Eew.Visible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     <TextBlock Grid.Row="4"
@@ -148,6 +163,7 @@
                                Text="{Binding Eew.Magnitude}"/>
                     <TextBlock Grid.Row="5"
                                Grid.Column="0"
+                               Style="{StaticResource ItemHeader}"
                                Text="最大予測震度"
                                Visibility="{Binding Eew.Visible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     <TextBlock Grid.Row="5"
@@ -157,9 +173,6 @@
             </Grid>
             <Grid Grid.Row="1" Margin="0,8,0,0">
                 <Rectangle Grid.Column="0" Stroke="{Binding EqInfo.Level, Converter={c:LevelColorConverter}}"/>
-                <TextBlock Grid.Column="0"
-                           Style="{StaticResource Header}"
-                           Text="地震情報"/>
                 <Grid Margin="22,10,20,10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="20"/>
@@ -170,29 +183,33 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="111"/>
+                        <ColumnDefinition Width="94"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Row="0"
                                Grid.Column="0"
+                               Style="{StaticResource ItemHeader}"
                                Text="発生時刻"/>
                     <TextBlock Grid.Row="0"
                                Grid.Column="1"
                                Text="{Binding EqInfo.DateTime}"/>
                     <TextBlock Grid.Row="1"
                                Grid.Column="0"
+                               Style="{StaticResource ItemHeader}"
                                Text="震源地"/>
                     <TextBlock Grid.Row="1"
                                Grid.Column="1"
                                Text="{Binding EqInfo.Epicenter}"/>
                     <TextBlock Grid.Row="2"
                                Grid.Column="0"
+                               Style="{StaticResource ItemHeader}"
                                Text="震源の深さ"/>
                     <TextBlock Grid.Row="2"
                                Grid.Column="1"
                                Text="{Binding EqInfo.Depth}"/>
                     <TextBlock Grid.Row="3"
                                Grid.Column="0"
+                               Style="{StaticResource ItemHeader}"
                                Text="マグニチュード"/>
                     <TextBlock Grid.Row="3"
                                Grid.Column="1"

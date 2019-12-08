@@ -49,7 +49,7 @@ namespace Temonis
                 {
                     MainWindow.DataContext.Eew.Message = "緊急地震速報は取り消されました。";
                 }
-                else if (EqInfo.Id == json.ReportId && !Kyoshin.IsTriggerOn && json.IsFinal.GetBoolean())
+                else if (MainWindow.DataContext.Kyoshin.SliderValue >= .0 && EqInfo.Id == json.ReportId && !Kyoshin.IsTriggerOn && json.IsFinal.GetBoolean())
                 {
                     IsTriggerOn = false;
                     Info[json.ReportId] = "-1";
