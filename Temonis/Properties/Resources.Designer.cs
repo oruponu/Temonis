@@ -79,6 +79,15 @@ namespace Temonis.Properties {
         }
         
         /// <summary>
+        ///   https://www.data.jma.go.jp/developer/xml/feed/ に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string JmxUri {
+            get {
+                return ResourceManager.GetString("JmxUri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   http://www.kmoni.bosai.go.jp/data/map_img/ に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string KyoshinUri {

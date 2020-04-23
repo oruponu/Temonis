@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using static Temonis.MainWindow;
 
 namespace Temonis
 {
     public static class EqInfo
     {
-        private static readonly HttpClient HttpClient = new HttpClient();
+        private static readonly HttpClient HttpClient = new HttpClient(new HttpClientHandler
+        {
+            AutomaticDecompression = DecompressionMethods.All
+        });
         private static readonly IReadOnlyDictionary<string, string> CityAbbreviation = new Dictionary<string, string>
         {
             ["渡島北斗市"] = "北斗市",
@@ -120,7 +123,6 @@ namespace Temonis
             ["鹿児島出水市"] = "出水市",
             ["鹿児島十島村"] = "十島村"
         };
-        private static string _prevInfo;
         private static string _prevId = "";
 
         public static string Id { get; private set; }
@@ -133,190 +135,85 @@ namespace Temonis
         /// 地震情報を取得
         /// </summary>
         /// <returns></returns>
-        public static async Task UpdateAsync()
+        public static async Task<Report> RequestAsync(string uri)
         {
-            var html = "";
             try
             {
-                var response = await HttpClient.GetAsync(Properties.Resources.EqInfoUri);
+                var response = await HttpClient.GetAsync(uri);
                 if (!response.IsSuccessStatusCode)
-                    return;
-                html = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    return null;
+                var serializer = new XmlSerializer(typeof(Report));
+                await using var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                return (Report)serializer.Deserialize(stream);
             }
             catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
             {
                 WriteLog(ex);
+                return null;
             }
+        }
 
-            if (html.Length == 0)
-                return;
-
-            var info = new Regex("<div id=\"eqinfdtl\" class=\"tracked_mods\">.+?</div>", RegexOptions.Compiled | RegexOptions.Singleline).Match(html).Value;
-
-            // 発生時刻
-            var dateTime = new Regex(@"<.+>発生時刻(</.+>)+\n(<.+>)+(.+?)</.+>", RegexOptions.Compiled).Match(info).Groups[3].Value.Replace("ごろ", "");
-            if (dateTime == "---")
-                return;
-            dateTime = DateTime.TryParse(dateTime, new CultureInfo("ja-JP"), DateTimeStyles.AssumeLocal, out var arrivalTime) ? arrivalTime.ToString("yyyy年MM月dd日 HH時mm分") : "---";
-
-            // 震源地
-            var epicenter = new Regex(@"<.+>震源地(</.+>)+\n(<.+>)+<.+?>(.+?)</.+>", RegexOptions.Compiled).Match(info).Groups[3].Value;
-            epicenter += new Regex(@"<.+>震源地(</.+>)+\n(<.+>)+<.+?>(.+?)</.+>(.+?)(</.+>){2}", RegexOptions.Compiled).Match(info).Groups[4].Value;
-            epicenter = epicenter.Replace('/', '／');
-
-            // マグニチュード
-            var magnitude = new Regex(@"<.+>マグニチュード(</.+>)+\n(<.+>)+(.+?)</.+>", RegexOptions.Compiled).Match(info).Groups[3].Value;
-
-            // 震源の深さ
-            var depth = new Regex(@"<.+>深さ(</.+>)+\n\n(<.+>)+(.+?)</.+>", RegexOptions.Compiled).Match(info).Groups[3].Value;
-
-            // 付加文
-            var comment = new Regex(@"<.+>情報(</.+>)+\n(<.+?>)+(.+?)</?.+>", RegexOptions.Compiled).Match(info).Groups[3].Value;
-            if (comment.Count(text => text == '。') == 2)  // 付加文の情報が2つの場合は2行に分割
-                comment = comment.Replace("。", "。\n").TrimEnd('\n');
-
-            // 各地の震度
-            var intensity = new Regex(@"<.+class=""yjw_table"">(.+?)</\w+>\n</div>", RegexOptions.Compiled | RegexOptions.Singleline).Match(info).Groups[1].Value.Replace("\n", "");
-            intensity = new Regex(@"<\w+ \S+><\w+ \S+ \w+>(<\w+>)+", RegexOptions.Compiled).Replace(intensity, "[");
-            intensity = new Regex(@"(</\w+>)+<\w+ \S+><\w+>", RegexOptions.Compiled).Replace(intensity, "]");
-            intensity = new Regex(@"<\w+ \S+><\w+ \S+ \S+ \S+><\w+>震度", RegexOptions.Compiled).Replace(intensity, "");
-            intensity = new Regex(@"(</\w+>)+<\w+ \S+ \S+><.+?>", RegexOptions.Compiled).Replace(intensity, ":");
-            intensity = new Regex(@"　<\w+>(</\w+>){3}", RegexOptions.Compiled).Replace(intensity, "");
-            intensity = new Regex(@"(</\w+>)+", RegexOptions.Compiled).Replace(intensity, ",");
-            intensity = intensity.TrimEnd(',');
-
-            if (!IsUpdated($"{dateTime},{epicenter},{magnitude}\n{intensity}"))
-                return;
-
-            MainWindow.DataContext.EqInfo.DateTime = dateTime;
-            MainWindow.DataContext.EqInfo.Epicenter = epicenter;
-            MainWindow.DataContext.EqInfo.Depth = depth;
-            MainWindow.DataContext.EqInfo.Magnitude = magnitude;
-            MainWindow.DataContext.EqInfo.Comment = comment;
-
-            var maxInt = "";
-            if (intensity.Length != 0)
+        public static void Update(Report report, string eventId = "")
+        {
+            var infoKind = report.Control.Title switch
             {
-                SetDataGridContext(intensity);
-                maxInt = intensity.Split(',')[0].Split(':')[0];
-            }
-            else
-            {
-                MainWindow.DataContext.EqInfo.IntensityList = new List<Intensity>();
-            }
-
-            // 震源の緯度
-            var latitude = .0;
-            var latLon = new Regex(@"<.+>緯度/経度(</.+>)+\n(<.+>)+(.+?)</.+>", RegexOptions.Compiled).Match(info).Groups[3].Value.Split('/');
-            if (latLon[0] != "---")
-            {
-                latLon[0] = latLon[0].TrimEnd('度');
-                if (latLon[0].StartsWith("北緯"))
-                    double.TryParse(latLon[0].Replace("北緯", ""), out latitude);
-                else
-                    double.TryParse("-" + latLon[0].Replace("南緯", ""), out latitude);
-            }
-
-            // 震源の経度
-            var longitude = .0;
-            if (latLon.Length > 1 && latLon[1] != "---")
-            {
-                latLon[1] = latLon[1].TrimEnd('度');
-                if (latLon[1].StartsWith("東経"))
-                    double.TryParse(latLon[1].Replace("東経", ""), out longitude);
-                else
-                    double.TryParse("-" + latLon[1].Replace("西経", ""), out longitude);
-            }
-
-            SetEpicenterPoint(latitude, longitude);
+                "震度速報" => InfoKind.Shindo,
+                "震源に関する情報" => InfoKind.Shingen,
+                _ => InfoKind.ShingenShindo
+            };
 
             // 地震ID
-            Id = new Regex("<a href=\"/weather/jp/earthquake/(.+).html\">", RegexOptions.Compiled).Match(html).Groups[1].Value;
+            Id = report.Head.EventId;
 
-            UpdateState(maxInt);
-        }
-
-        /// <summary>
-        /// ページの更新を確認します。
-        /// </summary>
-        /// <param name="current">現在保持している HTML</param>
-        /// <returns></returns>
-        private static bool IsUpdated(string current)
-        {
-            if (_prevInfo == current)
-                return false;
-            _prevInfo = current;
-            return true;
-        }
-
-        private static void SetDataGridContext(string text)
-        {
-            var intensity = new List<Intensity>();
-            foreach (var item in text.Split(','))
+            var earthquake = report.Body.Earthquake;
+            if (infoKind != InfoKind.Shindo)
             {
-                var split = item.Split(':');
-                var maxInt = "震度" + split[0];
-                var maxIntVisible = true;
-                var prefNameVisible = true;
-                foreach (var pref in split[1].TrimStart('[').Split('['))
-                {
-                    split = pref.Split(']');
-                    var prefName = split[0];
-                    var cities = new StringBuilder();
-                    foreach (var city in split[1].Split('　'))
-                    {
-                        var cityName = AbbreviateCityName(city, split[0]);
-                        if (cities.Length + ("　" + cityName).Length > 28)
-                        {
-                            intensity.Add(new Intensity
-                            {
-                                MaxInt = maxInt,
-                                MaxIntVisible = maxIntVisible,
-                                PrefName = prefName,
-                                PrefNameVisible = prefNameVisible,
-                                CityName = cities.ToString()
-                            });
-                            cities.Clear();
-                            maxIntVisible = false;
-                            prefNameVisible = false;
-                        }
+                // 発生時刻
+                MainWindow.DataContext.EqInfo.DateTime = earthquake.ArrivalTime.ToString("yyyy年MM月dd日 HH時mm分");
 
-                        if (cities.Length > 0)
-                            cities.Append('　');
-                        cities.Append(cityName);
-                    }
+                // 震源地
+                var epicenter = earthquake.Hypocenter.Area.Name;
+                if (earthquake.Hypocenter.Area.DetailedName != null)
+                    epicenter += $"（{earthquake.Hypocenter.Area.DetailedName}）";
+                if (earthquake.Hypocenter.Area.NameFromMark != null)
+                    epicenter += $"（{earthquake.Hypocenter.Area.NameFromMark}）";
+                MainWindow.DataContext.EqInfo.Epicenter = epicenter;
 
-                    intensity.Add(new Intensity
-                    {
-                        MaxInt = maxInt,
-                        MaxIntVisible = maxIntVisible,
-                        PrefName = prefName,
-                        PrefNameVisible = prefNameVisible,
-                        CityName = cities.ToString()
-                    });
+                // 震源の深さ
+                var (latitude, longitude, depth) = earthquake.Hypocenter.Area.Coordinate.Split();
+                depth = depth != "不明" ? depth : "---";
+                MainWindow.DataContext.EqInfo.Depth = depth;
+                SetEpicenterPoint(latitude, longitude);
 
-                    maxIntVisible = false;
-                    prefNameVisible = true;
-                }
+                // マグニチュード
+                MainWindow.DataContext.EqInfo.Magnitude = earthquake.Magnitude.Normalize();
+            }
+            else if (eventId.Length == 0)
+            {
+                MainWindow.DataContext.EqInfo.DateTime = report.Head.TargetDateTime.ToString("yyyy年MM月dd日 HH時mm分");
+                MainWindow.DataContext.EqInfo.Epicenter = "---";
+                MainWindow.DataContext.EqInfo.Depth = "---";
+                MainWindow.DataContext.EqInfo.Magnitude = "---";
             }
 
-            MainWindow.DataContext.EqInfo.IntensityList = intensity;
-        }
+            if (eventId.Length == 0)
+            {
+                // 付加文
+                MainWindow.DataContext.EqInfo.Comment = report.Body.Comments.ForecastComment.Text;
+            }
 
-        /// <summary>
-        /// 市町村名を省略します。
-        /// </summary>
-        /// <param name="city">市町村名</param>
-        /// <param name="pref">属する都道府県</param>
-        /// <returns></returns>
-        private static string AbbreviateCityName(string city, string pref)
-        {
-            pref = pref.TrimEnd('都').TrimEnd('府').TrimEnd('県');
-            if (!city.StartsWith(pref) && pref != "北海道")
-                return city;
-            if (city.EndsWith("区") && !city.EndsWith("２３区"))
-                return pref == "東京" ? city.Replace("東京", "") : city.Contains("堺市") ? city.Replace("大阪", "") : city;
-            return CityAbbreviation.TryGetValue(city, out var value) ? value : city;
+            // 各地の震度
+            var intensity = report.Body.Intensity;
+            if (intensity != null)
+            {
+                SetDataGridContext(infoKind, intensity.Observation);
+                UpdateState(intensity.Observation.MaxInt);
+            }
+            else if (eventId.Length == 0)
+            {
+                MainWindow.DataContext.EqInfo.IntensityList = new List<IntensityLine>();
+                UpdateState("");
+            }
         }
 
         /// <summary>
@@ -357,9 +254,111 @@ namespace Temonis
             }
         }
 
+        private static void SetDataGridContext(InfoKind infoKind, Observation observation)
+        {
+            var prefList = observation.Pref.Select(pref => new
+            {
+                pref.Name,
+                Code = int.Parse(pref.Code),
+                Area = pref.Area.OrderBy(area => int.Parse(area.Code)).Select(area => new
+                {
+                    Int = area.MaxInt,
+                    area.Name
+                }),
+                City = pref.Area.SelectMany(area => area.City).OrderBy(city => int.Parse(city.Code)).Select(city => new
+                {
+                    Int = city.MaxInt,
+                    city.Name
+                }),
+                Station = pref.Area.SelectMany(area => area.City).SelectMany(city => city.IntensityStation).OrderBy(station => int.Parse(station.Code)).Select(station => new
+                {
+                    station.Int,
+                    Name = station.Name.TrimEnd('＊')
+                })
+            }).OrderBy(pref => pref.Code).ToArray();
+
+            var intensityList = new List<IntensityLine>();
+            foreach (var intensity in new[] { "7", "6+", "6-", "5+", "5-", "4", "3", "2", "1" })
+            {
+                var maxIntVisible = true;
+                var prefNameVisible = true;
+                foreach (var pref in prefList)
+                {
+                    var cities = new StringBuilder();
+                    foreach (var city in infoKind == InfoKind.Shindo ? pref.Area : Settings.JsonClass.Appearance.ShowIntensityStation ? pref.Station : pref.City)
+                    {
+                        if (city.Int != intensity)
+                            continue;
+                        var cityName = AbbreviateCityName(city.Name, pref.Name);
+                        if (cities.Length + ("　" + cityName).Length > 28)
+                        {
+                            intensityList.Add(new IntensityLine
+                            {
+                                MaxInt = NormalizeIntensity(intensity),
+                                MaxIntVisible = maxIntVisible,
+                                PrefName = pref.Name,
+                                PrefNameVisible = prefNameVisible,
+                                CityName = cities.ToString()
+                            });
+                            cities.Clear();
+                            maxIntVisible = false;
+                            prefNameVisible = false;
+                        }
+
+                        if (cities.Length > 0)
+                            cities.Append('　');
+                        cities.Append(cityName);
+                    }
+
+                    if (cities.Length == 0)
+                        continue;
+
+                    intensityList.Add(new IntensityLine
+                    {
+                        MaxInt = NormalizeIntensity(intensity),
+                        MaxIntVisible = maxIntVisible,
+                        PrefName = pref.Name,
+                        PrefNameVisible = prefNameVisible,
+                        CityName = cities.ToString()
+                    });
+
+                    maxIntVisible = false;
+                    prefNameVisible = true;
+                }
+            }
+
+            MainWindow.DataContext.EqInfo.IntensityList = intensityList;
+        }
+
+        /// <summary>
+        /// 市町村名を省略します。
+        /// </summary>
+        /// <param name="city">市町村名</param>
+        /// <param name="pref">属する都道府県</param>
+        /// <returns></returns>
+        private static string AbbreviateCityName(string city, string pref)
+        {
+            pref = pref.TrimEnd('都').TrimEnd('府').TrimEnd('県');
+            if (!city.StartsWith(pref) && pref != "北海道")
+                return city;
+            if (city.EndsWith("区") && !city.EndsWith("２３区"))
+                return pref == "東京" ? city.Replace("東京", "") : city.Contains("堺市") ? city.Replace("大阪", "") : city;
+            return CityAbbreviation.TryGetValue(city, out var value) ? value : city;
+        }
+
+        private static string NormalizeIntensity(string str)
+        {
+            if (str.Length == 0)
+                return str;
+            str = "震度" + str;
+            if (str.Contains('-'))
+                return str.Replace('-', '弱');
+            return str.Contains('+') ? str.Replace('+', '強') : str;
+        }
+
         private static void UpdateState(string maxInt)
         {
-            if (maxInt.Contains('弱') || maxInt.Contains('強') || maxInt.Contains('7') || MainWindow.DataContext.EqInfo.Comment.Contains("津波警報"))
+            if (maxInt.Contains('-') || maxInt.Contains('+') || maxInt.Contains('7') || MainWindow.DataContext.EqInfo.Comment.Contains("津波警報"))
                 MainWindow.DataContext.EqInfo.Level = Level.Red;
             else if (maxInt.Contains('3') || maxInt.Contains('4'))
                 MainWindow.DataContext.EqInfo.Level = Level.Yellow;
@@ -374,7 +373,7 @@ namespace Temonis
             _prevId = Id;
         }
 
-        public class Intensity : BindableBase
+        public class IntensityLine : BindableBase
         {
             private string _maxInt;
             private bool _maxIntVisible;
@@ -421,7 +420,7 @@ namespace Temonis
             private string _depth;
             private string _magnitude;
             private string _comment;
-            private List<Intensity> _intensityList;
+            private List<IntensityLine> _intensityList;
 
             public Level Level
             {
@@ -459,11 +458,213 @@ namespace Temonis
                 set => SetProperty(ref _comment, value);
             }
 
-            public List<Intensity> IntensityList
+            public List<IntensityLine> IntensityList
             {
                 get => _intensityList;
                 set => SetProperty(ref _intensityList, value);
             }
+        }
+
+        [XmlRoot(Namespace = "http://xml.kishou.go.jp/jmaxml1/")]
+        public class Report
+        {
+            public Control Control { get; set; }
+
+            [XmlElement(Namespace = "http://xml.kishou.go.jp/jmaxml1/informationBasis1/")]
+            public Head Head { get; set; }
+
+            [XmlElement(Namespace = "http://xml.kishou.go.jp/jmaxml1/body/seismology1/")]
+            public Body Body { get; set; }
+        }
+
+        public class Control
+        {
+            public string Title { get; set; }
+        }
+
+        public class Head
+        {
+            public DateTime TargetDateTime { get; set; }
+
+            [XmlElement(ElementName = "EventID")]
+            public string EventId { get; set; }
+        }
+
+        public class Body
+        {
+            public Earthquake Earthquake { get; set; }
+
+            public Intensity Intensity { get; set; }
+
+            public Comments Comments { get; set; }
+        }
+
+        public class Earthquake
+        {
+            public DateTime ArrivalTime { get; set; }
+
+            public Hypocenter Hypocenter { get; set; }
+
+            [XmlElement(Namespace = "http://xml.kishou.go.jp/jmaxml1/elementBasis1/")]
+            public Magnitude Magnitude { get; set; }
+        }
+
+        public class Hypocenter
+        {
+            public HypoArea Area { get; set; }
+        }
+
+        public class HypoArea
+        {
+            public string Name { get; set; }
+
+            [XmlElement(Namespace = "http://xml.kishou.go.jp/jmaxml1/elementBasis1/")]
+            public Coordinate Coordinate { get; set; }
+
+            public string DetailedName { get; set; }
+
+            public string NameFromMark { get; set; }
+        }
+
+        public class Coordinate
+        {
+            [XmlText]
+            public string Value { get; set; }
+
+            public (float latitude, float longitude, string depth) Split()
+            {
+                var isoStr = Value.Remove(Value.Length - 1);
+                var parts = isoStr.Split(new[] { '+', '-' }, StringSplitOptions.None);
+
+                // 震源の緯度
+                var latitude = float.Parse(parts[1]);
+                if (isoStr[0] == '-')
+                    latitude = -latitude;
+
+                // 震源の経度
+                var longitude = float.Parse(parts[2]);
+                if (isoStr[parts[1].Length + 1] == '-')
+                    longitude = -longitude;
+
+                // 震源の深さ
+                string depth;
+                if (parts.Length >= 4)
+                {
+                    depth = parts[3] switch
+                    {
+                        "0" => "ごく浅い",
+                        "700000" => "700km以上",
+                        _ => parts[3].Remove(parts[3].Length - 3, 3) + "km"
+                    };
+                }
+                else
+                {
+                    depth = "不明";
+                }
+
+                return (latitude, longitude, depth);
+            }
+        }
+
+        public class Magnitude
+        {
+            [XmlAttribute(AttributeName = "description")]
+            public string Description { get; set; }
+
+            public string Normalize()
+            {
+                if (Description.Length == 0)
+                    return "---";
+
+                var charArray = Description.Replace("Ｍ", "").ToCharArray();
+                for (var i = 0; i < charArray.Length; i++)
+                {
+                    var ch = charArray[i];
+                    if ('０' <= ch && ch <= '９')
+                    {
+                        charArray[i] = (char)(ch - 0xFEE0);
+                    }
+                    else if (ch == '．')
+                    {
+                        charArray[i] = '.';
+                    }
+                }
+
+                return new string(charArray);
+            }
+        }
+
+        public class Intensity
+        {
+            public Observation Observation { get; set; }
+        }
+
+        public class Observation
+        {
+            public string MaxInt { get; set; }
+
+            [XmlElement]
+            public Pref[] Pref { get; set; }
+        }
+
+        public class Pref
+        {
+            public string Name { get; set; }
+
+            public string Code { get; set; }
+
+            [XmlElement]
+            public Area[] Area { get; set; }
+        }
+
+        public class Area
+        {
+            public string Name { get; set; }
+
+            public string Code { get; set; }
+
+            public string MaxInt { get; set; }
+
+            [XmlElement]
+            public City[] City { get; set; }
+        }
+
+        public class City
+        {
+            public string Name { get; set; }
+
+            public string Code { get; set; }
+
+            public string MaxInt { get; set; }
+
+            [XmlElement]
+            public IntensityStation[] IntensityStation { get; set; }
+        }
+
+        public class IntensityStation
+        {
+            public string Name { get; set; }
+
+            public string Code { get; set; }
+
+            public string Int { get; set; }
+        }
+
+        public class Comments
+        {
+            public ForecastComment ForecastComment { get; set; }
+        }
+
+        public class ForecastComment
+        {
+            public string Text { get; set; }
+        }
+
+        private enum InfoKind
+        {
+            Shindo,
+            Shingen,
+            ShingenShindo
         }
     }
 }

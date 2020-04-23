@@ -66,7 +66,7 @@ namespace Temonis
             if (_eqInfoCount >= EqInfoInterval)
             {
                 Sound.PlayDummy();
-                await EqInfo.UpdateAsync();
+                await Jmaxml.RequestFeedAsync();
                 _eqInfoCount = 0;
             }
 

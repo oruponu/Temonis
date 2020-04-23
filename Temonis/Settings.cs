@@ -48,6 +48,8 @@ namespace Temonis
             {
                 [JsonPropertyName("useJMASeismicIntensityScale")]
                 public bool UseJmaSeismicIntensityScale { get; set; }
+
+                public bool ShowIntensityStation { get; set; }
             }
 
             public class BehaviorClass

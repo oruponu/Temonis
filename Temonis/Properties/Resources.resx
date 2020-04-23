@@ -123,6 +123,9 @@
   <data name="EqInfoUri" xml:space="preserve">
     <value>https://typhoon.yahoo.co.jp/weather/earthquake/</value>
   </data>
+  <data name="JmxUri" xml:space="preserve">
+    <value>https://www.data.jma.go.jp/developer/xml/feed/</value>
+  </data>
   <data name="KyoshinUri" xml:space="preserve">
     <value>http://www.kmoni.bosai.go.jp/data/map_img/</value>
   </data>

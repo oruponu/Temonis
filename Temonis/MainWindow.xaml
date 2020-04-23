@@ -88,7 +88,7 @@
                     </StackPanel>
                     <Image Width="100"
                            Height="20"
-                           Margin="0,16,4,0"
+                           Margin="0,16,3,0"
                            HorizontalAlignment="Right"
                            Opacity=".75"
                            RenderOptions.BitmapScalingMode="NearestNeighbor"

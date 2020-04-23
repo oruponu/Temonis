@@ -22,7 +22,7 @@ namespace Temonis
         /// <returns></returns>
         public static async Task UpdateAsync()
         {
-            var json = default(Json);
+            Json json;
             try
             {
                 var response = await MainWindow.HttpClient.GetAsync(Properties.Resources.EewUri + LatestTime.ToString("yyyyMMddHHmmss") + ".json");
@@ -38,10 +38,8 @@ namespace Temonis
             catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
             {
                 WriteLog(ex);
-            }
-
-            if (json == default(Json))
                 return;
+            }
 
             if (json.Result.Message != "データがありません")
             {

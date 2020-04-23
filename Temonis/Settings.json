@@ -1,6 +1,7 @@
 {
     "appearance": {
-        "useJMASeismicIntensityScale": true
+        "useJMASeismicIntensityScale": true,
+        "showIntensityStation": false
     },
     "behavior": {
         "activateWindow": true
