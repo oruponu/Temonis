@@ -207,12 +207,12 @@ namespace Temonis
             if (intensity != null)
             {
                 SetDataGridContext(infoKind, intensity.Observation);
-                UpdateState(intensity.Observation.MaxInt);
+                UpdateState(intensity.Observation.MaxInt, infoKind);
             }
             else if (eventId.Length == 0)
             {
                 MainWindow.DataContext.EqInfo.IntensityList = new List<IntensityLine>();
-                UpdateState("");
+                UpdateState("", infoKind);
             }
         }
 
@@ -356,7 +356,7 @@ namespace Temonis
             return str.Contains('+') ? str.Replace('+', '強') : str;
         }
 
-        private static void UpdateState(string maxInt)
+        private static void UpdateState(string maxInt, InfoKind infoKind)
         {
             if (maxInt.Contains('-') || maxInt.Contains('+') || maxInt.Contains('7') || MainWindow.DataContext.EqInfo.Comment.Contains("津波警報"))
                 MainWindow.DataContext.EqInfo.Level = Level.Red;
@@ -365,10 +365,13 @@ namespace Temonis
             else
                 MainWindow.DataContext.EqInfo.Level = Level.White;
 
-            if (_prevId.Length != 0)
-                Sound.PlayEqInfo(maxInt);
+            if (infoKind != InfoKind.Shingen && maxInt.Length != 0)
+            {
+                if (_prevId.Length != 0)
+                    Sound.PlayEqInfo(maxInt);
 
-            SetActive();
+                SetActive();
+            }
 
             _prevId = Id;
         }

@@ -70,15 +70,6 @@ namespace Temonis.Properties {
         }
         
         /// <summary>
-        ///   https://typhoon.yahoo.co.jp/weather/earthquake/ に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string EqInfoUri {
-            get {
-                return ResourceManager.GetString("EqInfoUri", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   https://www.data.jma.go.jp/developer/xml/feed/ に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string JmxUri {
