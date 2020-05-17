@@ -156,16 +156,14 @@ namespace Temonis
         public static byte[] DecompressResource(Stream stream, int bufferSize)
         {
             var bytes = new byte[bufferSize];
-            using (var zipStream = new GZipStream(stream, CompressionMode.Decompress))
+            using var zipStream = new GZipStream(stream, CompressionMode.Decompress);
+            using var decompressedMemoryStream = new MemoryStream();
+            while (true)
             {
-                using var decompressedMemoryStream = new MemoryStream();
-                while (true)
-                {
-                    var size = zipStream.Read(bytes, 0, bytes.Length);
-                    if (size == 0)
-                        break;
-                    decompressedMemoryStream.Write(bytes, 0, size);
-                }
+                var size = zipStream.Read(bytes, 0, bytes.Length);
+                if (size == 0)
+                    break;
+                decompressedMemoryStream.Write(bytes, 0, size);
             }
 
             return bytes;

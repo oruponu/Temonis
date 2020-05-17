@@ -262,18 +262,23 @@ namespace Temonis
                 Code = int.Parse(pref.Code),
                 Area = pref.Area.OrderBy(area => int.Parse(area.Code)).Select(area => new
                 {
-                    Int = area.MaxInt,
-                    area.Name
+                    area.Name,
+                    Int = area.MaxInt
                 }),
                 City = pref.Area.SelectMany(area => area.City).OrderBy(city => int.Parse(city.Code)).Select(city => new
                 {
-                    Int = city.MaxInt,
-                    city.Name
+                    Name = AbbreviateCityName(city.Name, pref.Name),
+                    Int = city.MaxInt
                 }),
-                Station = pref.Area.SelectMany(area => area.City).SelectMany(city => city.IntensityStation).OrderBy(station => int.Parse(station.Code)).Select(station => new
+                Station = pref.Area.SelectMany(area => area.City).SelectMany(city => city.IntensityStation.Select(station => new
                 {
-                    station.Int,
-                    Name = station.Name.TrimEnd('＊')
+                    Name = station.Name.Replace(city.Name, AbbreviateCityName(city.Name, pref.Name)),
+                    station.Code,
+                    station.Int
+                })).OrderBy(station => int.Parse(station.Code)).Select(station => new
+                {
+                    Name = station.Name.TrimEnd('＊'),
+                    station.Int
                 })
             }).OrderBy(pref => pref.Code).ToArray();
 
@@ -289,8 +294,7 @@ namespace Temonis
                     {
                         if (city.Int != intensity)
                             continue;
-                        var cityName = AbbreviateCityName(city.Name, pref.Name);
-                        if (cities.Length + ("　" + cityName).Length > 28)
+                        if (cities.Length + ("　" + city.Name).Length > 28)
                         {
                             intensityList.Add(new IntensityLine
                             {
@@ -307,7 +311,7 @@ namespace Temonis
 
                         if (cities.Length > 0)
                             cities.Append('　');
-                        cities.Append(cityName);
+                        cities.Append(city.Name);
                     }
 
                     if (cities.Length == 0)
