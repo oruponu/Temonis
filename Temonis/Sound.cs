@@ -151,7 +151,7 @@ namespace Temonis
                 case "7":
                     Play(Settings.JsonClass.Sounds.EqInfo.Intensity9);
                     break;
-                default:
+                case "D":
                     Play(Settings.JsonClass.Sounds.EqInfo.Distant);
                     break;
             }

@@ -35,7 +35,7 @@ namespace Temonis
                 };
                 json = await JsonSerializer.DeserializeAsync<Json>(stream, options).ConfigureAwait(false);
             }
-            catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
+            catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException || ex is JsonException)
             {
                 WriteLog(ex);
                 return;

@@ -212,7 +212,7 @@ namespace Temonis
             else if (eventId.Length == 0)
             {
                 MainWindow.DataContext.EqInfo.IntensityList = new List<IntensityLine>();
-                UpdateState("", infoKind);
+                UpdateState(report.Head.Title == "遠地地震に関する情報" ? "D" : "", infoKind);
             }
         }
 
@@ -491,6 +491,8 @@ namespace Temonis
 
         public class Head
         {
+            public string Title { get; set; }
+
             public DateTime TargetDateTime { get; set; }
 
             [XmlElement(ElementName = "EventID")]
