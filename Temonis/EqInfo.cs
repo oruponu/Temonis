@@ -369,11 +369,9 @@ namespace Temonis
             else
                 MainWindow.DataContext.EqInfo.Level = Level.White;
 
-            if (infoKind != InfoKind.Shingen && maxInt.Length != 0)
+            if (infoKind != InfoKind.Shingen && maxInt.Length != 0 && _prevId.Length != 0)
             {
-                if (_prevId.Length != 0)
-                    Sound.PlayEqInfo(maxInt);
-
+                Sound.PlayEqInfo(maxInt);
                 SetActive();
             }
 

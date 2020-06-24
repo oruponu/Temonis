@@ -136,16 +136,16 @@ namespace Temonis
                 case "4":
                     Play(Settings.JsonClass.Sounds.EqInfo.Intensity4);
                     break;
-                case "5弱":
+                case "5-":
                     Play(Settings.JsonClass.Sounds.EqInfo.Intensity5);
                     break;
-                case "5強":
+                case "5+":
                     Play(Settings.JsonClass.Sounds.EqInfo.Intensity6);
                     break;
-                case "6弱":
+                case "6-":
                     Play(Settings.JsonClass.Sounds.EqInfo.Intensity7);
                     break;
-                case "6強":
+                case "6+":
                     Play(Settings.JsonClass.Sounds.EqInfo.Intensity8);
                     break;
                 case "7":
