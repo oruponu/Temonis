@@ -10,10 +10,10 @@
             set => SetProperty(ref _latestTimeString, value);
         }
 
-        public Kyoshin.DataContext Kyoshin { get; set; } = new Kyoshin.DataContext();
+        public Kyoshin.DataContext Kyoshin { get; } = new();
 
-        public Eew.DataContext Eew { get; set; } = new Eew.DataContext();
+        public Eew.DataContext Eew { get; } = new();
 
-        public EqInfo.DataContext EqInfo { get; set; } = new EqInfo.DataContext();
+        public EqInfo.DataContext EqInfo { get; } = new();
     }
 }

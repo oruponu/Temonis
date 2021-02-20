@@ -16,11 +16,11 @@ namespace Temonis.Converters
 
             var text = "";
             if (hour > 0)
-                text += $"{hour.ToString()}時間";
+                text += $"{hour}時間";
             if (minute > 0)
-                text += $"{minute.ToString()}分";
+                text += $"{minute}分";
             if (second > 0)
-                text += $"{second.ToString()}秒";
+                text += $"{second}秒";
             if (text.Length != 0)
                 text += "前";
 

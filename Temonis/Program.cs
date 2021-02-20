@@ -14,13 +14,13 @@ namespace Temonis
         [STAThread]
         public static void Main()
         {
-            TaskScheduler.UnobservedTaskException += (sender, e) =>
+            TaskScheduler.UnobservedTaskException += (_, e) =>
             {
                 WriteFatalErrorLog(e.Exception);
                 e.SetObserved();
             };
 
-            AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+            AppDomain.CurrentDomain.UnhandledException += (_, e) =>
             {
                 var ex = e.ExceptionObject as Exception;
                 WriteFatalErrorLog(ex);
@@ -29,7 +29,7 @@ namespace Temonis
 
             var latestVersion = GetLatestVersionAsync().GetAwaiter().GetResult();
             var version = Assembly.GetExecutingAssembly().GetName().Version;
-            if (latestVersion != null && latestVersion > version)
+            if (latestVersion is not null && latestVersion > version)
             {
                 var result = MessageBox.Show($"新しいバージョン {latestVersion} がリリースされました。\nダウンロードページを開きますか？", "Temonis", MessageBoxButton.YesNo, MessageBoxImage.Information);
                 if (result == MessageBoxResult.Yes)
@@ -56,8 +56,7 @@ namespace Temonis
             var value = $"{DateTime.Now}\n";
             value += $"[Message]\n{ex.GetType().FullName}: {ex.Message}\n";
             value += $"[StackTrace]\n{ex.StackTrace}\n\n";
-            using var stream = new StreamWriter("FatalError.txt", true);
-            stream.WriteLine(value);
+            File.AppendAllText("FatalError.txt", value);
         }
 
         private static async Task<Version> GetLatestVersionAsync()
@@ -66,7 +65,7 @@ namespace Temonis
             try
             {
                 using var client = new HttpClient();
-                var response = await client.GetAsync($"{Temonis.Properties.Resources.TemonisUri}version");
+                var response = await client.GetAsync($"{Properties.Resources.TemonisUri}version");
                 if (!response.IsSuccessStatusCode)
                     return null;
                 split = (await response.Content.ReadAsStringAsync()).Split('.');
@@ -76,7 +75,7 @@ namespace Temonis
                 WriteLog(ex);
             }
 
-            if (split != null && split.Length == 4 && int.TryParse(split[0], out var major) && int.TryParse(split[1], out var minor) && int.TryParse(split[2], out var build) && int.TryParse(split[3], out var revision))
+            if (split is not null && split.Length == 4 && int.TryParse(split[0], out var major) && int.TryParse(split[1], out var minor) && int.TryParse(split[2], out var build) && int.TryParse(split[3], out var revision))
                 return new Version(major, minor, build, revision);
             return null;
         }

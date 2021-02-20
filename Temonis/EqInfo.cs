@@ -12,7 +12,7 @@ namespace Temonis
 {
     public static class EqInfo
     {
-        private static readonly HttpClient HttpClient = new HttpClient(new HttpClientHandler
+        private static readonly HttpClient HttpClient = new(new HttpClientHandler
         {
             AutomaticDecompression = DecompressionMethods.All
         });
@@ -173,9 +173,9 @@ namespace Temonis
 
                 // 震源地
                 var epicenter = earthquake.Hypocenter.Area.Name;
-                if (earthquake.Hypocenter.Area.DetailedName != null)
+                if (earthquake.Hypocenter.Area.DetailedName is not null)
                     epicenter += $"（{earthquake.Hypocenter.Area.DetailedName}）";
-                if (earthquake.Hypocenter.Area.NameFromMark != null)
+                if (earthquake.Hypocenter.Area.NameFromMark is not null)
                     epicenter += $"（{earthquake.Hypocenter.Area.NameFromMark}）";
                 MainWindow.DataContext.EqInfo.Epicenter = epicenter;
 
@@ -204,7 +204,7 @@ namespace Temonis
 
             // 各地の震度
             var intensity = report.Body.Intensity;
-            if (intensity != null)
+            if (intensity is not null)
             {
                 SetDataGridContext(infoKind, intensity.Observation);
                 UpdateState(intensity.Observation.MaxInt, infoKind);
@@ -380,40 +380,40 @@ namespace Temonis
 
         public class IntensityLine : BindableBase
         {
-            private string _maxInt;
-            private bool _maxIntVisible;
-            private string _prefName;
-            private bool _prefNameVisible;
-            private string _cityName;
+            private readonly string _maxInt;
+            private readonly bool _maxIntVisible;
+            private readonly string _prefName;
+            private readonly bool _prefNameVisible;
+            private readonly string _cityName;
 
             public string MaxInt
             {
                 get => _maxInt;
-                set => SetProperty(ref _maxInt, value);
+                init => SetProperty(ref _maxInt, value);
             }
 
             public bool MaxIntVisible
             {
                 get => _maxIntVisible;
-                set => SetProperty(ref _maxIntVisible, value);
+                init => SetProperty(ref _maxIntVisible, value);
             }
 
             public string PrefName
             {
                 get => _prefName;
-                set => SetProperty(ref _prefName, value);
+                init => SetProperty(ref _prefName, value);
             }
 
             public bool PrefNameVisible
             {
                 get => _prefNameVisible;
-                set => SetProperty(ref _prefNameVisible, value);
+                init => SetProperty(ref _prefNameVisible, value);
             }
 
             public string CityName
             {
                 get => _cityName;
-                set => SetProperty(ref _cityName, value);
+                init => SetProperty(ref _cityName, value);
             }
         }
 
@@ -473,70 +473,70 @@ namespace Temonis
         [XmlRoot(Namespace = "http://xml.kishou.go.jp/jmaxml1/")]
         public class Report
         {
-            public Control Control { get; set; }
+            public Control Control { get; init; }
 
             [XmlElement(Namespace = "http://xml.kishou.go.jp/jmaxml1/informationBasis1/")]
-            public Head Head { get; set; }
+            public Head Head { get; init; }
 
             [XmlElement(Namespace = "http://xml.kishou.go.jp/jmaxml1/body/seismology1/")]
-            public Body Body { get; set; }
+            public Body Body { get; init; }
         }
 
         public class Control
         {
-            public string Title { get; set; }
+            public string Title { get; init; }
         }
 
         public class Head
         {
-            public string Title { get; set; }
+            public string Title { get; init; }
 
-            public DateTime TargetDateTime { get; set; }
+            public DateTime TargetDateTime { get; init; }
 
             [XmlElement(ElementName = "EventID")]
-            public string EventId { get; set; }
+            public string EventId { get; init; }
         }
 
         public class Body
         {
-            public Earthquake Earthquake { get; set; }
+            public Earthquake Earthquake { get; init; }
 
-            public Intensity Intensity { get; set; }
+            public Intensity Intensity { get; init; }
 
-            public Comments Comments { get; set; }
+            public Comments Comments { get; init; }
         }
 
         public class Earthquake
         {
-            public DateTime ArrivalTime { get; set; }
+            public DateTime ArrivalTime { get; init; }
 
-            public Hypocenter Hypocenter { get; set; }
+            public Hypocenter Hypocenter { get; init; }
 
             [XmlElement(Namespace = "http://xml.kishou.go.jp/jmaxml1/elementBasis1/")]
-            public Magnitude Magnitude { get; set; }
+            public Magnitude Magnitude { get; init; }
         }
 
         public class Hypocenter
         {
-            public HypoArea Area { get; set; }
+            public HypoArea Area { get; init; }
         }
 
         public class HypoArea
         {
-            public string Name { get; set; }
+            public string Name { get; init; }
 
             [XmlElement(Namespace = "http://xml.kishou.go.jp/jmaxml1/elementBasis1/")]
-            public Coordinate Coordinate { get; set; }
+            public Coordinate Coordinate { get; init; }
 
-            public string DetailedName { get; set; }
+            public string DetailedName { get; init; }
 
-            public string NameFromMark { get; set; }
+            public string NameFromMark { get; init; }
         }
 
         public class Coordinate
         {
             [XmlText]
-            public string Value { get; set; }
+            public string Value { get; init; }
 
             public (float latitude, float longitude, string depth) Split()
             {
@@ -576,7 +576,7 @@ namespace Temonis
         public class Magnitude
         {
             [XmlAttribute(AttributeName = "description")]
-            public string Description { get; set; }
+            public string Description { get; init; }
 
             public string Normalize()
             {
@@ -603,68 +603,68 @@ namespace Temonis
 
         public class Intensity
         {
-            public Observation Observation { get; set; }
+            public Observation Observation { get; init; }
         }
 
         public class Observation
         {
-            public string MaxInt { get; set; }
+            public string MaxInt { get; init; }
 
             [XmlElement]
-            public Pref[] Pref { get; set; }
+            public Pref[] Pref { get; init; }
         }
 
         public class Pref
         {
-            public string Name { get; set; }
+            public string Name { get; init; }
 
-            public string Code { get; set; }
+            public string Code { get; init; }
 
             [XmlElement]
-            public Area[] Area { get; set; }
+            public Area[] Area { get; init; }
         }
 
         public class Area
         {
-            public string Name { get; set; }
+            public string Name { get; init; }
 
-            public string Code { get; set; }
+            public string Code { get; init; }
 
-            public string MaxInt { get; set; }
+            public string MaxInt { get; init; }
 
             [XmlElement]
-            public City[] City { get; set; }
+            public City[] City { get; init; }
         }
 
         public class City
         {
-            public string Name { get; set; }
+            public string Name { get; init; }
 
-            public string Code { get; set; }
+            public string Code { get; init; }
 
-            public string MaxInt { get; set; }
+            public string MaxInt { get; init; }
 
             [XmlElement]
-            public IntensityStation[] IntensityStation { get; set; }
+            public IntensityStation[] IntensityStation { get; init; }
         }
 
         public class IntensityStation
         {
-            public string Name { get; set; }
+            public string Name { get; init; }
 
-            public string Code { get; set; }
+            public string Code { get; init; }
 
-            public string Int { get; set; }
+            public string Int { get; init; }
         }
 
         public class Comments
         {
-            public ForecastComment ForecastComment { get; set; }
+            public ForecastComment ForecastComment { get; init; }
         }
 
         public class ForecastComment
         {
-            public string Text { get; set; }
+            public string Text { get; init; }
         }
 
         private enum InfoKind

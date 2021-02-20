@@ -11,8 +11,8 @@ namespace Temonis
 {
     public static class Eew
     {
-        private static readonly Dictionary<string, string> Info = new Dictionary<string, string>();
-        private static readonly Dictionary<string, string> PrevInfo = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> Info = new();
+        private static readonly Dictionary<string, string> PrevInfo = new();
 
         public static bool IsTriggerOn { get; private set; }
 
@@ -52,7 +52,7 @@ namespace Temonis
                     IsTriggerOn = false;
                     Info[json.ReportId] = "-1";
                 }
-                else if (!Info.TryGetValue(json.ReportId, out var value) || value != null && value != "-1")
+                else if (!Info.TryGetValue(json.ReportId, out var value) || value is not null && value != "-1")
                 {
                     IsTriggerOn = true;
                     var serial = $"第{json.ReportNum}報";
@@ -66,7 +66,7 @@ namespace Temonis
                     MainWindow.DataContext.Eew.Magnitude = json.Magnitude;
                     MainWindow.DataContext.Eew.Intensity = json.Calcintensity;
 
-                    if (value == null)
+                    if (value is null)
                         Info.Add(json.ReportId, json.Calcintensity);
                     else if (value != json.Calcintensity)
                         Info[json.ReportId] = json.Calcintensity;
@@ -188,38 +188,38 @@ namespace Temonis
 
         private class Json
         {
-            public ResultClass Result { get; set; }
+            public ResultClass Result { get; init; }
 
             [JsonPropertyName("region_name")]
-            public string RegionName { get; set; }
+            public string RegionName { get; init; }
 
             [JsonPropertyName("is_cancel")]
-            public JsonElement IsCancel { get; set; }
+            public JsonElement IsCancel { get; init; }
 
-            public string Depth { get; set; }
+            public string Depth { get; init; }
 
-            public string Calcintensity { get; set; }
+            public string Calcintensity { get; init; }
 
             [JsonPropertyName("is_final")]
-            public JsonElement IsFinal { get; set; }
+            public JsonElement IsFinal { get; init; }
 
             [JsonPropertyName("origin_time")]
-            public string OriginTime { get; set; }
+            public string OriginTime { get; init; }
 
             [JsonPropertyName("magunitude")]
-            public string Magnitude { get; set; }
+            public string Magnitude { get; init; }
 
             [JsonPropertyName("report_num")]
-            public string ReportNum { get; set; }
+            public string ReportNum { get; init; }
 
             [JsonPropertyName("report_id")]
-            public string ReportId { get; set; }
+            public string ReportId { get; init; }
 
-            public string Alertflg { get; set; }
+            public string Alertflg { get; init; }
 
             public class ResultClass
             {
-                public string Message { get; set; }
+                public string Message { get; init; }
             }
         }
     }

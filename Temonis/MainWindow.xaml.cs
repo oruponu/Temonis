@@ -19,10 +19,10 @@ namespace Temonis
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static readonly HttpClient HttpClient = new HttpClient();
+        public static readonly HttpClient HttpClient = new();
         private const int TimeResetInterval = 60;
         private const int EqInfoInterval = 10;
-        private readonly DispatcherTimer _timer = new DispatcherTimer();
+        private readonly DispatcherTimer _timer = new();
         private static int _timeResetCount = TimeResetInterval;
         private static int _eqInfoCount = EqInfoInterval;
         private static int _retryCount;
@@ -36,7 +36,7 @@ namespace Temonis
             private set => _latestTime = value;
         }
 
-        public new static DataContext DataContext { get; } = new DataContext();
+        public new static DataContext DataContext { get; } = new();
 
         public MainWindow()
         {
@@ -174,8 +174,7 @@ namespace Temonis
         {
             var value = DateTime.Now + "\n";
             value += $"[Log]\n{str}\n\n";
-            using var stream = new StreamWriter("Log.txt", true);
-            stream.WriteLine(value);
+            File.AppendAllText("Log.txt", value);
         }
 
         [Conditional("DEBUG")]
@@ -184,14 +183,13 @@ namespace Temonis
             var value = DateTime.Now + "\n";
             value += $"[Message]\n{ex.GetType().FullName}: {ex.Message}\n";
             value += $"[StackTrace]\n{ex.StackTrace}\n\n";
-            using var stream = new StreamWriter("Exception.txt", true);
-            stream.WriteLine(value);
+            File.AppendAllText("Exception.txt", value);
         }
 
         private class Json
         {
             [JsonPropertyName("latest_time")]
-            public string LatestTime { get; set; }
+            public string LatestTime { get; init; }
         }
     }
 

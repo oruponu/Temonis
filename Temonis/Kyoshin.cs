@@ -18,9 +18,9 @@ namespace Temonis
         public static readonly double ImageWidth = (double)Instance.FindResource("ImageWidth");
         public static readonly double ImageHeight = (double)Instance.FindResource("ImageHeight");
 
-        private static readonly BitmapImage BaseMap = new BitmapImage(new Uri("pack://application:,,,/Resources/BaseMap.png", UriKind.Absolute));
-        private static readonly BitmapImage BaseMapBorder = new BitmapImage(new Uri("pack://application:,,,/Resources/BaseMapBorder.png", UriKind.Absolute));
-        private static readonly BitmapImage Epicenter = new BitmapImage(new Uri("pack://application:,,,/Resources/Epicenter.png", UriKind.Absolute));
+        private static readonly BitmapImage BaseMap = new(new Uri("pack://application:,,,/Resources/BaseMap.png", UriKind.Absolute));
+        private static readonly BitmapImage BaseMapBorder = new(new Uri("pack://application:,,,/Resources/BaseMapBorder.png", UriKind.Absolute));
+        private static readonly BitmapImage Epicenter = new(new Uri("pack://application:,,,/Resources/Epicenter.png", UriKind.Absolute));
 
         /// <summary>
         /// 観測点リスト
@@ -170,7 +170,7 @@ namespace Temonis
             ((SolidColorBrush)Instance.FindResource("Red")).Color
         };
         private static readonly Color[] Colors = new Color[256];
-        private static readonly Intensity Observation = new Intensity
+        private static readonly Intensity Observation = new()
         {
             Prefs = new List<Intensity.Pref>(47),
             Stations = new List<Intensity.Station>(Stations.Count)
@@ -207,7 +207,7 @@ namespace Temonis
                 try
                 {
                     var source = await DownloadImageAsync($"{Properties.Resources.KyoshinUri}RealTimeImg/jma_s/{time}.jma_s.gif");
-                    if (source != null)
+                    if (source is not null)
                     {
                         source.Freeze();
                         var converted = new FormatConvertedBitmap(source, PixelFormats.Bgr32, null, .0);
@@ -289,7 +289,7 @@ namespace Temonis
             var mapType = MapType[MainWindow.DataContext.Kyoshin.ComboBoxSelectedIndex];
             var mapSb = MainWindow.DataContext.Kyoshin.RadioButton == DataContext.RadioButtonEnum.Surface ? "s" : "b";
             var image = await DownloadImageAsync($"{Properties.Resources.KyoshinUri}RealTimeImg/{mapType}_{mapSb}/{time}.{mapType}_{mapSb}.gif");
-            if (image == null)
+            if (image is null)
                 return;
             image.Freeze();
             var rect = new Rect(.0, .0, ImageWidth, ImageHeight);
@@ -306,7 +306,7 @@ namespace Temonis
         private static async Task DrawPsWaveImageAsync(DrawingContext context, string time)
         {
             var image = await DownloadImageAsync($"{Properties.Resources.KyoshinUri}PSWaveImg/eew/{time}.eew.gif");
-            if (image == null)
+            if (image is null)
                 return;
             image.Freeze();
             var rect = new Rect(.0, .0, ImageWidth, ImageHeight);
@@ -480,7 +480,7 @@ namespace Temonis
 
             // 最大震度（気象庁震度階級）を検知した地点数
             var maxIntNum = Observation.Stations.Where(station => station.Int >= .5).Count(station => Settings.JsonClass.Appearance.UseJmaSeismicIntensityScale ? ToIntensityInt(station.Int) == _maxInt : station.Int == Observation.MaxInt);
-            MainWindow.DataContext.Kyoshin.MaxIntDetail = maxIntNum > 1 ? $"他 {(maxIntNum - 1).ToString()} 地点" : "";
+            MainWindow.DataContext.Kyoshin.MaxIntDetail = maxIntNum > 1 ? $"他 {maxIntNum - 1} 地点" : "";
 
             // 地表リアルアイム震度0.5以上を検知した都道府県をラベルに設定
             if (IsTriggerOn && !_isTriggerWait && firstIntStation.Int >= .5)
@@ -489,7 +489,7 @@ namespace Temonis
                 {
                     var text = string.Join("　", Observation.Prefs.Take(9).Select(pref => pref.Name));
                     if (Observation.Prefs.Count >= 11)
-                        text += $"　他 {(Observation.Prefs.Count - 9).ToString()} 都道府県";
+                        text += $"　他 {Observation.Prefs.Count - 9} 都道府県";
                     else if (Observation.Prefs.Count >= 10)
                         text += "　" + Observation.Prefs.Last().Name;
 
@@ -531,24 +531,12 @@ namespace Temonis
         /// </summary>
         /// <param name="pref"></param>
         /// <returns></returns>
-        private static int SetComputeRange(string pref)
+        private static int SetComputeRange(string pref) => pref switch
         {
-            switch (pref)
-            {
-                case "茨城県":
-                case "栃木県":
-                case "埼玉県":
-                case "千葉県":
-                case "東京都":
-                case "神奈川県":
-                    return 5;   // 観測点同士の間隔が狭い地域では範囲を狭く設定
-                case "鹿児島県":
-                case "沖縄県":
-                    return 10;  // 観測点同士の間隔が広い地域では範囲を広く設定
-                default:
-                    return 8;
-            }
-        }
+            "茨城県" or "栃木県" or "埼玉県" or "千葉県" or "東京都" or "神奈川県" => 5,   // 観測点同士の間隔が狭い地域では範囲を狭く設定
+            "鹿児島県" or "沖縄県" => 10,  // 観測点同士の間隔が広い地域では範囲を広く設定
+            _ => 8
+        };
 
         /// <summary>
         /// 地震判定用スコアを計算します。
@@ -603,52 +591,38 @@ namespace Temonis
         /// </summary>
         /// <param name="seismicInt">変換する計測震度</param>
         /// <returns></returns>
-        private static int ToIntensityInt(double seismicInt)
+        private static int ToIntensityInt(double seismicInt) => seismicInt switch
         {
-            if (seismicInt < 0.5)
-                return 0;
-            if (seismicInt < 1.5)
-                return 1;
-            if (seismicInt < 2.5)
-                return 2;
-            if (seismicInt < 3.5)
-                return 3;
-            if (seismicInt < 4.5)
-                return 4;
-            if (seismicInt < 5.0)
-                return 5;
-            if (seismicInt < 5.5)
-                return 6;
-            if (seismicInt < 6.0)
-                return 7;
-            return seismicInt < 6.5 ? 8 : 9;
-        }
+            < 0.5 => 0,
+            < 1.5 => 1,
+            < 2.5 => 2,
+            < 3.5 => 3,
+            < 4.5 => 4,
+            < 5.0 => 5,
+            < 5.5 => 6,
+            < 6.0 => 7,
+            < 6.5 => 8,
+            _ => 9
+        };
 
         /// <summary>
         /// 計測震度を気象庁震度階級の文字列に変換します。
         /// </summary>
         /// <param name="seismicInt">変換する計測震度</param>
         /// <returns></returns>
-        private static string ToIntensityString(double seismicInt)
+        private static string ToIntensityString(double seismicInt) => seismicInt switch
         {
-            if (seismicInt < 0.5)
-                return "0";
-            if (seismicInt < 1.5)
-                return "1";
-            if (seismicInt < 2.5)
-                return "2";
-            if (seismicInt < 3.5)
-                return "3";
-            if (seismicInt < 4.5)
-                return "4";
-            if (seismicInt < 5.0)
-                return "5弱";
-            if (seismicInt < 5.5)
-                return "5強";
-            if (seismicInt < 6.0)
-                return "6弱";
-            return seismicInt < 6.5 ? "6強" : "7";
-        }
+            < 0.5 => "0",
+            < 1.5 => "1",
+            < 2.5 => "2",
+            < 3.5 => "3",
+            < 4.5 => "4",
+            < 5.0 => "5弱",
+            < 5.5 => "5強",
+            < 6.0 => "6弱",
+            < 6.5 => "6強",
+            _ => "7"
+        };
 
         private static void UpdateState()
         {
@@ -678,12 +652,12 @@ namespace Temonis
         {
             if (IsTriggerOn && !_isTriggerWait)
             {
-                if (_maxInt >= 5)
-                    MainWindow.DataContext.Kyoshin.Level = Level.Red;
-                else if (_maxInt >= 3)
-                    MainWindow.DataContext.Kyoshin.Level = Level.Yellow;
-                else
-                    MainWindow.DataContext.Kyoshin.Level = Level.White;
+                MainWindow.DataContext.Kyoshin.Level = _maxInt switch
+                {
+                    >= 5 => Level.Red,
+                    >= 3 => Level.Yellow,
+                    _ => Level.White
+                };
             }
             else
             {
@@ -779,7 +753,7 @@ namespace Temonis
                 /// <summary>
                 /// 都道府県名
                 /// </summary>
-                public string Name { get; set; }
+                public string Name { get; init; }
 
                 /// <summary>
                 /// 最大リアルタイム震度
@@ -797,12 +771,12 @@ namespace Temonis
                 /// <summary>
                 /// 観測点インデックス
                 /// </summary>
-                public int Index { get; set; }
+                public int Index { get; init; }
 
                 /// <summary>
                 /// リアルタイム震度
                 /// </summary>
-                public double Int { get; set; }
+                public double Int { get; init; }
             }
         }
 
@@ -811,27 +785,27 @@ namespace Temonis
             /// <summary>
             /// 観測点が有効であるか
             /// </summary>
-            public bool IsEnabled { get; set; }
+            public bool IsEnabled { get; init; }
 
             /// <summary>
             /// 観測点名
             /// </summary>
-            public string Name { get; set; }
+            public string Name { get; init; }
 
             /// <summary>
             /// 都道府県名
             /// </summary>
-            public string PrefName { get; set; }
+            public string PrefName { get; init; }
 
             /// <summary>
             /// X座標
             /// </summary>
-            public int X { get; set; }
+            public int X { get; init; }
 
             /// <summary>
             /// Y座標
             /// </summary>
-            public int Y { get; set; }
+            public int Y { get; init; }
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Temonis
 {
     internal static class Sound
     {
-        private static readonly MediaPlayer Player = new MediaPlayer();
+        private static readonly MediaPlayer Player = new();
 
         public static void PlayKyoshin(int maxInt)
         {

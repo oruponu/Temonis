@@ -11,8 +11,8 @@ namespace Temonis
 {
     internal class Jmaxml
     {
-        private static readonly HttpClient HttpClient = new HttpClient();
-        private static readonly Dictionary<string, DateTimeOffset?> LastModified = new Dictionary<string, DateTimeOffset?>();
+        private static readonly HttpClient HttpClient = new();
+        private static readonly Dictionary<string, DateTimeOffset?> LastModified = new();
 
         private static string _prevRef;
 
@@ -35,9 +35,9 @@ namespace Temonis
 
             if (!response.IsSuccessStatusCode)
                 return;
-            if (response.Content.Headers.LastModified != null)
+            if (response.Content.Headers.LastModified is not null)
             {
-                if (lastModified != null)
+                if (lastModified is not null)
                     LastModified[fileName] = response.Content.Headers.LastModified;
                 else
                     LastModified.Add(fileName, response.Content.Headers.LastModified);
@@ -63,7 +63,7 @@ namespace Temonis
             foreach (var xml in xmls)
             {
                 var report = await EqInfo.RequestAsync(xml.Uri);
-                if (report == null)
+                if (report is null)
                     continue;
 
                 if (prevEventId.Length != 0 && report.Head.EventId != prevEventId)
@@ -91,13 +91,13 @@ namespace Temonis
 
         private class Feed
         {
-            public string Title { get; set; }
+            public string Title { get; init; }
 
-            public DateTime Updated { get; set; }
+            public DateTime Updated { get; init; }
 
-            public string Content { get; set; }
+            public string Content { get; init; }
 
-            public string Uri { get; set; }
+            public string Uri { get; init; }
         }
     }
 }

@@ -38,131 +38,131 @@ namespace Temonis
 
         public class Json
         {
-            public AppearanceClass Appearance { get; set; }
+            public AppearanceClass Appearance { get; init; }
 
-            public BehaviorClass Behavior { get; set; }
+            public BehaviorClass Behavior { get; init; }
 
-            public SoundsClass Sounds { get; set; }
+            public SoundsClass Sounds { get; init; }
 
             public class AppearanceClass
             {
                 [JsonPropertyName("useJMASeismicIntensityScale")]
-                public bool UseJmaSeismicIntensityScale { get; set; }
+                public bool UseJmaSeismicIntensityScale { get; init; }
 
-                public bool ShowIntensityStation { get; set; }
+                public bool ShowIntensityStation { get; init; }
             }
 
             public class BehaviorClass
             {
-                public bool ActivateWindow { get; set; }
+                public bool ActivateWindow { get; init; }
             }
 
             public class SoundsClass
             {
-                public Kyoshin Kyoshin { get; set; }
+                public Kyoshin Kyoshin { get; init; }
 
-                public Eew Eew { get; set; }
+                public Eew Eew { get; init; }
 
-                public EqInfo EqInfo { get; set; }
+                public EqInfo EqInfo { get; init; }
             }
 
             public class Kyoshin
             {
-                public string Intensity1 { get; set; }
+                public string Intensity1 { get; init; }
 
-                public string Intensity2 { get; set; }
+                public string Intensity2 { get; init; }
 
-                public string Intensity3 { get; set; }
+                public string Intensity3 { get; init; }
 
-                public string Intensity4 { get; set; }
+                public string Intensity4 { get; init; }
 
-                public string Intensity5 { get; set; }
+                public string Intensity5 { get; init; }
 
-                public string Intensity6 { get; set; }
+                public string Intensity6 { get; init; }
 
-                public string Intensity7 { get; set; }
+                public string Intensity7 { get; init; }
 
-                public string Intensity8 { get; set; }
+                public string Intensity8 { get; init; }
 
-                public string Intensity9 { get; set; }
+                public string Intensity9 { get; init; }
             }
 
             public class Eew
             {
-                public FirstReport FirstReport { get; set; }
+                public FirstReport FirstReport { get; init; }
 
-                public MaxIntChange MaxIntChange { get; set; }
+                public MaxIntChange MaxIntChange { get; init; }
             }
 
             public class FirstReport
             {
-                public string Intensity1 { get; set; }
+                public string Intensity1 { get; init; }
 
-                public string Intensity2 { get; set; }
+                public string Intensity2 { get; init; }
 
-                public string Intensity3 { get; set; }
+                public string Intensity3 { get; init; }
 
-                public string Intensity4 { get; set; }
+                public string Intensity4 { get; init; }
 
-                public string Intensity5 { get; set; }
+                public string Intensity5 { get; init; }
 
-                public string Intensity6 { get; set; }
+                public string Intensity6 { get; init; }
 
-                public string Intensity7 { get; set; }
+                public string Intensity7 { get; init; }
 
-                public string Intensity8 { get; set; }
+                public string Intensity8 { get; init; }
 
-                public string Intensity9 { get; set; }
+                public string Intensity9 { get; init; }
 
-                public string Unknown { get; set; }
+                public string Unknown { get; init; }
             }
 
             public class MaxIntChange
             {
-                public string Cancel { get; set; }
+                public string Cancel { get; init; }
 
-                public string Intensity1 { get; set; }
+                public string Intensity1 { get; init; }
 
-                public string Intensity2 { get; set; }
+                public string Intensity2 { get; init; }
 
-                public string Intensity3 { get; set; }
+                public string Intensity3 { get; init; }
 
-                public string Intensity4 { get; set; }
+                public string Intensity4 { get; init; }
 
-                public string Intensity5 { get; set; }
+                public string Intensity5 { get; init; }
 
-                public string Intensity6 { get; set; }
+                public string Intensity6 { get; init; }
 
-                public string Intensity7 { get; set; }
+                public string Intensity7 { get; init; }
 
-                public string Intensity8 { get; set; }
+                public string Intensity8 { get; init; }
 
-                public string Intensity9 { get; set; }
+                public string Intensity9 { get; init; }
 
-                public string Unknown { get; set; }
+                public string Unknown { get; init; }
             }
 
             public class EqInfo
             {
-                public string Distant { get; set; }
+                public string Distant { get; init; }
 
-                public string Intensity1 { get; set; }
+                public string Intensity1 { get; init; }
 
-                public string Intensity2 { get; set; }
+                public string Intensity2 { get; init; }
 
-                public string Intensity3 { get; set; }
+                public string Intensity3 { get; init; }
 
-                public string Intensity4 { get; set; }
+                public string Intensity4 { get; init; }
 
-                public string Intensity5 { get; set; }
+                public string Intensity5 { get; init; }
 
-                public string Intensity6 { get; set; }
+                public string Intensity6 { get; init; }
 
-                public string Intensity7 { get; set; }
+                public string Intensity7 { get; init; }
 
-                public string Intensity8 { get; set; }
+                public string Intensity8 { get; init; }
 
-                public string Intensity9 { get; set; }
+                public string Intensity9 { get; init; }
             }
         }
     }
