@@ -21,7 +21,7 @@ namespace Temonis
     {
         public static readonly HttpClient HttpClient = new();
         private const int TimeResetInterval = 60;
-        private const int EqInfoInterval = 10;
+        private const int EqInfoInterval = 60;
         private readonly DispatcherTimer _timer = new();
         private static int _timeResetCount = TimeResetInterval;
         private static int _eqInfoCount = EqInfoInterval;
@@ -81,7 +81,7 @@ namespace Temonis
             {
                 DataContext.Kyoshin.MaxIntString = "";
                 DataContext.Kyoshin.Prefecture = "";
-                LatestTime = await RequestLatestTimeAsync(LatestTime.AddSeconds(-DataContext.Kyoshin.SliderValue)).ConfigureAwait(false);
+                LatestTime = await RequestLatestTimeAsync(LatestTime.AddSeconds(-DataContext.Kyoshin.SliderValue));
                 _retryCount++;
             }
 
@@ -101,13 +101,14 @@ namespace Temonis
             var json = default(Json);
             try
             {
-                var response = await HttpClient.GetAsync(Properties.Resources.LatestTimeUri).ConfigureAwait(false);
+                var requestUri = new Uri(Properties.Resources.LatestTimeUri);
+                var response = await HttpClient.GetAsync(requestUri);
                 if (!response.IsSuccessStatusCode)
                     return dateTime;
-                await using var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                json = await JsonSerializer.DeserializeAsync<Json>(stream).ConfigureAwait(false);
+                await using var stream = await response.Content.ReadAsStreamAsync();
+                json = await JsonSerializer.DeserializeAsync<Json>(stream);
             }
-            catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
             {
                 WriteLog(ex);
             }
@@ -123,7 +124,7 @@ namespace Temonis
         {
             if (_timeResetCount >= TimeResetInterval)
             {
-                LatestTime = await RequestLatestTimeAsync(LatestTime.AddSeconds(-DataContext.Kyoshin.SliderValue)).ConfigureAwait(false);
+                LatestTime = await RequestLatestTimeAsync(LatestTime.AddSeconds(-DataContext.Kyoshin.SliderValue));
                 _timeResetCount = 0;
             }
             else

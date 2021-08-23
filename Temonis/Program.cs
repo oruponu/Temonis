@@ -65,12 +65,13 @@ namespace Temonis
             try
             {
                 using var client = new HttpClient();
-                var response = await client.GetAsync($"{Properties.Resources.TemonisUri}version");
+                var requestUri = new Uri($"{Properties.Resources.TemonisUri}version");
+                var response = await client.GetAsync(requestUri);
                 if (!response.IsSuccessStatusCode)
                     return null;
                 split = (await response.Content.ReadAsStringAsync()).Split('.');
             }
-            catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
             {
                 WriteLog(ex);
             }

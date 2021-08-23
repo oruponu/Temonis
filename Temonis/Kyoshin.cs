@@ -199,14 +199,15 @@ namespace Temonis
                 {
                     await DrawRealTimeImageAsync(context, time);
                 }
-                catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException || ex is IOException)
+                catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or IOException)
                 {
                     WriteLog(ex);
                 }
 
                 try
                 {
-                    var source = await DownloadImageAsync($"{Properties.Resources.KyoshinUri}RealTimeImg/jma_s/{time}.jma_s.gif");
+                    var requestUri = new Uri($"{Properties.Resources.KyoshinUri}RealTimeImg/jma_s/{time}.jma_s.gif");
+                    var source = await DownloadImageAsync(requestUri);
                     if (source is not null)
                     {
                         source.Freeze();
@@ -220,7 +221,7 @@ namespace Temonis
                         _isSucceeded = true;
                     }
                 }
-                catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException || ex is IOException || ex is ArgumentOutOfRangeException)
+                catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or IOException or ArgumentOutOfRangeException)
                 {
                     WriteLog(ex);
                 }
@@ -231,7 +232,7 @@ namespace Temonis
                     {
                         await DrawPsWaveImageAsync(context, time);
                     }
-                    catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException || ex is IOException)
+                    catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or IOException)
                     {
                         WriteLog(ex);
                     }
@@ -259,16 +260,16 @@ namespace Temonis
         /// </summary>
         /// <param name="requestUri">要求の送信先 URI</param>
         /// <returns></returns>
-        private static async Task<BitmapSource> DownloadImageAsync(string requestUri)
+        private static async Task<BitmapSource> DownloadImageAsync(Uri requestUri)
         {
-            using var response = await MainWindow.HttpClient.GetAsync(requestUri).ConfigureAwait(false);
+            using var response = await MainWindow.HttpClient.GetAsync(requestUri);
             if (!response.IsSuccessStatusCode)
                 return null;
             var image = new BitmapImage();
             image.BeginInit();
             image.CacheOption = BitmapCacheOption.OnLoad;
             image.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
-            await using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+            await using (var stream = await response.Content.ReadAsStreamAsync())
             {
                 image.StreamSource = stream;
                 image.EndInit();
@@ -287,8 +288,9 @@ namespace Temonis
         private static async Task DrawRealTimeImageAsync(DrawingContext context, string time)
         {
             var mapType = MapType[MainWindow.DataContext.Kyoshin.ComboBoxSelectedIndex];
-            var mapSb = MainWindow.DataContext.Kyoshin.RadioButton == DataContext.RadioButtonEnum.Surface ? "s" : "b";
-            var image = await DownloadImageAsync($"{Properties.Resources.KyoshinUri}RealTimeImg/{mapType}_{mapSb}/{time}.{mapType}_{mapSb}.gif");
+            var mapSb = MainWindow.DataContext.Kyoshin.RadioButton == DataContext.MapSb.Surface ? "s" : "b";
+            var requestUri = new Uri($"{Properties.Resources.KyoshinUri}RealTimeImg/{mapType}_{mapSb}/{time}.{mapType}_{mapSb}.gif");
+            var image = await DownloadImageAsync(requestUri);
             if (image is null)
                 return;
             image.Freeze();
@@ -305,7 +307,8 @@ namespace Temonis
         /// <returns></returns>
         private static async Task DrawPsWaveImageAsync(DrawingContext context, string time)
         {
-            var image = await DownloadImageAsync($"{Properties.Resources.KyoshinUri}PSWaveImg/eew/{time}.eew.gif");
+            var requestUri = new Uri($"{Properties.Resources.KyoshinUri}PSWaveImg/eew/{time}.eew.gif");
+            var image = await DownloadImageAsync(requestUri);
             if (image is null)
                 return;
             image.Freeze();
@@ -546,11 +549,11 @@ namespace Temonis
         private static int ComputeScore(IReadOnlyList<Intensity.Station> stations)
         {
             var score = stations.Count(station => station.Int >= 1.5) * 59;
-            score += stations.Count(station => station.Int < 1.5 && station.Int >= 1.0) * 48;
-            score += stations.Count(station => station.Int < 1.0 && station.Int >= 0.5) * 37;
-            score += stations.Count(station => station.Int < 0.5 && station.Int >= 0.0) * 26;
-            score += stations.Count(station => station.Int < 0.0 && station.Int >= -0.5) * 15;
-            score += stations.Count(station => station.Int < -0.5 && station.Int >= -1.0) * 4;
+            score += stations.Count(station => station.Int is < 1.5 and >= 1.0) * 48;
+            score += stations.Count(station => station.Int is < 1.0 and >= 0.5) * 37;
+            score += stations.Count(station => station.Int is < 0.5 and >= 0.0) * 26;
+            score += stations.Count(station => station.Int is < 0.0 and >= -0.5) * 15;
+            score += stations.Count(station => station.Int is < -0.5 and >= -1.0) * 4;
             return score;
         }
 
@@ -673,7 +676,7 @@ namespace Temonis
             private string _maxIntDetail;
             private string _prefecture;
             private int _comboBoxSelectedIndex;
-            private RadioButtonEnum _radioButton;
+            private MapSb _radioButton;
             private double _sliderValue;
 
             public Level Level
@@ -712,13 +715,13 @@ namespace Temonis
                 set => SetProperty(ref _comboBoxSelectedIndex, value);
             }
 
-            public enum RadioButtonEnum
+            public enum MapSb
             {
                 Surface,
                 Borehole
             }
 
-            public RadioButtonEnum RadioButton
+            public MapSb RadioButton
             {
                 get => _radioButton;
                 set => SetProperty(ref _radioButton, value);

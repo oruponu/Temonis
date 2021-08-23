@@ -18,7 +18,7 @@ namespace Temonis
 
         public static async Task RequestFeedAsync(string fileName = "eqvol")
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, Properties.Resources.JmxUri + fileName + ".xml");
+            using var request = new HttpRequestMessage(HttpMethod.Get, Properties.Resources.JmxUri + fileName + ".xml");
             if (LastModified.TryGetValue(fileName, out var lastModified))
                 request.Headers.IfModifiedSince = lastModified;
 
@@ -27,7 +27,7 @@ namespace Temonis
             {
                 response = await HttpClient.SendAsync(request);
             }
-            catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
             {
                 WriteLog(ex);
                 return;
@@ -52,7 +52,7 @@ namespace Temonis
                 Updated = item.LastUpdatedTime.LocalDateTime,
                 Content = ((TextSyndicationContent)item.Content).Text,
                 Uri = item.Links[0].Uri.OriginalString
-            }).Where(item => item.Title == "震度速報" || item.Title == "震源に関する情報" || item.Title == "震源・震度に関する情報").ToArray();
+            }).Where(item => item.Title is "震度速報" or "震源に関する情報" or "震源・震度に関する情報").ToArray();
             if (fileName == "eqvol" && !xmls.Any())
                 await RequestFeedAsync("eqvol_l");
             if (!xmls.Any())
@@ -62,7 +62,8 @@ namespace Temonis
             var prevInfoKind = "";
             foreach (var xml in xmls)
             {
-                var report = await EqInfo.RequestAsync(xml.Uri);
+                var requestUri = new Uri(xml.Uri);
+                var report = await EqInfo.RequestAsync(requestUri);
                 if (report is null)
                     continue;
 

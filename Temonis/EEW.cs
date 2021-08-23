@@ -25,17 +25,18 @@ namespace Temonis
             Json json;
             try
             {
-                var response = await MainWindow.HttpClient.GetAsync(Properties.Resources.EewUri + LatestTime.ToString("yyyyMMddHHmmss") + ".json");
+                var requestUri = new Uri(Properties.Resources.EewUri + LatestTime.ToString("yyyyMMddHHmmss") + ".json");
+                var response = await MainWindow.HttpClient.GetAsync(requestUri);
                 if (!response.IsSuccessStatusCode)
                     return;
-                await using var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                await using var stream = await response.Content.ReadAsStreamAsync();
                 var options = new JsonSerializerOptions
                 {
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                 };
-                json = await JsonSerializer.DeserializeAsync<Json>(stream, options).ConfigureAwait(false);
+                json = await JsonSerializer.DeserializeAsync<Json>(stream, options);
             }
-            catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException || ex is JsonException)
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or JsonException)
             {
                 WriteLog(ex);
                 return;

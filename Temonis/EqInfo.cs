@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Serialization;
 using static Temonis.MainWindow;
 
@@ -14,7 +15,8 @@ namespace Temonis
     {
         private static readonly HttpClient HttpClient = new(new HttpClientHandler
         {
-            AutomaticDecompression = DecompressionMethods.All
+            AutomaticDecompression = DecompressionMethods.All,
+            CheckCertificateRevocationList = true
         });
         private static readonly IReadOnlyDictionary<string, string> CityAbbreviation = new Dictionary<string, string>
         {
@@ -135,18 +137,19 @@ namespace Temonis
         /// 地震情報を取得
         /// </summary>
         /// <returns></returns>
-        public static async Task<Report> RequestAsync(string uri)
+        public static async Task<Report> RequestAsync(Uri requestUri)
         {
             try
             {
-                var response = await HttpClient.GetAsync(uri);
+                var response = await HttpClient.GetAsync(requestUri);
                 if (!response.IsSuccessStatusCode)
                     return null;
                 var serializer = new XmlSerializer(typeof(Report));
-                await using var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                return (Report)serializer.Deserialize(stream);
+                await using var stream = await response.Content.ReadAsStreamAsync();
+                using var xmlReader = XmlReader.Create(stream);
+                return (Report)serializer.Deserialize(xmlReader);
             }
-            catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
             {
                 WriteLog(ex);
                 return null;
@@ -587,14 +590,10 @@ namespace Temonis
                 for (var i = 0; i < charArray.Length; i++)
                 {
                     var ch = charArray[i];
-                    if ('０' <= ch && ch <= '９')
-                    {
+                    if (ch is >= '０' and <= '９')
                         charArray[i] = (char)(ch - 0xFEE0);
-                    }
                     else if (ch == '．')
-                    {
                         charArray[i] = '.';
-                    }
                 }
 
                 return new string(charArray);
