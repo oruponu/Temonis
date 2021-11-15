@@ -59,18 +59,18 @@ namespace Temonis
                     var serial = $"第{json.ReportNum}報";
                     if (json.IsFinal.GetBoolean())
                         serial += " 最終";
-                    MainWindow.DataContext.Eew.Message = $"緊急地震速報（{json.Alertflg}）{serial}";
+                    MainWindow.DataContext.Eew.Message = $"緊急地震速報（{json.AlertFlg}）{serial}";
                     MainWindow.DataContext.Eew.Visible = true;
                     MainWindow.DataContext.Eew.DateTime = DateTime.ParseExact(json.OriginTime, "yyyyMMddHHmmss", new CultureInfo("ja-JP")).ToString("yyyy年MM月dd日 HH時mm分ss秒");
                     MainWindow.DataContext.Eew.Epicenter = json.RegionName;
                     MainWindow.DataContext.Eew.Depth = json.Depth;
                     MainWindow.DataContext.Eew.Magnitude = json.Magnitude;
-                    MainWindow.DataContext.Eew.Intensity = json.Calcintensity;
+                    MainWindow.DataContext.Eew.Intensity = json.CalcIntensity;
 
                     if (value is null)
-                        Info.Add(json.ReportId, json.Calcintensity);
-                    else if (value != json.Calcintensity)
-                        Info[json.ReportId] = json.Calcintensity;
+                        Info.Add(json.ReportId, json.CalcIntensity);
+                    else if (value != json.CalcIntensity)
+                        Info[json.ReportId] = json.CalcIntensity;
                 }
             }
             else
@@ -187,41 +187,29 @@ namespace Temonis
             }
         }
 
-        private class Json
-        {
-            public ResultClass Result { get; init; }
+        private record Json(
+            Result Result,
+            [property: JsonPropertyName("region_name")]
+            string RegionName,
+            [property: JsonPropertyName("is_cancel")]
+            JsonElement IsCancel,
+            string Depth,
+            [property: JsonPropertyName("calcintensity")]
+            string CalcIntensity,
+            [property: JsonPropertyName("is_final")]
+            JsonElement IsFinal,
+            [property: JsonPropertyName("origin_time")]
+            string OriginTime,
+            [property: JsonPropertyName("magunitude")]
+            string Magnitude,
+            [property: JsonPropertyName("report_num")]
+            string ReportNum,
+            [property: JsonPropertyName("report_id")]
+            string ReportId,
+            [property: JsonPropertyName("alertflg")]
+            string AlertFlg
+        );
 
-            [JsonPropertyName("region_name")]
-            public string RegionName { get; init; }
-
-            [JsonPropertyName("is_cancel")]
-            public JsonElement IsCancel { get; init; }
-
-            public string Depth { get; init; }
-
-            public string Calcintensity { get; init; }
-
-            [JsonPropertyName("is_final")]
-            public JsonElement IsFinal { get; init; }
-
-            [JsonPropertyName("origin_time")]
-            public string OriginTime { get; init; }
-
-            [JsonPropertyName("magunitude")]
-            public string Magnitude { get; init; }
-
-            [JsonPropertyName("report_num")]
-            public string ReportNum { get; init; }
-
-            [JsonPropertyName("report_id")]
-            public string ReportId { get; init; }
-
-            public string Alertflg { get; init; }
-
-            public class ResultClass
-            {
-                public string Message { get; init; }
-            }
-        }
+        private record Result(string Message);
     }
 }

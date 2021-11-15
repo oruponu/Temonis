@@ -187,11 +187,7 @@ namespace Temonis
             File.AppendAllText("Exception.txt", value);
         }
 
-        private class Json
-        {
-            [JsonPropertyName("latest_time")]
-            public string LatestTime { get; init; }
-        }
+        private record Json([property: JsonPropertyName("latest_time")] string LatestTime);
     }
 
     public enum Level

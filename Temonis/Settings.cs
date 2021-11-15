@@ -36,134 +36,70 @@ namespace Temonis
             }
         }
 
-        public class Json
-        {
-            public AppearanceClass Appearance { get; init; }
+        public record Json(Appearance Appearance, Behavior Behavior, Sounds Sounds);
 
-            public BehaviorClass Behavior { get; init; }
+        public record Appearance(
+            [property: JsonPropertyName("useJMASeismicIntensityScale")]
+            bool UseJmaSeismicIntensityScale,
+            bool ShowIntensityStation
+        );
 
-            public SoundsClass Sounds { get; init; }
+        public record Behavior(bool ActivateWindow);
 
-            public class AppearanceClass
-            {
-                [JsonPropertyName("useJMASeismicIntensityScale")]
-                public bool UseJmaSeismicIntensityScale { get; init; }
+        public record Sounds(Kyoshin Kyoshin, Eew Eew, EqInfo EqInfo);
 
-                public bool ShowIntensityStation { get; init; }
-            }
+        public record Kyoshin(
+            string Intensity1,
+            string Intensity2,
+            string Intensity3,
+            string Intensity4,
+            string Intensity5,
+            string Intensity6,
+            string Intensity7,
+            string Intensity8,
+            string Intensity9
+        );
 
-            public class BehaviorClass
-            {
-                public bool ActivateWindow { get; init; }
-            }
+        public record Eew(FirstReport FirstReport, MaxIntChange MaxIntChange);
 
-            public class SoundsClass
-            {
-                public Kyoshin Kyoshin { get; init; }
+        public record FirstReport(
+            string Intensity1,
+            string Intensity2,
+            string Intensity3,
+            string Intensity4,
+            string Intensity5,
+            string Intensity6,
+            string Intensity7,
+            string Intensity8,
+            string Intensity9,
+            string Unknown
+        );
 
-                public Eew Eew { get; init; }
+        public record MaxIntChange(
+            string Cancel,
+            string Intensity1,
+            string Intensity2,
+            string Intensity3,
+            string Intensity4,
+            string Intensity5,
+            string Intensity6,
+            string Intensity7,
+            string Intensity8,
+            string Intensity9,
+            string Unknown
+        );
 
-                public EqInfo EqInfo { get; init; }
-            }
-
-            public class Kyoshin
-            {
-                public string Intensity1 { get; init; }
-
-                public string Intensity2 { get; init; }
-
-                public string Intensity3 { get; init; }
-
-                public string Intensity4 { get; init; }
-
-                public string Intensity5 { get; init; }
-
-                public string Intensity6 { get; init; }
-
-                public string Intensity7 { get; init; }
-
-                public string Intensity8 { get; init; }
-
-                public string Intensity9 { get; init; }
-            }
-
-            public class Eew
-            {
-                public FirstReport FirstReport { get; init; }
-
-                public MaxIntChange MaxIntChange { get; init; }
-            }
-
-            public class FirstReport
-            {
-                public string Intensity1 { get; init; }
-
-                public string Intensity2 { get; init; }
-
-                public string Intensity3 { get; init; }
-
-                public string Intensity4 { get; init; }
-
-                public string Intensity5 { get; init; }
-
-                public string Intensity6 { get; init; }
-
-                public string Intensity7 { get; init; }
-
-                public string Intensity8 { get; init; }
-
-                public string Intensity9 { get; init; }
-
-                public string Unknown { get; init; }
-            }
-
-            public class MaxIntChange
-            {
-                public string Cancel { get; init; }
-
-                public string Intensity1 { get; init; }
-
-                public string Intensity2 { get; init; }
-
-                public string Intensity3 { get; init; }
-
-                public string Intensity4 { get; init; }
-
-                public string Intensity5 { get; init; }
-
-                public string Intensity6 { get; init; }
-
-                public string Intensity7 { get; init; }
-
-                public string Intensity8 { get; init; }
-
-                public string Intensity9 { get; init; }
-
-                public string Unknown { get; init; }
-            }
-
-            public class EqInfo
-            {
-                public string Distant { get; init; }
-
-                public string Intensity1 { get; init; }
-
-                public string Intensity2 { get; init; }
-
-                public string Intensity3 { get; init; }
-
-                public string Intensity4 { get; init; }
-
-                public string Intensity5 { get; init; }
-
-                public string Intensity6 { get; init; }
-
-                public string Intensity7 { get; init; }
-
-                public string Intensity8 { get; init; }
-
-                public string Intensity9 { get; init; }
-            }
-        }
+        public record EqInfo(
+            string Distant,
+            string Intensity1,
+            string Intensity2,
+            string Intensity3,
+            string Intensity4,
+            string Intensity5,
+            string Intensity6,
+            string Intensity7,
+            string Intensity8,
+            string Intensity9
+        );
     }
 }

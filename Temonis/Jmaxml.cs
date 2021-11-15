@@ -46,13 +46,12 @@ namespace Temonis
             await using var stream = await response.Content.ReadAsStreamAsync();
             using var reader = XmlReader.Create(stream);
             var feed = SyndicationFeed.Load(reader);
-            var xmls = feed.Items.Select(item => new Feed
-            {
-                Title = item.Title.Text,
-                Updated = item.LastUpdatedTime.LocalDateTime,
-                Content = ((TextSyndicationContent)item.Content).Text,
-                Uri = item.Links[0].Uri.OriginalString
-            }).Where(item => item.Title is "震度速報" or "震源に関する情報" or "震源・震度に関する情報").ToArray();
+            var xmls = feed.Items.Select(item => new Feed(
+                item.Title.Text,
+                item.LastUpdatedTime.LocalDateTime,
+                ((TextSyndicationContent)item.Content).Text,
+                item.Links[0].Uri.OriginalString
+            )).Where(item => item.Title is "震度速報" or "震源に関する情報" or "震源・震度に関する情報").ToArray();
             if (fileName == "eqvol" && !xmls.Any())
                 await RequestFeedAsync("eqvol_l");
             if (!xmls.Any())
@@ -90,15 +89,6 @@ namespace Temonis
             }
         }
 
-        private class Feed
-        {
-            public string Title { get; init; }
-
-            public DateTime Updated { get; init; }
-
-            public string Content { get; init; }
-
-            public string Uri { get; init; }
-        }
+        private record Feed(string Title, DateTime Updated, string Content, string Uri);
     }
 }
