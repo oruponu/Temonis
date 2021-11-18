@@ -159,12 +159,14 @@ namespace Temonis
             var bytes = new byte[bufferSize];
             using var zipStream = new GZipStream(stream, CompressionMode.Decompress);
             using var decompressedMemoryStream = new MemoryStream();
+            var totalRead = 0;
             while (true)
             {
-                var size = zipStream.Read(bytes, 0, bytes.Length);
-                if (size == 0)
+                var bytesRead = zipStream.Read(bytes.AsSpan(totalRead));
+                if (bytesRead == 0)
                     break;
-                decompressedMemoryStream.Write(bytes, 0, size);
+                totalRead += bytesRead;
+                decompressedMemoryStream.Write(bytes, 0, bytesRead);
             }
 
             return bytes;
