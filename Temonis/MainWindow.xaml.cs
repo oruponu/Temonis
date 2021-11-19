@@ -111,7 +111,7 @@ public partial class MainWindow : Window
             WriteLog(ex);
         }
 
-        return json == default(Json) ? dateTime : DateTime.Parse(json.LatestTime);
+        return json == default ? dateTime : DateTime.Parse(json.LatestTime);
     }
 
     /// <summary>
