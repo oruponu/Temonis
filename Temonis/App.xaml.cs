@@ -1,17 +1,16 @@
 ﻿using System.Windows;
 using System.Windows.Threading;
 
-namespace Temonis
+namespace Temonis;
+
+/// <summary>
+/// App.xaml の相互作用ロジック
+/// </summary>
+public partial class App : Application
 {
-    /// <summary>
-    /// App.xaml の相互作用ロジック
-    /// </summary>
-    public partial class App : Application
+    private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
-        private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
-        {
-            Program.WriteFatalErrorLog(e.Exception);
-            e.Handled = true;
-        }
+        Program.WriteFatalErrorLog(e.Exception);
+        e.Handled = true;
     }
 }
